@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kangaroo Radio — DIY USB-C ABC Kids Radio Build Guide</title>
+  <meta name="description" content="A complete, beginner-friendly guide to building a one-button, USB-C rechargeable ABC Kids radio in Australia with rich audio and zero soldering required.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="#" class="brand-logo" id="brand-logo-link">
+        <span class="logo-icon">📻</span>
+        <span class="logo-text">Kangaroo<strong>Radio</strong></span>
+        <span class="badge-tag">AU Beginner Guide</span>
+      </a>
+      <nav class="nav-links">
+        <a href="#the-truth">The FM Catch</a>
+        <a href="#parts-guide">Parts & Australian Stores</a>
+        <a href="#sound-science">Sound Secret</a>
+        <a href="#wiring-guide">Wiring Diagram</a>
+        <a href="#step-by-step">Step-by-Step Guide</a>
+        <a href="#code-generator">Code Generator</a>
+        <a href="#troubleshooting">Gotchas & FAQ</a>
+      </nav>
+      <a href="#parts-guide" class="nav-cta-btn" id="nav-cta-shop">Get Parts List</a>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-section" id="hero-section">
+    <div class="hero-container">
+      <div class="hero-text-content">
+        <div class="hero-pill-badge">
+          <span class="pill-dot"></span>
+          <span>Sydney, Australia &bull; ABC Kids Listen Project</span>
+        </div>
+        <h1 class="hero-title">Build a One-Switch, USB-C Rechargeable <span>ABC Kids Radio</span></h1>
+        <p class="hero-lead">
+          Flick the toggle switch on, and it instantly plays <strong>ABC Kids Listen</strong>. No fiddling with apps, no tiny buzzers, and no screen time. A warm, wooden, high-quality speaker build designed for complete beginners with <strong>zero previous electronics experience</strong>.
+        </p>
+
+        <div class="hero-stats-grid">
+          <div class="stat-card">
+            <span class="stat-number">~$35–$45</span>
+            <span class="stat-label">Total Cost (AUD)</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-number">1–2 hrs</span>
+            <span class="stat-label">Build Time</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-number">Zero</span>
+            <span class="stat-label">Soldering Required</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-number">12+ hrs</span>
+            <span class="stat-label">USB-C Battery Life</span>
+          </div>
+        </div>
+
+        <div class="hero-actions">
+          <a href="#parts-guide" class="btn btn-primary" id="btn-hero-start">View Australian Shopping List</a>
+          <a href="#step-by-step" class="btn btn-secondary" id="btn-hero-guide">Jump to Step-by-Step Instructions</a>
+        </div>
+      </div>
+
+      <div class="hero-image-wrapper">
+        <div class="hero-image-card">
+          <img src="assets/hero.jpg" alt="Finished DIY handmade wooden ABC Kids Radio sitting on a bedside table with a knitted kangaroo toy" class="hero-img" id="hero-display-img">
+          <div class="image-caption-overlay">
+            <span class="caption-title">The Finished Radio</span>
+            <span class="caption-desc">Solid Tasmanian Oak/Plywood case, 3W speaker grille, brass volume knob, toggle switch & USB-C</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- The Big Catch / Why FM Radio Doesn't Work Section -->
+  <section class="section alert-section" id="the-truth">
+    <div class="container">
+      <div class="truth-card">
+        <div class="truth-icon">⚠️</div>
+        <div class="truth-content">
+          <div class="truth-header">
+            <span class="badge badge-warning">Crucial Warning Before Buying Parts</span>
+            <h2>Why Standard FM Radio Kits Cannot Play ABC Kids</h2>
+          </div>
+          <p>
+            If you bought a traditional analog DIY FM radio kit from Jaycar, Amazon, or eBay, <strong>it would be completely silent on ABC Kids</strong>. Here is why:
+          </p>
+          <div class="truth-grid">
+            <div class="truth-box">
+              <div class="box-icon">📡</div>
+              <h3>ABC Kids is Digital-Only</h3>
+              <p>In Sydney (and all of Australia), <em>ABC Kids Listen</em> does <strong>not</strong> broadcast on analog FM (like 104.1 or 105.7 MHz) or AM. It only broadcasts digitally via <strong>DAB+ (Block 9C)</strong> and online streaming.</p>
+            </div>
+            <div class="truth-box">
+              <div class="box-icon">⚡</div>
+              <h3>The Smart DIY Solution</h3>
+              <p>We use an <strong>ESP32 microcontroller</strong>. When powered on, it connects directly to your home Wi-Fi in ~2 seconds and streams the official ABC Kids digital stream directly into a high-fidelity 3.2W amplifier. It operates identically to a radio!</p>
+            </div>
+            <div class="truth-box">
+              <div class="box-icon">🎵</div>
+              <h3>Far Superior Sound Quality</h3>
+              <p>Analog FM radios suffer from indoor static, multipath hiss, and antenna alignment woes. This digital stream sounds as clean and crisp as Spotify, with <strong>zero background hiss</strong>.</p>
+            </div>
+          </div>
+          <div class="truth-footer">
+            <span>✨ <em>Still want analog FM for other stations (like Triple J or ABC Classic)? We include an optional FM module guide at the bottom!</em></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Parts Breakdown & Interactive Shopping List -->
+  <section class="section" id="parts-guide">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-kicker">Everything You Need</span>
+        <h2 class="section-title">Exact Parts List & Australian Buy Links</h2>
+        <p class="section-subtitle">
+          Sourced specifically from Australian suppliers with fast local dispatch so you can order everything from <strong>just one or two stores</strong> without waiting weeks for overseas freight.
+        </p>
+      </div>
+
+      <!-- Parts Photo Display -->
+      <div class="parts-photo-card">
+        <img src="assets/parts.jpg" alt="Neatly laid out components for the DIY radio on a green cutting mat" class="parts-img" id="parts-knolling-img">
+        <div class="parts-photo-overlay">
+          <span>📸 Everything you see above fits together easily with plug-in jumper wires.</span>
+        </div>
+      </div>
+
+      <!-- Store Filter Tabs -->
+      <div class="filter-controls">
+        <div class="filter-label">Order Route:</div>
+        <div class="filter-tabs" id="store-filter-tabs">
+          <button class="filter-tab active" data-store="all">All Retailers</button>
+          <button class="filter-tab" data-store="core">Core Electronics (1-Stop Shop Newcastle, NSW)</button>
+          <button class="filter-tab" data-store="jaycar">Jaycar (In-Store Pickup Sydney)</button>
+          <button class="filter-tab" data-store="amazon">Amazon Australia Prime</button>
+        </div>
+      </div>
+
+      <!-- Interactive Shopping Table with Live Budget Calculator -->
+      <div class="shopping-table-card">
+        <div class="table-header-row">
+          <div class="th col-check">Got It?</div>
+          <div class="th col-part">Component & Exact Specs</div>
+          <div class="th col-why">Why It's Needed</div>
+          <div class="th col-price">Est. Price</div>
+          <div class="th col-link">Buy in Australia</div>
+        </div>
+
+        <div class="table-body" id="parts-table-body">
+          <!-- Item 1: ESP32 -->
+          <div class="table-row" data-store="core amazon jaycar">
+            <div class="td col-check">
+              <input type="checkbox" id="part-esp32" class="part-checkbox" data-price="9.50">
+            </div>
+            <div class="td col-part">
+              <strong>ESP32 Development Board (USB-C)</strong>
+              <span class="part-meta">ESP32-WROOM-32D / Type-C 30-pin or 38-pin</span>
+            </div>
+            <div class="td col-why">The brain. Connects to Wi-Fi and decodes the ABC Kids MP3 stream in real time.</div>
+            <div class="td col-price">$9.50 AUD</div>
+            <div class="td col-link">
+              <div class="link-buttons">
+                <a href="https://core-electronics.com.au/search/?q=esp32+type-c" target="_blank" rel="noopener" class="store-badge core-badge">Core Electronics</a>
+                <a href="https://www.amazon.com.au/s?k=esp32+type+c+development+board" target="_blank" rel="noopener" class="store-badge amazon-badge">Amazon AU</a>
+                <a href="https://www.jaycar.com.au/p/XC3800" target="_blank" rel="noopener" class="store-badge jaycar-badge">Jaycar (XC3800)</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Item 2: MAX98357A I2S DAC Amp -->
+          <div class="table-row" data-store="core amazon">
+            <div class="td col-check">
+              <input type="checkbox" id="part-max98357a" class="part-checkbox" data-price="6.90">
+            </div>
+            <div class="td col-part">
+              <strong>MAX98357A I2S 3.2W Class-D Mono Amplifier</strong>
+              <span class="part-meta">Digital audio input (I2S), built-in DAC + Amp</span>
+            </div>
+            <div class="td col-why">Receives pure digital audio directly from the ESP32. Crystal clear with no analog buzz.</div>
+            <div class="td col-price">$6.90 AUD</div>
+            <div class="td col-link">
+              <div class="link-buttons">
+                <a href="https://core-electronics.com.au/search/?q=MAX98357A" target="_blank" rel="noopener" class="store-badge core-badge">Core Electronics</a>
+                <a href="https://www.amazon.com.au/s?k=MAX98357A+I2S+amplifier" target="_blank" rel="noopener" class="store-badge amazon-badge">Amazon AU</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Item 3: 3W Speaker -->
+          <div class="table-row" data-store="core amazon jaycar">
+            <div class="td col-check">
+              <input type="checkbox" id="part-speaker" class="part-checkbox" data-price="6.50">
+            </div>
+            <div class="td col-part">
+              <strong>3W or 5W 4Ω Full-Range Cone Speaker (40mm – 50mm)</strong>
+              <span class="part-meta">Rubber surround, paper/composite cone</span>
+            </div>
+            <div class="td col-why">Produces clear, warm speech and gentle children's music. 10x better than a micro piezo buzzer!</div>
+            <div class="td col-price">$6.50 AUD</div>
+            <div class="td col-link">
+              <div class="link-buttons">
+                <a href="https://core-electronics.com.au/search/?q=3w+speaker+4+ohm" target="_blank" rel="noopener" class="store-badge core-badge">Core Electronics</a>
+                <a href="https://www.amazon.com.au/s?k=3w+4+ohm+full+range+speaker" target="_blank" rel="noopener" class="store-badge amazon-badge">Amazon AU</a>
+                <a href="https://www.jaycar.com.au/p/AS3004" target="_blank" rel="noopener" class="store-badge jaycar-badge">Jaycar (AS3004)</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Item 4: 18650 Battery & Holder -->
+          <div class="table-row" data-store="core amazon jaycar">
+            <div class="td col-check">
+              <input type="checkbox" id="part-battery" class="part-checkbox" data-price="11.50">
+            </div>
+            <div class="td col-part">
+              <strong>18650 Li-ion Battery (3.7V ~2600mAh) + Single Slot Holder</strong>
+              <span class="part-meta">Holder with red/black lead wires</span>
+            </div>
+            <div class="td col-why">Rechargeable power for 12 to 18 hours of continuous play. The holder means <strong>zero soldering on the battery</strong>.</div>
+            <div class="td col-price">$11.50 AUD</div>
+            <div class="td col-link">
+              <div class="link-buttons">
+                <a href="https://core-electronics.com.au/search/?q=18650+battery+holder" target="_blank" rel="noopener" class="store-badge core-badge">Core Electronics</a>
+                <a href="https://www.amazon.com.au/s?k=18650+battery+holder+with+leads" target="_blank" rel="noopener" class="store-badge amazon-badge">Amazon AU</a>
+                <a href="https://www.jaycar.com.au/p/PH9201" target="_blank" rel="noopener" class="store-badge jaycar-badge">Jaycar (PH9201)</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Item 5: USB-C Charger & Protection -->
+          <div class="table-row" data-store="core amazon">
+            <div class="td col-check">
+              <input type="checkbox" id="part-tp4056" class="part-checkbox" data-price="3.50">
+            </div>
+            <div class="td col-part">
+              <strong>TP4056 USB-C Charger with Battery Protection</strong>
+              <span class="part-meta">Look for B+, B-, OUT+, OUT- terminals & DW01A chip</span>
+            </div>
+            <div class="td col-why">Allows charging via standard phone charger. Automatically shuts off before the battery over-discharges.</div>
+            <div class="td col-price">$3.50 AUD</div>
+            <div class="td col-link">
+              <div class="link-buttons">
+                <a href="https://core-electronics.com.au/search/?q=usb-c+lipo+charger" target="_blank" rel="noopener" class="store-badge core-badge">Core Electronics</a>
+                <a href="https://www.amazon.com.au/s?k=TP4056+USB-C+protection" target="_blank" rel="noopener" class="store-badge amazon-badge">Amazon AU</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Item 6: Switch & Volume Potentiometer -->
+          <div class="table-row" data-store="core amazon jaycar">
+            <div class="td col-check">
+              <input type="checkbox" id="part-switch" class="part-checkbox" data-price="3.80">
+            </div>
+            <div class="td col-part">
+              <strong>SPST Toggle Switch + 10kΩ Potentiometer with Knob</strong>
+              <span class="part-meta">On/Off toggle switch + rotary potentiometer</span>
+            </div>
+            <div class="td col-why">The vintage tactile feel: flip on to play, twist to make louder or quieter.</div>
+            <div class="td col-price">$3.80 AUD</div>
+            <div class="td col-link">
+              <div class="link-buttons">
+                <a href="https://core-electronics.com.au/search/?q=toggle+switch+potentiometer" target="_blank" rel="noopener" class="store-badge core-badge">Core Electronics</a>
+                <a href="https://www.amazon.com.au/s?k=toggle+switch+potentiometer+knob" target="_blank" rel="noopener" class="store-badge amazon-badge">Amazon AU</a>
+                <a href="https://www.jaycar.com.au/p/ST0570" target="_blank" rel="noopener" class="store-badge jaycar-badge">Jaycar Toggle</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Item 7: Dupont Jumper Wires -->
+          <div class="table-row" data-store="core amazon jaycar">
+            <div class="td col-check">
+              <input type="checkbox" id="part-wires" class="part-checkbox" data-price="4.00">
+            </div>
+            <div class="td col-part">
+              <strong>Dupont Jumper Wires (Female-to-Female & Male-to-Female)</strong>
+              <span class="part-meta">40-pack, 10cm or 20cm</span>
+            </div>
+            <div class="td col-why">Plug everything together onto pin headers like Lego bricks without touching a soldering iron!</div>
+            <div class="td col-price">$4.00 AUD</div>
+            <div class="td col-link">
+              <div class="link-buttons">
+                <a href="https://core-electronics.com.au/search/?q=dupont+jumper+wires" target="_blank" rel="noopener" class="store-badge core-badge">Core Electronics</a>
+                <a href="https://www.amazon.com.au/s?k=dupont+jumper+wires" target="_blank" rel="noopener" class="store-badge amazon-badge">Amazon AU</a>
+                <a href="https://www.jaycar.com.au/p/WC6024" target="_blank" rel="noopener" class="store-badge jaycar-badge">Jaycar (WC6024)</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Item 8: Wooden Box Enclosure -->
+          <div class="table-row" data-store="all">
+            <div class="td col-check">
+              <input type="checkbox" id="part-box" class="part-checkbox" data-price="5.00">
+            </div>
+            <div class="td col-part">
+              <strong>Enclosure / Wooden Craft Box</strong>
+              <span class="part-meta">Kmart $5 bamboo/timber box, Bunnings craft box, or repurposed shoebox</span>
+            </div>
+            <div class="td col-why">House all components safely and provides acoustic resonance for warm bass.</div>
+            <div class="td col-price">$5.00 AUD</div>
+            <div class="td col-link">
+              <div class="link-buttons">
+                <a href="https://www.kmart.com.au/search/?searchTerm=wooden+box" target="_blank" rel="noopener" class="store-badge kmart-badge">Kmart Australia</a>
+                <a href="https://www.bunnings.com.au/search/products?q=craft+box" target="_blank" rel="noopener" class="store-badge bunnings-badge">Bunnings Warehouse</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Budget Tally -->
+        <div class="shopping-footer">
+          <div class="budget-tracker">
+            <span class="tracker-label">Estimated Total:</span>
+            <span class="tracker-total" id="budget-total-display">$50.70 AUD</span>
+            <span class="tracker-count" id="budget-count-display">(0 of 8 items collected)</span>
+          </div>
+          <button class="btn btn-outline" id="btn-select-all-parts">Mark All Collected</button>
+        </div>
+      </div>
+
+      <!-- Component Alternatives Accordion -->
+      <div class="alternatives-wrapper">
+        <h3 class="alternatives-title">🔄 Alternative Part Options & Upgrades</h3>
+        <div class="alternatives-grid">
+          <div class="alt-card">
+            <div class="alt-badge">Ultra-Beginner Power</div>
+            <h4>V3 18650 Battery Shield with USB-C</h4>
+            <p>Instead of wiring a separate TP4056 board and battery holder, this single board combines the 18650 battery clip, USB-C fast charging, power switch, and 5V output pins all in one. Plug and play!</p>
+            <span class="alt-price">~$8.50 on Amazon AU</span>
+          </div>
+          <div class="alt-card">
+            <div class="alt-badge">Audiophile Sound</div>
+            <h4>5W 40mm Speaker with Passive Radiator</h4>
+            <p>Want deeper, richer lullabies? A 5W speaker paired with a small 40mm rubber passive bass radiator turns the wooden box into a mini Sonos speaker with warm, resonant low-end frequencies.</p>
+            <span class="alt-price">~$9.00 on Core Electronics</span>
+          </div>
+          <div class="alt-card">
+            <div class="alt-badge">Compact Build</div>
+            <h4>Flat 3.7V 2000mAh LiPo Battery</h4>
+            <p>If your wooden box is shallow, a flat lithium polymer pouch battery with a standard JST connector fits into tight spaces where an 18650 cylinder might be too bulky.</p>
+            <span class="alt-price">~$12.00 on Core Electronics</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- The Acoustic Secret Section (Interactive Sound Demo) -->
+  <section class="section acoustic-section" id="sound-science">
+    <div class="container">
+      <div class="acoustic-card">
+        <div class="acoustic-content">
+          <span class="badge badge-primary">Acoustics 101</span>
+          <h2>The Secret to Great Sound: "The Baffle Effect"</h2>
+          <p>
+            When you first wire up your 3W speaker on your table, you might think: <em>"Wait, this sounds thin and tinny!"</em> 
+          </p>
+          <p>
+            This is called <strong>acoustic phase cancellation</strong>. When a speaker cone pushes forward, it creates high air pressure in front, but low pressure behind. With a bare speaker, the sound from the back instantly cancels out the sound from the front!
+          </p>
+          <p>
+            The moment you mount the speaker inside a <strong>sealed wooden box</strong> with a cutout hole, the backwards wave is trapped inside. The sound instantly transforms into <strong>deep, rich, warm audio</strong>.
+          </p>
+
+          <!-- Interactive Acoustic Simulator -->
+          <div class="sound-demo-box">
+            <div class="sound-demo-header">
+              <span class="demo-title">Interactive Sound Simulator</span>
+              <span class="demo-subtitle">Hear the difference an enclosure makes:</span>
+            </div>
+            <div class="sound-demo-buttons">
+              <button class="sound-btn" id="btn-sound-bare" data-mode="bare">
+                <span class="icon">📢</span>
+                <span class="label">Bare Speaker (Sitting on desk)</span>
+                <span class="subtext">Thin, tinny, weak bass</span>
+              </button>
+              <button class="sound-btn active" id="btn-sound-enclosed" data-mode="enclosed">
+                <span class="icon">📻</span>
+                <span class="label">Mounted in Sealed Box</span>
+                <span class="subtext">Warm, rich, full frequencies</span>
+              </button>
+            </div>
+            <div class="sound-waveform-visual" id="waveform-visual">
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+            </div>
+            <div class="sound-feedback-text" id="sound-feedback-text">
+              ✨ Currently simulating: <strong>Warm Enclosed Box</strong> (Deep resonant lullabies & clear speech).
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Wiring & Pinout Guide Section -->
+  <section class="section" id="wiring-guide">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-kicker">Simple Connections</span>
+        <h2 class="section-title">Color-Coded Circuit & Pinout Guide</h2>
+        <p class="section-subtitle">
+          There are only 7 core wires needed between the ESP32, the amplifier, and the battery. Hover over any connection in the diagram or table below to highlight it.
+        </p>
+      </div>
+
+      <div class="wiring-grid">
+        <!-- SVG Interactive Circuit Diagram -->
+        <div class="circuit-diagram-card">
+          <div class="diagram-title-bar">
+            <span>🔌 Interactive Wiring Schematic</span>
+            <span class="badge badge-light">Click any wire to inspect</span>
+          </div>
+
+          <div class="svg-container">
+            <svg viewBox="0 0 760 480" class="circuit-svg" id="circuit-svg" xmlns="http://www.w3.org/2000/svg">
+              <!-- Defs for filters/gradients -->
+              <defs>
+                <linearGradient id="gradEsp32" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#1e293b"/>
+                  <stop offset="100%" stop-color="#0f172a"/>
+                </linearGradient>
+                <linearGradient id="gradMax" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#6b21a8"/>
+                  <stop offset="100%" stop-color="#4c1d95"/>
+                </linearGradient>
+                <linearGradient id="gradBatt" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#15803d"/>
+                  <stop offset="100%" stop-color="#166534"/>
+                </linearGradient>
+                <linearGradient id="gradTp" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#1d4ed8"/>
+                  <stop offset="100%" stop-color="#1e40af"/>
+                </linearGradient>
+              </defs>
+
+              <!-- Components -->
+              <!-- 1. TP4056 Charger -->
+              <g class="comp-box" id="svg-comp-tp">
+                <rect x="30" y="40" width="150" height="110" rx="8" fill="url(#gradTp)" stroke="#3b82f6" stroke-width="2"/>
+                <text x="105" y="65" text-anchor="middle" fill="#fff" font-weight="700" font-size="13">TP4056 USB-C</text>
+                <text x="105" y="80" text-anchor="middle" fill="#93c5fd" font-size="10">Charger & Protection</text>
+                <rect x="25" y="88" width="15" height="24" rx="3" fill="#cbd5e1"/>
+                <text x="32" y="104" font-size="8" fill="#0f172a" text-anchor="middle">USB</text>
+                <!-- Ports -->
+                <circle cx="160" cy="65" r="5" fill="#ef4444" id="pin-tp-outplus"/><text x="145" y="68" fill="#fca5a5" font-size="9">OUT+</text>
+                <circle cx="160" cy="85" r="5" fill="#3b82f6" id="pin-tp-outminus"/><text x="145" y="88" fill="#93c5fd" font-size="9">OUT-</text>
+                <circle cx="160" cy="115" r="5" fill="#ef4444" id="pin-tp-bplus"/><text x="145" y="118" fill="#fca5a5" font-size="9">B+</text>
+                <circle cx="160" cy="135" r="5" fill="#1e293b" id="pin-tp-bminus"/><text x="145" y="138" fill="#94a3b8" font-size="9">B-</text>
+              </g>
+
+              <!-- 2. 18650 Battery -->
+              <g class="comp-box" id="svg-comp-battery">
+                <rect x="30" y="210" width="150" height="70" rx="6" fill="url(#gradBatt)" stroke="#22c55e" stroke-width="2"/>
+                <rect x="180" y="235" width="10" height="20" rx="2" fill="#94a3b8"/>
+                <text x="105" y="245" text-anchor="middle" fill="#fff" font-weight="700" font-size="13">18650 Cell</text>
+                <text x="105" y="262" text-anchor="middle" fill="#bbf7d0" font-size="10">3.7V 2600mAh</text>
+                <text x="45" y="248" fill="#ef4444" font-size="12" font-weight="bold">+</text>
+                <text x="165" y="248" fill="#94a3b8" font-size="12" font-weight="bold">-</text>
+              </g>
+
+              <!-- 3. Toggle Switch -->
+              <g class="comp-box" id="svg-comp-switch">
+                <rect x="230" y="45" width="60" height="50" rx="6" fill="#334155" stroke="#64748b" stroke-width="2"/>
+                <circle cx="260" cy="70" r="10" fill="#f59e0b"/>
+                <text x="260" y="88" text-anchor="middle" fill="#fff" font-size="8">SW</text>
+                <text x="260" y="112" text-anchor="middle" fill="#94a3b8" font-size="9">Power Switch</text>
+              </g>
+
+              <!-- 4. ESP32 Microcontroller -->
+              <g class="comp-box" id="svg-comp-esp32">
+                <rect x="340" y="30" width="170" height="250" rx="10" fill="url(#gradEsp32)" stroke="#38bdf8" stroke-width="2"/>
+                <rect x="380" y="60" width="90" height="80" rx="4" fill="#475569"/>
+                <text x="425" y="105" text-anchor="middle" fill="#cbd5e1" font-size="10">ESP-WROOM-32</text>
+                <text x="425" y="48" text-anchor="middle" fill="#38bdf8" font-weight="700" font-size="13">ESP32 Dev Board</text>
+
+                <!-- Pins on ESP32 Left -->
+                <circle cx="350" cy="170" r="5" fill="#ef4444"/><text x="360" y="174" fill="#fff" font-size="10">VIN / 5V</text>
+                <circle cx="350" cy="195" r="5" fill="#3b82f6"/><text x="360" y="199" fill="#fff" font-size="10">GND</text>
+                <circle cx="350" cy="225" r="5" fill="#eab308"/><text x="360" y="229" fill="#fff" font-size="10">GPIO 34 (Pot)</text>
+
+                <!-- Pins on ESP32 Right -->
+                <circle cx="500" cy="170" r="5" fill="#10b981"/><text x="450" y="174" fill="#fff" font-size="10">GPIO 25</text>
+                <circle cx="500" cy="195" r="5" fill="#06b6d4"/><text x="450" y="199" fill="#fff" font-size="10">GPIO 26</text>
+                <circle cx="500" cy="220" r="5" fill="#a855f7"/><text x="450" y="224" fill="#fff" font-size="10">GPIO 22</text>
+                <circle cx="500" cy="245" r="5" fill="#3b82f6"/><text x="465" y="249" fill="#fff" font-size="10">GND</text>
+              </g>
+
+              <!-- 5. MAX98357A I2S Amp -->
+              <g class="comp-box" id="svg-comp-max">
+                <rect x="570" y="120" width="160" height="160" rx="8" fill="url(#gradMax)" stroke="#c084fc" stroke-width="2"/>
+                <text x="650" y="145" text-anchor="middle" fill="#fff" font-weight="700" font-size="13">MAX98357A</text>
+                <text x="650" y="160" text-anchor="middle" fill="#d8b4fe" font-size="10">3.2W I2S Class-D Amp</text>
+
+                <!-- Pins on MAX left -->
+                <circle cx="580" cy="180" r="5" fill="#10b981"/><text x="590" y="184" fill="#fff" font-size="10">LRC (WS)</text>
+                <circle cx="580" cy="205" r="5" fill="#06b6d4"/><text x="590" y="209" fill="#fff" font-size="10">BCLK</text>
+                <circle cx="580" cy="230" r="5" fill="#a855f7"/><text x="590" y="234" fill="#fff" font-size="10">DIN</text>
+                <circle cx="580" cy="255" r="5" fill="#ef4444"/><text x="590" y="259" fill="#fff" font-size="10">VIN</text>
+
+                <!-- Speaker Out on MAX right -->
+                <circle cx="720" cy="195" r="5" fill="#f97316"/><text x="680" y="199" fill="#fed7aa" font-size="10">SPK +</text>
+                <circle cx="720" cy="225" r="5" fill="#f97316"/><text x="680" y="229" fill="#fed7aa" font-size="10">SPK -</text>
+              </g>
+
+              <!-- 6. Speaker -->
+              <g class="comp-box" id="svg-comp-spk">
+                <circle cx="650" cy="390" r="55" fill="#334155" stroke="#94a3b8" stroke-width="4"/>
+                <circle cx="650" cy="390" r="30" fill="#1e293b"/>
+                <circle cx="650" cy="390" r="14" fill="#0f172a"/>
+                <text x="650" y="394" text-anchor="middle" fill="#fff" font-size="11" font-weight="bold">3W 4Ω</text>
+                <text x="650" y="465" text-anchor="middle" fill="#94a3b8" font-size="11">Speaker</text>
+              </g>
+
+              <!-- WIRES (Color-coded) -->
+              <!-- Battery to TP4056 B+/B- -->
+              <path d="M 45 210 L 45 170 L 160 115" fill="none" stroke="#ef4444" stroke-width="2.5" class="wire-path wire-batt"/>
+              <path d="M 165 210 L 165 180 L 160 135" fill="none" stroke="#000000" stroke-width="2.5" class="wire-path wire-batt"/>
+
+              <!-- TP4056 OUT+ to Switch to ESP32 VIN -->
+              <path d="M 160 65 L 230 65" fill="none" stroke="#ef4444" stroke-width="3" class="wire-path wire-pwr"/>
+              <path d="M 290 65 L 320 65 L 320 170 L 350 170" fill="none" stroke="#ef4444" stroke-width="3" class="wire-path wire-pwr"/>
+
+              <!-- TP4056 OUT- to ESP32 GND -->
+              <path d="M 160 85 L 210 85 L 210 195 L 350 195" fill="none" stroke="#3b82f6" stroke-width="3" class="wire-path wire-gnd"/>
+
+              <!-- ESP32 to MAX98357A I2S Lines -->
+              <!-- GPIO 25 (LRC) -> LRC -->
+              <path d="M 500 170 L 540 170 L 540 180 L 580 180" fill="none" stroke="#10b981" stroke-width="2.5" class="wire-path wire-lrc"/>
+              <!-- GPIO 26 (BCLK) -> BCLK -->
+              <path d="M 500 195 L 580 195 L 580 205" fill="none" stroke="#06b6d4" stroke-width="2.5" class="wire-path wire-bclk"/>
+              <!-- GPIO 22 (DIN) -> DIN -->
+              <path d="M 500 220 L 540 220 L 540 230 L 580 230" fill="none" stroke="#a855f7" stroke-width="2.5" class="wire-path wire-din"/>
+
+              <!-- Power branch to MAX98357A VIN & GND -->
+              <path d="M 320 170 L 320 295 L 595 295 L 595 260 L 580 260" fill="none" stroke="#ef4444" stroke-dasharray="4,3" stroke-width="2" class="wire-path wire-pwr"/>
+              <path d="M 500 245 L 560 245 L 560 268 L 575 268" fill="none" stroke="#3b82f6" stroke-dasharray="4,3" stroke-width="2" class="wire-path wire-gnd"/>
+
+              <!-- MAX98357A to Speaker -->
+              <path d="M 720 195 L 740 195 L 740 370 L 690 370" fill="none" stroke="#f97316" stroke-width="2.5" class="wire-path wire-spk"/>
+              <path d="M 720 225 L 730 225 L 730 405 L 690 405" fill="none" stroke="#f97316" stroke-width="2.5" class="wire-path wire-spk"/>
+            </svg>
+          </div>
+          <div class="diagram-legend">
+            <span class="legend-item"><span class="color-dot red"></span> 5V Power</span>
+            <span class="legend-item"><span class="color-dot blue"></span> Ground (GND)</span>
+            <span class="legend-item"><span class="color-dot green"></span> LRC (Word Clock)</span>
+            <span class="legend-item"><span class="color-dot cyan"></span> BCLK (Bit Clock)</span>
+            <span class="legend-item"><span class="color-dot purple"></span> DIN (Digital Audio)</span>
+            <span class="legend-item"><span class="color-dot orange"></span> Speaker Leads</span>
+          </div>
+        </div>
+
+        <!-- Pinout Quick Reference Table -->
+        <div class="pinout-card">
+          <div class="card-header">
+            <h3>📌 Pin-by-Pin Hookup Table</h3>
+            <p>Simple 1-to-1 jumper wire mapping:</p>
+          </div>
+          <div class="pin-table">
+            <div class="pin-row header">
+              <div>From Component</div>
+              <div>Pin Name</div>
+              <div>Connects To</div>
+            </div>
+            <div class="pin-row" data-target="wire-lrc">
+              <div><strong>MAX98357A</strong></div>
+              <div><code>LRC</code> (WS)</div>
+              <div>ESP32 <strong>GPIO 25</strong></div>
+            </div>
+            <div class="pin-row" data-target="wire-bclk">
+              <div><strong>MAX98357A</strong></div>
+              <div><code>BCLK</code></div>
+              <div>ESP32 <strong>GPIO 26</strong></div>
+            </div>
+            <div class="pin-row" data-target="wire-din">
+              <div><strong>MAX98357A</strong></div>
+              <div><code>DIN</code></div>
+              <div>ESP32 <strong>GPIO 22</strong></div>
+            </div>
+            <div class="pin-row" data-target="wire-gnd">
+              <div><strong>MAX98357A</strong></div>
+              <div><code>GND</code></div>
+              <div>ESP32 <strong>GND</strong></div>
+            </div>
+            <div class="pin-row" data-target="wire-pwr">
+              <div><strong>MAX98357A</strong></div>
+              <div><code>VIN</code></div>
+              <div>ESP32 <strong>VIN / 5V</strong></div>
+            </div>
+            <div class="pin-row" data-target="wire-spk">
+              <div><strong>MAX98357A</strong></div>
+              <div><code>+ / -</code> Terminals</div>
+              <div>Speaker <strong>+ and -</strong></div>
+            </div>
+            <div class="pin-row" data-target="wire-batt">
+              <div><strong>18650 Battery</strong></div>
+              <div><code>Red (+) / Black (-)</code></div>
+              <div>TP4056 <strong>B+ and B-</strong></div>
+            </div>
+            <div class="pin-row" data-target="wire-pwr">
+              <div><strong>TP4056 Board</strong></div>
+              <div><code>OUT+</code></div>
+              <div>Through Switch to <strong>VIN</strong></div>
+            </div>
+            <div class="pin-row" data-target="wire-gnd">
+              <div><strong>TP4056 Board</strong></div>
+              <div><code>OUT-</code></div>
+              <div>Common <strong>GND</strong></div>
+            </div>
+          </div>
+          <div class="pinout-tip">
+            💡 <em>Gain setting tip: Leave the <code>GAIN</code> pin on the MAX98357A completely disconnected. It defaults to 9dB, which is the perfect sweet spot for warm children's audio without distortion!</em>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Step-by-Step Novice Assembly Guide -->
+  <section class="section" id="step-by-step">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-kicker">Follow Along</span>
+        <h2 class="section-title">Step-by-Step Novice Build Walkthrough</h2>
+        <p class="section-subtitle">
+          Designed for someone who has never touched a microcontroller before. We test everything safely on your desk <strong>before</strong> putting anything into a box.
+        </p>
+      </div>
+
+      <!-- Assembly Photo Feature -->
+      <div class="assembly-hero-card">
+        <img src="assets/assembly.jpg" alt="Interior view of the wooden radio case with components neatly mounted and wired" class="assembly-img" id="assembly-progress-img">
+        <div class="assembly-overlay">
+          <span class="overlay-badge">Cabinet Interior</span>
+          <h4>How clean it looks when mounted</h4>
+          <p>The speaker is mounted over the round grille, components are secured with hot-glue or small standoffs, and wires are neatly routed.</p>
+        </div>
+      </div>
+
+      <!-- Step Cards Progression -->
+      <div class="steps-timeline">
+        <!-- Step 1 -->
+        <div class="step-card">
+          <div class="step-number-col">
+            <span class="step-num">01</span>
+          </div>
+          <div class="step-content">
+            <div class="step-badge">Desktop Bench Test</div>
+            <h3>Test the Audio on Your Desk First (No Box Yet!)</h3>
+            <p>
+              Always test your electronics in the open before mounting them. Plug the ESP32 into your laptop using a standard USB-C data cable (make sure it's a data cable, not a charge-only cable).
+            </p>
+            <ul class="step-checklist">
+              <li>Use your female-to-female Dupont jumper wires to connect the 5 pins of the MAX98357A to the ESP32 as shown in the pinout table.</li>
+              <li>Connect the two speaker wires into the amplifier's screw terminals or solder pads.</li>
+              <li>Keep the battery disconnected for now — the laptop USB-C cable will power the ESP32 and amplifier during testing!</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="step-card">
+          <div class="step-number-col">
+            <span class="step-num">02</span>
+          </div>
+          <div class="step-content">
+            <div class="step-badge">Software Setup</div>
+            <h3>Flash the ESP32 (Takes 5 Minutes in Arduino IDE)</h3>
+            <p>
+              Don't worry if you've never coded in your life. You only need to copy and paste.
+            </p>
+            <div class="sub-steps">
+              <div class="sub-step">
+                <strong>1. Download Arduino IDE:</strong> Download the free IDE from <a href="https://www.arduino.cc/en/software" target="_blank" rel="noopener">arduino.cc</a> (Windows/Mac/Linux).
+              </div>
+              <div class="sub-step">
+                <strong>2. Add ESP32 Boards:</strong> In Arduino IDE, go to <em>Settings > Additional Board Manager URLs</em> and paste: <code>https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json</code>. Then go to <em>Boards Manager</em>, search "esp32", and click <strong>Install</strong>.
+              </div>
+              <div class="sub-step">
+                <strong>3. Install the Audio Library:</strong> Go to <em>Tools > Manage Libraries...</em>, search for <strong>ESP32-audioI2S</strong> (by schreibfaul1), and click <strong>Install</strong>.
+              </div>
+              <div class="sub-step">
+                <strong>4. Flash the Code:</strong> Use our code generator below to generate your sketch, select your ESP32 board and COM port in the menu, and hit the <strong>Upload</strong> arrow!
+              </div>
+            </div>
+            <div class="callout-box">
+              🎉 <strong>The Magic Moment:</strong> Within 5 seconds of uploading, your speaker will announce connection and ABC Kids will start playing live through the speaker!
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="step-card">
+          <div class="step-number-col">
+            <span class="step-num">03</span>
+          </div>
+          <div class="step-content">
+            <div class="step-badge">Battery & Power</div>
+            <h3>Hook Up the USB-C Rechargeable Battery</h3>
+            <p>
+              Once your desktop bench test works, it's time to make it truly wireless:
+            </p>
+            <ul class="step-checklist">
+              <li><strong>Connect Battery:</strong> Pop your 18650 cell into the battery holder. Wire the holder's Red (+) lead to the TP4056 board's <code>B+</code> pad and the Black (-) lead to <code>B-</code>.</li>
+              <li><strong>Wire the Power Switch:</strong> Wire the TP4056 <code>OUT+</code> through your toggle switch, then into the ESP32 <code>VIN</code> (and amplifier <code>VIN</code>).</li>
+              <li><strong>Connect Ground:</strong> Connect TP4056 <code>OUT-</code> to the ESP32 <code>GND</code>.</li>
+              <li><strong>Test USB-C Charging:</strong> Plug a phone charger into the TP4056 USB-C port. The red LED on the charger will glow while charging and turn blue when full!</li>
+            </ul>
+            <div class="alert-box-warning">
+              ⚠️ <strong>Battery Safety:</strong> Never reverse the positive and negative battery wires, and never solder with the 18650 cell installed inside the holder. Always remove the battery while wiring!
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="step-card">
+          <div class="step-number-col">
+            <span class="step-num">04</span>
+          </div>
+          <div class="step-content">
+            <div class="step-badge">Cabinet & Finishing</div>
+            <h3>Crafting & Mounting Inside Your Wooden Enclosure</h3>
+            <p>
+              This is where your creation transforms into a cherished family heirloom:
+            </p>
+            <ul class="step-checklist">
+              <li><strong>Speaker Hole:</strong> Use a hole saw or spade bit (usually 40mm to 50mm) to drill a circular hole in the front face.</li>
+              <li><strong>Vintage Fabric Grille:</strong> Glue a small square of linen, tweed, or speaker cloth behind the hole before screwing or gluing the speaker in place.</li>
+              <li><strong>Control Holes:</strong> Drill a 6mm hole for the toggle switch and a 7mm hole for the volume potentiometer.</li>
+              <li><strong>USB-C Slot:</strong> In the back or side of the box, cut a small 12mm x 4mm slot so the TP4056's USB-C port sits flush with the outside. Secure the TP4056 board with high-strength hot-glue or epoxy.</li>
+              <li><strong>Seal the Box:</strong> Ensure the back lid seals tightly. Any air leaks around the speaker will reduce the warm acoustic bass!</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Wi-Fi & Firmware Code Generator -->
+  <section class="section" id="code-generator">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-kicker">Customized For You</span>
+        <h2 class="section-title">Instant Wi-Fi & Firmware Generator</h2>
+        <p class="section-subtitle">
+          Type in your home Wi-Fi details below. The code updates automatically in real-time, pre-configured with the official Australian ABC Kids digital streaming URL.
+        </p>
+      </div>
+
+      <div class="generator-wrapper">
+        <!-- Configuration Form -->
+        <div class="config-form-card">
+          <h3>⚙️ Your Radio Settings</h3>
+          <p>These details are stored only in your browser and injected directly into your copy-ready code:</p>
+
+          <div class="form-group">
+            <label for="input-ssid">Wi-Fi Name (SSID) <span class="badge badge-light">2.4 GHz only</span></label>
+            <input type="text" id="input-ssid" value="MyHomeWiFi" placeholder="e.g. Telstra_Home_2.4G">
+            <small>Tip: ESP32 only connects to 2.4 GHz networks, not 5 GHz.</small>
+          </div>
+
+          <div class="form-group">
+            <label for="input-password">Wi-Fi Password</label>
+            <input type="text" id="input-password" value="SecretPassword123" placeholder="Your Wi-Fi password">
+          </div>
+
+          <div class="form-group">
+            <label for="input-volume">Default Startup Volume (0 to 21)</label>
+            <div class="slider-row">
+              <input type="range" id="input-volume" min="5" max="21" value="14" class="range-slider">
+              <span class="range-val" id="vol-display-val">14 / 21</span>
+            </div>
+            <small>Level 14 is a comfortable, pleasant room volume for nursery or kitchen.</small>
+          </div>
+
+          <div class="stream-info-pill">
+            <span class="status-indicator"></span>
+            <span>Target Stream: <strong>ABC Kids Listen (Sydney/National MP3)</strong></span>
+          </div>
+        </div>
+
+        <!-- Code Preview Card -->
+        <div class="code-preview-card">
+          <div class="code-header">
+            <div class="window-dots">
+              <span class="dot red"></span>
+              <span class="dot yellow"></span>
+              <span class="dot green"></span>
+            </div>
+            <span class="code-filename">KangarooRadio_ABCKids.ino</span>
+            <button class="btn-copy" id="btn-copy-code">
+              <span class="copy-icon">📋</span>
+              <span class="copy-text">Copy Code</span>
+            </button>
+          </div>
+
+          <pre class="code-block"><code id="code-display">// Kangaroo Radio — DIY ABC Kids Radio
+// Hardware: ESP32 + MAX98357A I2S DAC Amp + 3W Speaker
+// Stream: ABC Kids Listen (Australian Broadcast Corporation)
+
+#include &lt;Arduino.h&gt;
+#include &lt;WiFi.h&gt;
+#include "Audio.h"
+
+// Wi-Fi Credentials
+const char* ssid     = "<span class="hl-var" id="code-ssid">MyHomeWiFi</span>";
+const char* password = "<span class="hl-var" id="code-pass">SecretPassword123</span>";
+
+// I2S Digital Audio Pinout for MAX98357A
+#define I2S_DOUT      22    // Connects to DIN on MAX98357A
+#define I2S_BCLK      26    // Connects to BCLK on MAX98357A
+#define I2S_LRC       25    // Connects to LRC (WS) on MAX98357A
+
+// Optional: Hardware Volume Potentiometer Pin
+#define POT_PIN       34    // Connects to Center Pin of 10k Pot
+
+Audio audio;
+int lastVolume = -1;
+
+void setup() {
+  Serial.begin(115200);
+  Serial.println("\n--- Kangaroo Radio Starting Up ---");
+
+  // 1. Connect to Home Wi-Fi
+  WiFi.begin(ssid, password);
+  Serial.print("Connecting to Wi-Fi");
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(400);
+    Serial.print(".");
+  }
+  Serial.println("\nWi-Fi Connected successfully!");
+  Serial.print("IP Address: ");
+  Serial.println(WiFi.localIP());
+
+  // 2. Configure Digital Audio Output
+  audio.setPinout(I2S_BCLK, I2S_LRC, I2S_DOUT);
+  audio.setVolume(<span class="hl-var" id="code-vol">14</span>); // Default volume (range: 0 to 21)
+
+  // 3. Connect directly to ABC Kids Listen Live Stream
+  Serial.println("Tuning to ABC Kids Listen...");
+  audio.connecttohost("http://live-radio01.mediahubaustralia.com/XTDW/mp3/");
+}
+
+void loop() {
+  // Keeps audio buffer filled smoothly
+  audio.loop();
+
+  // Read volume potentiometer every 250ms
+  static unsigned long lastCheck = 0;
+  if (millis() - lastCheck > 250) {
+    lastCheck = millis();
+    int potVal = analogRead(POT_PIN); // 0 to 4095
+    int newVol = map(potVal, 0, 4095, 0, 21);
+    if (abs(newVol - lastVolume) > 0) {
+      lastVolume = newVol;
+      audio.setVolume(newVol);
+    }
+  }
+}</code></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Downsides, Gotchas & Troubleshooting FAQ -->
+  <section class="section" id="troubleshooting">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-kicker">Avoid the Traps</span>
+        <h2 class="section-title">Common Gotchas, Downsides & Fixes</h2>
+        <p class="section-subtitle">
+          Everything that could possibly trip up a novice builder, with instant fixes.
+        </p>
+      </div>
+
+      <div class="faq-grid">
+        <div class="faq-card">
+          <div class="faq-icon">📶</div>
+          <h4>Gotcha #1: 2.4 GHz vs 5 GHz Wi-Fi</h4>
+          <p>
+            The ESP32 microcontroller only supports <strong>2.4 GHz Wi-Fi</strong>. If your modern home router has a single combined Wi-Fi name for both 2.4GHz and 5GHz, the ESP32 can occasionally struggle to connect on first try.
+          </p>
+          <div class="faq-fix">
+            <strong>Fix:</strong> Log in to your home router and enable a dedicated <code>2.4GHz</code> network name (or enable your router's "Guest Network" on 2.4 GHz).
+          </div>
+        </div>
+
+        <div class="faq-card">
+          <div class="faq-icon">🌏</div>
+          <h4>Gotcha #2: Australian Geoblocking</h4>
+          <p>
+            Due to licensing for children's music and stories (like Bluey and Play School), the ABC strictly restricts its digital streams to <strong>Australian IP addresses</strong>.
+          </p>
+          <div class="faq-fix">
+            <strong>Fix:</strong> This radio will work seamlessly in Sydney and anywhere in Australia. If taking it overseas on holiday, you'd need an in-home VPN or local proxy.
+          </div>
+        </div>
+
+        <div class="faq-card">
+          <div class="faq-icon">🚗</div>
+          <h4>Gotcha #3: Taking It in the Car or Camping</h4>
+          <p>
+            Because it uses Wi-Fi, what happens when you take the kids to grandma's or in the car?
+          </p>
+          <div class="faq-fix">
+            <strong>Fix:</strong> In the code, you can add your <strong>phone's mobile hotspot name and password</strong> as a secondary network! When away from home, switch on your phone hotspot and the radio connects automatically.
+          </div>
+        </div>
+
+        <div class="faq-card">
+          <div class="faq-icon">🔌</div>
+          <h4>Gotcha #4: Low-Volume Buzzing or Wi-Fi Whine</h4>
+          <p>
+            When the ESP32 transmits Wi-Fi packets, tiny power dips can cause a faint squeaking or buzzing in the speaker if power rails are shared carelessly.
+          </p>
+          <div class="faq-fix">
+            <strong>Fix:</strong> Add a cheap <strong>220µF electrolytic capacitor</strong> directly across the <code>VIN</code> and <code>GND</code> pins of the MAX98357A amplifier. It smooths power fluctuations completely!
+          </div>
+        </div>
+
+        <div class="faq-card">
+          <div class="faq-icon">🔋</div>
+          <h4>Gotcha #5: Over-Discharging Lithium Batteries</h4>
+          <p>
+            If a standard 18650 cell drops below 2.5V, it can permanently lose capacity or become dangerous to recharge.
+          </p>
+          <div class="faq-fix">
+            <strong>Fix:</strong> Only use the TP4056 board version that includes the <strong>DW01A protection chip</strong> (distinguished by 4 solder pads: B+, B-, OUT+, OUT-), which cuts off power automatically at 2.9V.
+          </div>
+        </div>
+
+        <div class="faq-card">
+          <div class="faq-icon">🛠️</div>
+          <h4>Gotcha #6: Solder-Free Dupont Wires Coming Loose</h4>
+          <p>
+            If you build the entire project with solderless push-on jumper wires, tossing the radio in a backpack could shake a wire loose.
+          </p>
+          <div class="faq-fix">
+            <strong>Fix:</strong> Once your bench test is 100% verified, apply a small dab of hot-glue over the plastic pin headers. It holds firmly but can easily be peeled off later if you ever want to reconfigure it!
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bonus: True Analog FM Alternative Section -->
+  <section class="section fm-section" id="fm-alternative">
+    <div class="container">
+      <div class="fm-card">
+        <div class="fm-header">
+          <span class="badge badge-accent">Optional Alternative</span>
+          <h2>What If You Genuinely Want an Over-The-Air FM Radio?</h2>
+          <p>
+            If you want to build a radio for traditional Sydney FM stations (like <strong>Triple J 105.7 FM</strong>, <strong>ABC Classic 92.9 FM</strong>, or <strong>2DayFM 104.1 FM</strong>), or you want to set up a small in-home FM transmitter:
+          </p>
+        </div>
+        <div class="fm-grid">
+          <div class="fm-steps">
+            <h4>The FM Parts Swap:</h4>
+            <ul>
+              <li>Swap the MAX98357A for an <strong>RDA5807M</strong> or <strong>TEA5767</strong> FM receiver breakout module (~$3.50 AUD).</li>
+              <li>Add a <strong>PAM8403</strong> (3W stereo) or <strong>PAM8302</strong> (mono) analog amplifier board.</li>
+              <li>Attach a <strong>75cm thin wire antenna</strong> to the ANT pin on the FM module.</li>
+            </ul>
+          </div>
+          <div class="fm-code-box">
+            <h4>Hardcoded Auto-Tune Frequency (Arduino):</h4>
+            <pre><code>#include &lt;Wire.h&gt;
+#include &lt;radio.h&gt;
+#include &lt;RDA5807M.h&gt;
+
+RDA5807M radio;
+
+void setup() {
+  radio.init();
+  radio.setBandFrequency(RADIO_BAND_FM, 10570); // 105.7 Triple J Sydney
+  radio.setVolume(12);
+}</code></pre>
+            <small>Locks straight onto 105.7 MHz whenever power is turned on!</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <div class="footer-brand">
+        <span class="logo-icon">📻</span>
+        <span class="logo-text">Kangaroo<strong>Radio</strong></span>
+        <p>A fun, zero-soldering DIY open-source guide for Australian families and makers.</p>
+      </div>
+      <div class="footer-links">
+        <a href="#hero-section">Back to Top</a>
+        <a href="#parts-guide">Shopping List</a>
+        <a href="#wiring-guide">Wiring Diagram</a>
+        <a href="#code-generator">Code Generator</a>
+        <a href="https://www.abc.net.au/listen" target="_blank" rel="noopener">Official ABC listen</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
