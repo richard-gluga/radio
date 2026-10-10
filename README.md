@@ -28,7 +28,7 @@ If you buy a traditional analog FM receiver kit, **it will be completely silent 
 ### The Solution:
 We build a dedicated **ESP32 Wi-Fi Radio**:
 - Flick the physical toggle switch **ON**.
-- It connects to your home Wi-Fi in ~2 seconds and immediately streams the official ABC Kids digital stream (`http://live-radio01.mediahubaustralia.com/XTDW/mp3/`).
+- It connects to your home Wi-Fi in ~2 seconds and immediately streams the official ABC Kids digital stream (`https://streaming.abc-cdn.net.au/audio/hls/abcextra.m3u8?source=web`).
 - Sounds crystal clear through a high-efficiency **3.2W I2S digital amplifier** (zero analog static or indoor hiss).
 - Rechargeable via **USB-C** with an internal 18650 lithium battery (12–18 hours battery life).
 
@@ -41,18 +41,31 @@ We build a dedicated **ESP32 Wi-Fi Radio**:
 
 ## 🛒 Bill of Materials & Australian Retailers
 
-All components can be ordered from **[Core Electronics](https://core-electronics.com.au)** (Newcastle, NSW) in a single order, or via **Amazon AU** and **Jaycar**:
+All components can be ordered from **[Core Electronics](https://core-electronics.com.au)** (Newcastle, NSW) in a single order, or via **Jaycar Electronics** across Sydney:
 
-| Component | Exact Specification | Est. Price (AUD) | Sourcing Links |
+| Component | Exact Specification & Model | Est. Price (AUD) | Verified Direct Purchase Links |
 | :--- | :--- | :--- | :--- |
-| **Brain** | ESP32 Development Board (USB-C) | ~$9.50 | [Core Electronics](https://core-electronics.com.au/search/?q=esp32+type-c) / [Amazon AU](https://www.amazon.com.au/s?k=esp32+type+c+development+board) / [Jaycar XC3800](https://www.jaycar.com.au/p/XC3800) |
-| **DAC & Amp** | MAX98357A I2S 3.2W Mono Amp | ~$6.90 | [Core Electronics](https://core-electronics.com.au/search/?q=MAX98357A) / [Amazon AU](https://www.amazon.com.au/s?k=MAX98357A+I2S+amplifier) |
-| **Speaker** | 3W or 5W 4Ω Full-Range Cone (40–50mm) | ~$6.50 | [Core Electronics](https://core-electronics.com.au/search/?q=3w+speaker+4+ohm) / [Amazon AU](https://www.amazon.com.au/s?k=3w+4+ohm+full+range+speaker) / [Jaycar AS3004](https://www.jaycar.com.au/p/AS3004) |
-| **Battery** | 18650 Li-ion (3.7V ~2600mAh) + Holder with Leads | ~$11.50 | [Core Electronics](https://core-electronics.com.au/search/?q=18650+battery+holder) / [Amazon AU](https://www.amazon.com.au/s?k=18650+battery+holder+with+leads) |
-| **Charger** | TP4056 USB-C with DW01A Protection | ~$3.50 | [Core Electronics](https://core-electronics.com.au/search/?q=usb-c+lipo+charger) / [Amazon AU](https://www.amazon.com.au/s?k=TP4056+USB-C+protection) |
-| **Controls** | SPST Toggle Switch + 10kΩ Potentiometer | ~$3.80 | [Core Electronics](https://core-electronics.com.au/search/?q=toggle+switch+potentiometer) / [Jaycar ST0570](https://www.jaycar.com.au/p/ST0570) |
-| **Wiring** | Dupont Jumper Wires (40-pack F-to-F & M-to-F) | ~$4.00 | [Core Electronics](https://core-electronics.com.au/search/?q=dupont+jumper+wires) / [Jaycar WC6024](https://www.jaycar.com.au/p/WC6024) |
+| **Brain** | FireBeetle 2 ESP32-E (DFR0654) or DevKitC (DEV-19900) | ~$9.50 – $14 | [Core: FireBeetle 2 ESP32-E](https://core-electronics.com.au/firebeetle-2-esp32-e-iot-microcontroller.html) / [Jaycar: ESP32 (XC3800)](https://www.jaycar.com.au/esp32-main-development-board/p/XC3800) |
+| **DAC & Amp** | Adafruit MAX98357A 3.2W I2S Class D Amp (ADA3006) | ~$6.90 – $10 | [Core: Adafruit MAX98357A](https://core-electronics.com.au/adafruit-i2s-3w-class-d-amplifier-breakout-max98357a.html) / [Core: SparkFun (DEV-14809)](https://core-electronics.com.au/sparkfun-i2s-audio-breakout-max98357a.html) |
+| **Speaker** | Adafruit 3" 4Ω 3W Full-Range Speaker (ADA1314) | ~$6.50 | [Core: Adafruit 3" 4Ω 3W](https://core-electronics.com.au/speaker-3-diameter-4-ohm-3-watt.html) / [Jaycar: 50mm 4Ω (AS3004)](https://www.jaycar.com.au/mini-4-ohm-speaker-50mm/p/AS3004) |
+| **Battery** | 18650 3.7V ~2600mAh Cell + Single Slot Holder with Leads | ~$11.50 | [Jaycar: 18650 Cell (SB2423)](https://www.jaycar.com.au/18650-li-ion-rechargeable-battery-2600mah/p/SB2423) / [Jaycar: Holder (PH9201)](https://www.jaycar.com.au/1-x-18650-pcb-battery-holder/p/PH9201) / [Core: 2000mAh LiPo](https://core-electronics.com.au/polymer-lithium-ion-battery-2000mah.html) |
+| **Charger & Boost** | Makerverse USB-C LiPo Charger (CE08374) + 5V Step-Up (POLOLU-2115) | ~$6.50 – $10 | [Core: USB-C Charger (CE08374)](https://core-electronics.com.au/makerverse-usb-c-lipo-charger.html) / [Core: Pololu 5V Boost](https://core-electronics.com.au/pololu-5v-step-up-voltage-regulator-u3v12f5.html) / [Amazon AU: 18650 Shield V3](https://www.amazon.com.au/s?k=18650+battery+shield+v3+type+c) |
+| **Controls** | SPST Toggle Switch + 10kΩ Linear Potentiometer with Knob | ~$3.80 | [Core: Switch (COM-00102)](https://core-electronics.com.au/spdt-mini-power-switch.html) / [Core: 10k Pot (COM-09939)](https://core-electronics.com.au/rotary-potentiometer-10k-ohm-linear.html) / [Jaycar: Toggle (ST0570)](https://www.jaycar.com.au/spst-standard-toggle-switch/p/ST0570) |
+| **Wiring** | Dupont Jumper Wires (40-pack F-to-F, 150mm) | ~$4.00 | [Core: 40pk F-F Jumpers (PRT-12794)](https://core-electronics.com.au/premium-female-female-jumper-wires-40-x-6-150mm.html) / [Jaycar: Leads (WC6024)](https://www.jaycar.com.au/40-piece-female-to-female-jumper-leads/p/WC6024) |
 | **Enclosure** | Small Timber Craft Box | ~$5.00 | [Kmart Wooden Box](https://www.kmart.com.au/search/?searchTerm=wooden+box) / [Bunnings Craft Box](https://www.bunnings.com.au/search/products?q=craft+box) |
+
+---
+
+## ⚡ Engineering Compatibility & Safety Notes
+
+1. **Power & Brownout Prevention (Critical!):**  
+   Standard ESP32 development boards use an **AMS1117-3.3** voltage regulator which has a **~1.2V dropout voltage**. If you feed a 3.7V battery directly into the board's `VIN` pin, `3.7V - 1.2V = 2.5V`, causing the ESP32 to brownout and reset as soon as the Wi-Fi radio transmits!  
+   👉 **Solution:** Use the **Pololu 5V Step-Up Booster** or an **All-in-One 18650 Battery Shield V3** to supply a clean, regulated **5.0V** to both the ESP32 and MAX98357A. (If using the *FireBeetle 2 ESP32-E*, its onboard ultra-low dropout regulator accepts 3.7V LiPo batteries directly).
+2. **I2S Audio Clocking:**  
+   The MAX98357A features an internal phase-locked loop (PLL) that automatically derives the master clock (MCLK) from the bit clock (`BCLK`). You only need **3 data wires** (`BCLK`, `LRC`, and `DIN`). No master clock wire is required.
+3. **Volume Potentiometer Voltage & Pin Selection:**  
+   - Connect the potentiometer's power leg to **3.3V (NOT 5V!)**. The ESP32 analog pins are 3.3V max.
+   - Use **GPIO 34**: On the ESP32, GPIO 34 belongs to **ADC1**. Channels on ADC2 are disabled when Wi-Fi is actively streaming; ADC1 pins work flawlessly during continuous Wi-Fi audio playback.
 
 ---
 
@@ -67,15 +80,22 @@ Connect the components with standard push-on Dupont jumper wires:
    BCLK (Bit Clock)  ──► GPIO 26
    DIN (Data In)     ──► GPIO 22
    GND               ──► GND
-   VIN               ──► VIN (or 5V Rail)
+   VIN               ──► 5V (from Boost Converter or Shield)
    GAIN              ──► Leave Floating (defaults to 9dB)
+
+    10k Volume Pot        ESP32 Pin
+   ────────────────     ─────────────
+   Leg 1 (VCC)       ──► 3.3V (NEVER 5V!)
+   Leg 2 (Wiper)     ──► GPIO 34 (ADC1)
+   Leg 3 (GND)       ──► GND
 
     Power System          Connections
    ───────────────     ─────────────────
    18650 Battery (+) ──► TP4056 B+
    18650 Battery (-) ──► TP4056 B-
-   TP4056 OUT+       ──► Through SPST Toggle Switch ──► ESP32 VIN & Amp VIN
-   TP4056 OUT-       ──► Common GND
+   TP4056 OUT+       ──► Through SPST Toggle Switch ──► 5V Step-Up Boost IN+
+   5V Boost OUT+     ──► ESP32 VIN & MAX98357A VIN
+   Common GND        ──► All GND terminals connected together
 ```
 
 ---
@@ -91,12 +111,12 @@ Never run a speaker cone bare on a table! The sound wave from the back cancels o
 ## ⚡ Quick Start Firmware
 
 1. Install [Arduino IDE](https://www.arduino.cc/en/software).
-2. Add ESP32 boards manager URL:
+2. Add ESP32 boards manager URL in Preferences:
    ```
    https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
    ```
 3. In Library Manager, install **`ESP32-audioI2S`** (by *schreibfaul1*).
-4. Open [`firmware/KangarooRadio_ABCKids.ino`](firmware/KangarooRadio_ABCKids.ino), input your Wi-Fi credentials, and hit **Upload**!
+4. Open [`firmware/KangarooRadio_ABCKids.ino`](firmware/KangarooRadio_ABCKids.ino), enter your Wi-Fi credentials, and hit **Upload**!
 
 ---
 
