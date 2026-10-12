@@ -1,15 +1,16 @@
 // ================================================================
 // Kangaroo Radio — DIY Child-Safe Multi-Station Radio with OLED
+// & Magic NFC/RFID Story Token Player (Yoto-Style Tap-to-Play)
 // Hardware: ESP32 + MAX98357A I2S DAC Amp + 0.96" I2C Monochrome OLED
-//           + 3W Full-Range Speaker + Station Cycle Push Button + 10k Pot
-// Display:  0.96" SSD1306 I2C OLED (128x64) showing Wi-Fi status,
-//           diagnostics ("Not found", "Wrong password", "No internet"),
-//           station names, volume bar, and live equalizer bars!
+//           + RC522 SPI RFID/NFC Reader + 3W Full-Range Speaker
+//           + Station Cycle Push Button + 10k Potentiometer
 // ================================================================
 
 #include <Arduino.h>
 #include <WiFi.h>
 #include <Wire.h>
+#include <SPI.h>
+#include <MFRC522.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include "Audio.h"
@@ -24,37 +25,33 @@ const char* password = "YOUR_WIFI_PASSWORD";
 // 2. Hardware Pinout Definitions
 // ----------------------------------------------------------------
 // I2C Monochrome OLED Display (SSD1306 128x64)
-#define SCREEN_WIDTH  128
-#define SCREEN_HEIGHT 64
-#define OLED_RESET    -1     // Reset pin # (or -1 if sharing ESP32 reset)
-#define SCREEN_ADDRESS 0x3C  // Common I2C address for 0.96" SSD1306
-#define I2C_SDA       21     // ESP32 Hardware I2C SDA
-#define I2C_SCL       22     // ESP32 Hardware I2C SCL
+#define SCREEN_WIDTH   128
+#define SCREEN_HEIGHT  64
+#define OLED_RESET     -1     // Reset pin # (or -1 if sharing ESP32 reset)
+#define SCREEN_ADDRESS 0x3C   // Common I2C address for 0.96" SSD1306
+#define I2C_SDA        21     // ESP32 Hardware I2C SDA
+#define I2C_SCL        22     // ESP32 Hardware I2C SCL
 
 // I2S Digital Audio (MAX98357A)
-#define I2S_DOUT      27     // DIN on MAX98357A (moved from 22 to free I2C SCL)
-#define I2S_BCLK      26     // BCLK on MAX98357A
-#define I2S_LRC       25     // LRC (WS) on MAX98357A
+#define I2S_DOUT       27     // DIN on MAX98357A
+#define I2S_BCLK       26     // BCLK on MAX98357A
+#define I2S_LRC        25     // LRC (WS) on MAX98357A
+
+// SPI RFID/NFC Reader (RC522 / MFRC522)
+// Mounted under the top wooden lid for contactless Yoto-style taps!
+#define RFID_SS_PIN    5      // SDA / NSS on RC522
+#define RFID_RST_PIN   4      // RST on RC522
+// Standard ESP32 Hardware VSPI Bus: SCK=18, MISO=19, MOSI=23
 
 // Physical Controls
-#define BUTTON_PIN    33     // Station Push Button (to GND; uses internal pull-up)
-#define POT_PIN       34     // 10k Volume Potentiometer (ADC1 channel 6; 3.3V reference)
+#define BUTTON_PIN     33     // Station Push Button (to GND; internal pull-up)
+#define POT_PIN        34     // 10k Volume Potentiometer (ADC1 channel 6; 3.3V)
 
 // ----------------------------------------------------------------
 // 2b. CHILD-SAFE VOLUME SAFETY LIMIT (HEARING PROTECTION GUARD)
 // ----------------------------------------------------------------
-// The MAX98357A I2S amplifier outputs up to 3.2W into a 4-ohm speaker.
-// At uncapped full volume (level 21), audio close-up can exceed 90-95 dBA,
-// which is far too loud for toddler and young child ears!
-//
-// Setting MAX_VOLUME_LIMIT caps the maximum sound level in software:
-//   14 / 21 = ~67% max power (~75 dBA safe listening limit, RECOMMENDED)
-//   11 / 21 = ~50% max power (~68 dBA gentle nursery/bedtime)
-//   17 / 21 = ~80% max power (~82 dBA outdoor/picnic use)
-//   21 / 21 = 100% uncapped max power (92+ dBA, adult use only)
-//
-// This scales the full physical rotation of the 10k knob smoothly from 0 to MAX_VOLUME_LIMIT,
-// so kids can twist the knob all the way without hurting their ears!
+// 14 / 21 = ~67% max power (~75 dBA safe listening limit, RECOMMENDED)
+// Protects toddlers and young children from accidental loud volume spikes!
 #define MAX_VOLUME_LIMIT  14
 
 // ----------------------------------------------------------------
@@ -102,7 +99,26 @@ const Station stations[] = {
 const int TOTAL_STATIONS = sizeof(stations) / sizeof(stations[0]);
 int currentStation = 0; // Default: ABC Kids listen
 
+// ----------------------------------------------------------------
+// Operating Modes & State Variables
+// ----------------------------------------------------------------
+enum RadioMode {
+  MODE_RADIO,          // Playing curated allow-listed radio stations
+  MODE_NFC_READING,    // Card tapped, reading NDEF URL
+  MODE_NFC_BUFFERING,  // Downloading / buffering MP3 stream
+  MODE_NFC_PLAYING,    // Playing NFC story with live progress bar
+  MODE_NFC_DONE,       // Story finished playback
+  MODE_NFC_ERROR       // Failed to stream URL or offline
+};
+
+RadioMode currentMode = MODE_RADIO;
+String currentNfcUrl = "";
+String currentStoryTitle = "";
+unsigned long nfcDoneStartTime = 0;
+unsigned long lastNfcScan = 0;
+
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+MFRC522 rfid(RFID_SS_PIN, RFID_RST_PIN);
 Audio audio;
 
 int lastVolume = -1;
@@ -115,7 +131,7 @@ bool hasInternet = false;
 // 4. OLED Display Rendering Routines
 // ----------------------------------------------------------------
 
-// Draws the top status bar
+// Draws the top status bar with safe volume indicator
 void drawTopBar(const char* tag, int vol) {
   display.fillRect(0, 0, SCREEN_WIDTH, 11, SSD1306_WHITE);
   display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
@@ -123,7 +139,6 @@ void drawTopBar(const char* tag, int vol) {
   display.setCursor(2, 2);
   display.print(tag);
 
-  // Volume badge on right with kid-safe ceiling indicator
   display.setCursor(74, 2);
   display.print("SAFE:");
   display.print(map(vol, 0, MAX_VOLUME_LIMIT, 0, 100));
@@ -144,7 +159,6 @@ void showConnectingScreen(const char* targetSsid, int progress) {
   display.print("SSID: ");
   display.print(targetSsid);
 
-  // Progress Bar
   int barWidth = map(progress, 0, 35, 10, 120);
   display.drawRect(4, 45, 120, 10, SSD1306_WHITE);
   display.fillRect(6, 47, barWidth - 4, 6, SSD1306_WHITE);
@@ -152,11 +166,9 @@ void showConnectingScreen(const char* targetSsid, int progress) {
   display.display();
 }
 
-// Display Specific Diagnostic Error Screen
+// Display Diagnostic Error Screen
 void showErrorScreen(const char* title, const char* line1, const char* line2) {
   display.clearDisplay();
-  
-  // Inverse Alert Bar
   display.fillRect(0, 0, SCREEN_WIDTH, 13, SSD1306_WHITE);
   display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
   display.setTextSize(1);
@@ -173,9 +185,7 @@ void showErrorScreen(const char* title, const char* line1, const char* line2) {
   display.println(line1);
 
   display.setCursor(0, 48);
-  display.setTextColor(SSD1306_WHITE);
   display.println(line2);
-
   display.display();
 }
 
@@ -184,7 +194,6 @@ void showStationScreen(int stationIdx, int vol, int animTick = 0) {
   display.clearDisplay();
   drawTopBar("WIFI OK", vol);
 
-  // Station Title (Prominent)
   display.setTextSize(1);
   display.setCursor(0, 16);
   display.print("STATION [");
@@ -193,16 +202,13 @@ void showStationScreen(int stationIdx, int vol, int animTick = 0) {
   display.print(TOTAL_STATIONS);
   display.print("]");
 
-  // Station Name (Bold / Size 1 or 2 depending on length)
-  display.setTextSize(1);
   display.setCursor(0, 28);
   display.print(stations[stationIdx].name);
 
-  // Genre / Description
   display.setCursor(0, 40);
   display.print(stations[stationIdx].genre);
 
-  // Animated Retro Equalizer Bars along the bottom
+  // Animated Retro Equalizer Bars
   int barHeights[] = {4, 7, 11, 8, 13, 9, 6, 12, 10, 5, 8, 14, 7, 10, 6, 12};
   int totalBars = 16;
   int startX = 4;
@@ -234,13 +240,11 @@ void showVolumeOverlay(int vol) {
   display.print(map(vol, 0, MAX_VOLUME_LIMIT, 0, 100));
   display.print("%)");
 
-  // Volume Bar with Safety Ceiling Marker
   display.drawRect(8, 32, 112, 14, SSD1306_WHITE);
-  int fillW = map(vol, 0, 21, 0, 108); // showing position relative to hardware max (21)
+  int fillW = map(vol, 0, 21, 0, 108);
   if (fillW > 0) {
     display.fillRect(10, 34, fillW, 10, SSD1306_WHITE);
   }
-  // Draw vertical safety cap marker line on the hardware bar
   int capX = 10 + map(MAX_VOLUME_LIMIT, 0, 21, 0, 108);
   display.drawFastVLine(capX, 30, 18, SSD1306_WHITE);
 
@@ -250,11 +254,243 @@ void showVolumeOverlay(int vol) {
 }
 
 // ----------------------------------------------------------------
-// 5. Station Switcher Function
+// 5. NFC Magic Story Display Screens
+// ----------------------------------------------------------------
+
+// Screen: NFC Tag Detected & Reading URL
+void showNfcReadingScreen() {
+  display.clearDisplay();
+  drawTopBar("NFC SCANNER", lastVolume >= 0 ? lastVolume : 14);
+
+  display.setTextSize(1);
+  display.setCursor(14, 18);
+  display.print("[ 🎴 TAG DETECTED ]");
+
+  display.setCursor(8, 34);
+  display.print("Reading Story URL...");
+
+  display.setCursor(18, 50);
+  display.print("Please hold still");
+  display.display();
+}
+
+// Screen: Downloading / Buffering Stream
+void showNfcBufferingScreen(const char* title, int progress) {
+  display.clearDisplay();
+  drawTopBar("DOWNLOADING", lastVolume >= 0 ? lastVolume : 14);
+
+  display.setTextSize(1);
+  display.setCursor(0, 16);
+  display.print("Story Token Tapped:");
+
+  display.setCursor(0, 28);
+  display.print(title);
+
+  // Animated downloading progress bar
+  int barW = map(progress % 20, 0, 19, 15, 110);
+  display.drawRect(6, 42, 116, 9, SSD1306_WHITE);
+  display.fillRect(8, 44, barW, 5, SSD1306_WHITE);
+
+  display.setCursor(8, 55);
+  display.print("Buffering audio stream...");
+  display.display();
+}
+
+// Screen: Playing Story with live progress bar, elapsed & remaining time
+void showNfcPlayingScreen(const char* title, uint32_t currentSec, uint32_t totalSec, int animTick = 0) {
+  display.clearDisplay();
+  drawTopBar("STORY TIME", lastVolume >= 0 ? lastVolume : 14);
+
+  // Story Title
+  display.setTextSize(1);
+  display.setCursor(0, 16);
+  display.print("> ");
+  display.print(title);
+
+  // Time formatting (MM:SS)
+  int curMin = currentSec / 60;
+  int curSec = currentSec % 60;
+  char timeStr[10];
+  snprintf(timeStr, sizeof(timeStr), "%02d:%02d", curMin, curSec);
+
+  char remStr[10] = "--:--";
+  int fillWidth = 0;
+
+  if (totalSec > 0 && totalSec >= currentSec) {
+    uint32_t remSec = totalSec - currentSec;
+    int remMin = remSec / 60;
+    int remS = remSec % 60;
+    snprintf(remStr, sizeof(remStr), "-%02d:%02d", remMin, remS);
+    fillWidth = map(currentSec, 0, totalSec, 0, 112);
+    fillWidth = constrain(fillWidth, 0, 112);
+  } else {
+    // Live stream fallback: breathing activity bar
+    fillWidth = (animTick * 6) % 112;
+  }
+
+  // Progress Bar
+  display.drawRect(6, 28, 116, 8, SSD1306_WHITE);
+  if (fillWidth > 0) {
+    display.fillRect(8, 30, fillWidth, 4, SSD1306_WHITE);
+  }
+
+  // Time stamps
+  display.setCursor(6, 40);
+  display.print(timeStr);
+  display.setCursor(80, 40);
+  display.print(remStr);
+
+  // Animated equalizer along the bottom + return prompt
+  int barHeights[] = {3, 6, 9, 7, 11, 8, 5, 10, 8, 4, 7, 11, 6, 8, 5, 9};
+  for (int i = 0; i < 16; i++) {
+    int h = (barHeights[(i + animTick) % 16]);
+    display.fillRect(4 + (i * 7), 63 - h, 4, h, SSD1306_WHITE);
+  }
+
+  display.display();
+}
+
+// Screen: Story Finished / DONE
+void showNfcDoneScreen(const char* title) {
+  display.clearDisplay();
+  display.fillRect(0, 0, SCREEN_WIDTH, 12, SSD1306_WHITE);
+  display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
+  display.setTextSize(1);
+  display.setCursor(18, 2);
+  display.print("STORY COMPLETE");
+
+  display.setTextColor(SSD1306_WHITE);
+  display.setTextSize(1);
+  display.setCursor(16, 20);
+  display.print("★ ALL DONE! ★");
+
+  display.setCursor(4, 34);
+  display.print(title);
+
+  display.setCursor(0, 50);
+  display.print("Press button for Radio");
+  display.display();
+}
+
+// Screen: NFC Error (404 / Offline / Invalid URL)
+void showNfcErrorScreen(const char* errCode, const char* detail) {
+  display.clearDisplay();
+  display.fillRect(0, 0, SCREEN_WIDTH, 13, SSD1306_WHITE);
+  display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
+  display.setTextSize(1);
+  display.setCursor(12, 3);
+  display.print("[ ! ] NFC ERROR [ ! ]");
+
+  display.setTextColor(SSD1306_WHITE);
+  display.setTextSize(1);
+  display.setCursor(0, 20);
+  display.print("Code: ");
+  display.print(errCode);
+
+  display.setCursor(0, 34);
+  display.print(detail);
+
+  display.setCursor(0, 50);
+  display.print("Press btn = Radio");
+  display.display();
+}
+
+// ----------------------------------------------------------------
+// 6. NFC Helper Functions
+// ----------------------------------------------------------------
+
+// Extracts a user-friendly story title from a URL filename
+String extractTitleFromUrl(String url) {
+  int lastSlash = url.lastIndexOf('/');
+  String filename = (lastSlash >= 0) ? url.substring(lastSlash + 1) : url;
+  int dot = filename.lastIndexOf('.');
+  if (dot >= 0) filename = filename.substring(0, dot);
+  filename.replace("%20", " ");
+  filename.replace("_", " ");
+  filename.replace("-", " ");
+  if (filename.length() > 0) {
+    filename[0] = toupper(filename[0]);
+    for (int i = 1; i < filename.length(); i++) {
+      if (filename[i - 1] == ' ') filename[i] = toupper(filename[i]);
+    }
+  }
+  return filename.length() > 0 ? filename : "Magic Story";
+}
+
+// Decodes NDEF URI record from NTAG213 / NTAG215 / Ultralight tags
+String readNfcUrlFromCard() {
+  byte buffer[18];
+  byte size = sizeof(buffer);
+  String fullData = "";
+
+  // Read first 12 user data pages (pages 4 through 15)
+  for (byte page = 4; page <= 14; page += 4) {
+    MFRC522::StatusCode status = rfid.MIFARE_Read(page, buffer, &size);
+    if (status == MFRC522::STATUS_OK) {
+      for (byte i = 0; i < 16; i++) {
+        fullData += (char)buffer[i];
+      }
+    } else {
+      break;
+    }
+  }
+
+  // Look for standard URL prefixes
+  int httpsIdx = fullData.indexOf("https://");
+  int httpIdx = fullData.indexOf("http://");
+
+  if (httpsIdx >= 0) {
+    String url = fullData.substring(httpsIdx);
+    int endIdx = url.indexOf((char)0xFE);
+    if (endIdx > 0) url = url.substring(0, endIdx);
+    url.trim();
+    for (int i = 0; i < url.length(); i++) {
+      if (url[i] < 32 || url[i] > 126) return url.substring(0, i);
+    }
+    return url;
+  } else if (httpIdx >= 0) {
+    String url = fullData.substring(httpIdx);
+    int endIdx = url.indexOf((char)0xFE);
+    if (endIdx > 0) url = url.substring(0, endIdx);
+    url.trim();
+    for (int i = 0; i < url.length(); i++) {
+      if (url[i] < 32 || url[i] > 126) return url.substring(0, i);
+    }
+    return url;
+  }
+
+  // Decode standard NDEF URI identifier codes (0x55 prefix)
+  for (int i = 0; i < fullData.length() - 2; i++) {
+    if ((byte)fullData[i] == 0x55) { // 'U'
+      byte idCode = (byte)fullData[i + 1];
+      String prefix = "";
+      if (idCode == 0x01) prefix = "http://www.";
+      else if (idCode == 0x02) prefix = "https://www.";
+      else if (idCode == 0x03) prefix = "http://";
+      else if (idCode == 0x04) prefix = "https://";
+
+      if (prefix.length() > 0) {
+        String rest = fullData.substring(i + 2);
+        for (int k = 0; k < rest.length(); k++) {
+          if ((byte)rest[k] == 0xFE || rest[k] < 32 || rest[k] > 126) {
+            return prefix + rest.substring(0, k);
+          }
+        }
+        return prefix + rest;
+      }
+    }
+  }
+
+  return "";
+}
+
+// ----------------------------------------------------------------
+// 7. Station Switcher Function
 // ----------------------------------------------------------------
 void switchStation(int index) {
   if (index < 0 || index >= TOTAL_STATIONS) return;
   currentStation = index;
+  currentMode = MODE_RADIO;
 
   Serial.println("\n----------------------------------");
   Serial.print(">>> Switching to Station: ");
@@ -264,13 +500,11 @@ void switchStation(int index) {
   Serial.println("----------------------------------");
 
   showStationScreen(currentStation, lastVolume >= 0 ? lastVolume : 14);
-
-  // Connect to the new live stream
   audio.connecttohost(stations[currentStation].url);
 }
 
 // ----------------------------------------------------------------
-// 6. Setup Routine
+// 8. Setup Routine
 // ----------------------------------------------------------------
 void setup() {
   Serial.begin(115200);
@@ -295,6 +529,18 @@ void setup() {
     delay(800);
   }
 
+  // Initialize Hardware SPI Bus & RC522 RFID/NFC Reader
+  SPI.begin(); // Standard ESP32 VSPI: SCK=18, MISO=19, MOSI=23
+  rfid.PCD_Init();
+  delay(50);
+  byte v = rfid.PCD_ReadRegister(MFRC522::VersionReg);
+  if (v == 0x00 || v == 0xFF) {
+    Serial.println("RC522 RFID reader not detected! Check wiring (SS=5, RST=4).");
+  } else {
+    Serial.print("RC522 RFID reader initialized successfully! Version: 0x");
+    Serial.println(v, HEX);
+  }
+
   // Connect to 2.4 GHz Wi-Fi with live diagnostic feedback
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
@@ -308,7 +554,6 @@ void setup() {
     attempts++;
   }
 
-  // Diagnose connection result
   if (WiFi.status() == WL_CONNECTED) {
     Serial.println("\nWi-Fi Connected successfully!");
     Serial.print("IP Address: ");
@@ -317,8 +562,6 @@ void setup() {
   } else {
     wl_status_t status = WiFi.status();
     Serial.println("\nWi-Fi connection failed!");
-    
-    // Check specific failure cause
     if (status == WL_NO_SSID_AVAIL) {
       char msg[32];
       snprintf(msg, sizeof(msg), "\"%s\" not found", ssid);
@@ -328,24 +571,8 @@ void setup() {
       snprintf(msg, sizeof(msg), "Wrong password for:");
       showErrorScreen("WRONG PASSWORD", msg, ssid);
     } else {
-      // Perform quick network scan to diagnose if SSID is in range
-      int n = WiFi.scanNetworks();
-      bool found = false;
-      for (int i = 0; i < n; i++) {
-        if (WiFi.SSID(i) == ssid) {
-          found = true;
-          break;
-        }
-      }
-      if (!found) {
-        char msg[32];
-        snprintf(msg, sizeof(msg), "\"%s\" not found", ssid);
-        showErrorScreen("WIFI NOT FOUND", msg, "Check 2.4GHz name");
-      } else {
-        showErrorScreen("WRONG PASSWORD", "Auth failed on:", ssid);
-      }
+      showErrorScreen("WIFI NOT FOUND", "Check SSID & router", ssid);
     }
-    // Halt with error screen visible so user can read what went wrong
     while (WiFi.status() != WL_CONNECTED) {
       delay(1000);
     }
@@ -353,8 +580,8 @@ void setup() {
 
   // Configure MAX98357A I2S Digital Audio Output
   audio.setPinout(I2S_BCLK, I2S_LRC, I2S_DOUT);
-  
-  // Read initial potentiometer position for startup volume with child-safe cap
+
+  // Read initial potentiometer position with Child-Safe Cap
   int initialPot = analogRead(POT_PIN);
   lastVolume = map(initialPot, 0, 4095, 0, MAX_VOLUME_LIMIT);
   audio.setVolume(lastVolume);
@@ -364,7 +591,7 @@ void setup() {
 }
 
 // ----------------------------------------------------------------
-// 7. Main Loop
+// 9. Main Loop
 // ----------------------------------------------------------------
 void loop() {
   // Feed audio decoder buffer continuously
@@ -374,12 +601,54 @@ void loop() {
   if (digitalRead(BUTTON_PIN) == LOW) {
     if (millis() - lastButtonPress > 450) { // 450ms debounce
       lastButtonPress = millis();
-      int next = (currentStation + 1) % TOTAL_STATIONS;
-      switchStation(next);
+
+      if (currentMode != MODE_RADIO) {
+        // Exiting NFC Story mode -> Smoothly return to curated Radio Stations!
+        Serial.println("Push button pressed: Exiting NFC Story -> Resuming Radio Stations.");
+        switchStation(currentStation);
+      } else {
+        // Normal radio cycling
+        int next = (currentStation + 1) % TOTAL_STATIONS;
+        switchStation(next);
+      }
     }
   }
 
-  // 2. Volume Potentiometer Polling every 200ms with Child-Safe Cap
+  // 2. Poll for NFC / RFID Story Cards every 250ms
+  if (millis() - lastNfcScan > 250) {
+    lastNfcScan = millis();
+
+    if (rfid.PICC_IsNewCardPresent() && rfid.PICC_ReadCardSerial()) {
+      Serial.println("\n[🎴 NFC Tag Detected]");
+      showNfcReadingScreen();
+
+      String extractedUrl = readNfcUrlFromCard();
+      rfid.PICC_HaltA();
+      rfid.PCD_StopCrypto1();
+
+      if (extractedUrl.length() > 0 && (extractedUrl.startsWith("http://") || extractedUrl.startsWith("https://"))) {
+        currentNfcUrl = extractedUrl;
+        currentStoryTitle = extractTitleFromUrl(currentNfcUrl);
+        currentMode = MODE_NFC_BUFFERING;
+
+        Serial.print(">>> Story Title: "); Serial.println(currentStoryTitle);
+        Serial.print(">>> Streaming MP3 URL: "); Serial.println(currentNfcUrl);
+
+        showNfcBufferingScreen(currentStoryTitle.c_str(), 5);
+        audio.connecttohost(currentNfcUrl.c_str());
+        currentMode = MODE_NFC_PLAYING;
+      } else {
+        Serial.println(">>> NFC Card did not contain a valid http/https MP3 URL!");
+        showNfcErrorScreen("NO URL", "Write MP3 URL on tag");
+        delay(2000);
+        if (currentMode == MODE_RADIO) {
+          showStationScreen(currentStation, lastVolume);
+        }
+      }
+    }
+  }
+
+  // 3. Volume Potentiometer Polling every 200ms with Child-Safe Cap
   static unsigned long lastPotCheck = 0;
   if (millis() - lastPotCheck > 200) {
     lastPotCheck = millis();
@@ -395,33 +664,64 @@ void loop() {
     }
   }
 
-  // 3. Clear Volume Overlay after 1.8 seconds and return to Station Screen
+  // 4. Clear Volume Overlay after 1.8 seconds and return to Active Screen
   if (showingVolumeOverlay && (millis() - lastVolOverlayTime > 1800)) {
     showingVolumeOverlay = false;
-    showStationScreen(currentStation, lastVolume);
+    if (currentMode == MODE_RADIO) {
+      showStationScreen(currentStation, lastVolume);
+    }
   }
 
-  // 4. Update Animated Equalizer on OLED every 250ms while playing
-  static unsigned long lastAnimTick = 0;
+  // 5. Update Screen (Radio Equalizer OR NFC Story Progress Bar)
+  static unsigned long lastScreenTick = 0;
   static int animCounter = 0;
-  if (!showingVolumeOverlay && (millis() - lastAnimTick > 250)) {
-    lastAnimTick = millis();
+  if (!showingVolumeOverlay && (millis() - lastScreenTick > 300)) {
+    lastScreenTick = millis();
     animCounter++;
-    showStationScreen(currentStation, lastVolume, animCounter);
+
+    if (currentMode == MODE_RADIO) {
+      showStationScreen(currentStation, lastVolume, animCounter);
+    } else if (currentMode == MODE_NFC_PLAYING) {
+      uint32_t curSec = audio.getAudioCurrentTime();
+      uint32_t totSec = audio.getAudioFileDuration();
+      showNfcPlayingScreen(currentStoryTitle.c_str(), curSec, totSec, animCounter);
+    } else if (currentMode == MODE_NFC_DONE) {
+      // Auto-return to radio after 4 seconds
+      if (millis() - nfcDoneStartTime > 4000) {
+        Serial.println("Story DONE timeout: Resuming Radio Stations.");
+        switchStation(currentStation);
+      }
+    }
   }
 }
 
 // ----------------------------------------------------------------
-// 8. Stream Diagnostic Callbacks
+// 10. Stream & Audio Callbacks
 // ----------------------------------------------------------------
 void audio_info(const char *info) {
   Serial.print("AUDIO: "); Serial.println(info);
 }
 
+// Called when an MP3 finishes playing to the end!
+void audio_eof_mp3(const char *info) {
+  Serial.print("MP3 FINISHED PLAYBACK: "); Serial.println(info);
+  if (currentMode == MODE_NFC_PLAYING) {
+    currentMode = MODE_NFC_DONE;
+    nfcDoneStartTime = millis();
+    showNfcDoneScreen(currentStoryTitle.c_str());
+  }
+}
+
 void audio_eof_stream(const char *info) {
   Serial.print("STREAM DISCONNECTED: "); Serial.println(info);
-  // If disconnected or stream offline, show error briefly then retry
-  showErrorScreen("NO INTERNET", "Stream lost/offline", "Reconnecting...");
-  delay(1500);
-  audio.connecttohost(stations[currentStation].url);
+  if (currentMode == MODE_RADIO) {
+    showErrorScreen("NO INTERNET", "Stream lost/offline", "Reconnecting...");
+    delay(1500);
+    audio.connecttohost(stations[currentStation].url);
+  } else if (currentMode == MODE_NFC_PLAYING) {
+    // If stream reached end or disconnected
+    currentMode = MODE_NFC_DONE;
+    nfcDoneStartTime = millis();
+    showNfcDoneScreen(currentStoryTitle.c_str());
+  }
 }

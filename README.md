@@ -49,6 +49,10 @@ Close-up of the handcrafted Tasmanian oak cabinet, knurled solid brass rotary vo
 The Kangaroo Radio in action at bedtime, glowing softly under warm lamp light while streaming soothing lullabies from *Positively Sleep Kids*:
 ![Bedtime Nursery Setting](docs/assets/final_bedtime.jpg)
 
+### 3. Tactile NFC Story Tokens & Tap-to-Play
+Handcrafted Australian wooden story tokens (Wombat Stew, Possum Magic, Gumnut Babies) with embedded $0.40 NTAG213 NFC chips. Tapping a token against the top lid immediately starts direct MP3 streaming with OLED progress bar tracking:
+![Tactile NFC Story Tokens](docs/assets/nfc_tokens.jpg)
+
 ---
 
 ## 📻 Curated Child-Safe Live Stations (Allow-List)
@@ -80,6 +84,8 @@ All components can be ordered from **[Core Electronics](https://core-electronics
 | **Charger & Boost** | Makerverse USB-C LiPo Charger (CE08374) + 5V Step-Up (POLOLU-2115) | ~$6.50 – $10 | [Core: USB-C Charger (CE08374)](https://core-electronics.com.au/makerverse-usb-c-lipo-charger.html) / [Core: Pololu 5V Boost](https://core-electronics.com.au/pololu-5v-step-up-voltage-regulator-u3v12f5.html) / [Amazon AU: 18650 Shield V3](https://www.amazon.com.au/s?k=18650+battery+shield+v3+type+c) |
 | **Controls** | SPST Toggle Switch + 10kΩ Linear Potentiometer with Knob | ~$3.80 | [Core: Switch (COM-00102)](https://core-electronics.com.au/spdt-mini-power-switch.html) / [Core: 10k Pot (COM-09939)](https://core-electronics.com.au/rotary-potentiometer-10k-ohm-linear.html) / [Jaycar: Toggle (ST0570)](https://www.jaycar.com.au/spst-standard-toggle-switch/p/ST0570) |
 | **Monochrome Display** | 0.96" I2C Monochrome OLED Display (128×64 SSD1306) | ~$8.50 | [Core: DFR0650 OLED](https://core-electronics.com.au/gravity-i2c-oled-2864-display.html) / [Jaycar: OLED (XC4384)](https://www.jaycar.com.au/0-96-inch-oled-display-module/p/XC4384) |
+| **NFC Reader** | RC522 13.56 MHz RFID / NFC Reader Module (SPI) | ~$4.50 | [Core: RC522 Module](https://core-electronics.com.au/rfid-rc522-reader-module.html) / [Jaycar: RC522 (XC5262)](https://www.jaycar.com.au/arduino-compatible-mifare-rc522-rfid-card-reader-module/p/XC5262) |
+| **NFC Tokens** | NTAG213 / NTAG215 Rewritable Stickers (10-Pack) | ~$4.00 | [Amazon AU: NTAG215 (10pk)](https://www.amazon.com.au/s?k=NTAG215+NFC+stickers) / [Core: NTAG Stickers](https://core-electronics.com.au/nfc-tag-ntag213-sticker.html) |
 | **Wiring** | Dupont Jumper Wires (40-pack F-to-F, 150mm) | ~$4.00 | [Core: 40pk F-F Jumpers (PRT-12794)](https://core-electronics.com.au/premium-female-female-jumper-wires-40-x-6-150mm.html) / [Jaycar: Leads (WC6024)](https://www.jaycar.com.au/40-piece-female-to-female-jumper-leads/p/WC6024) |
 | **Enclosure** | Small Timber Craft Box | ~$5.00 | [Kmart Wooden Box](https://www.kmart.com.au/search/?searchTerm=wooden+box) / [Bunnings Craft Box](https://www.bunnings.com.au/search/products?q=craft+box) |
 
@@ -101,6 +107,12 @@ All components can be ordered from **[Core Electronics](https://core-electronics
    The 0.96" SSD1306 OLED display connects to the ESP32 hardware I2C bus (`SDA = GPIO 21`, `SCL = GPIO 22`). To avoid pin collision on GPIO 22, the MAX98357A amplifier's digital audio line (`DIN`) is connected to **GPIO 27**.
 6. **Pediatric Hearing Safety & Volume Capping (`#define MAX_VOLUME_LIMIT 14`):**  
    The MAX98357A amplifier can pump 3.2W into a 4Ω speaker, generating over 92–95 dBA close-up. Toddlers and young children love turning knobs to maximum! To protect little ears without needing to solder extra attenuator resistors, the firmware software-caps volume at `MAX_VOLUME_LIMIT = 14` (~75 dBA safe ceiling per WHO pediatric guidelines), smoothly mapping the entire physical sweep of the 10k knob up to the safe limit. The 0.96" OLED screen confirms this with `SAFE: 65%` and a safety ceiling marker line.
+7. **NFC Story Tokens & Direct MP3 Streaming Architecture:**  
+   - **URL Storage:** Tokens store standard NDEF URI records containing direct URLs to MP3 files (podcasts, public domain stories, cloud links).
+   - **Direct Streaming & Buffering:** The ESP32 streams audio straight into the MAX98357A I2S DAC with real-time buffering—zero SD card required!
+   - **Smart OLED State Machine:** Shows *Reading Tag*, *Downloading / Buffering*, live *Elapsed & Remaining timebar* (`01:23 / -03:45`), and a *DONE* celebration screen (which auto-resumes radio after 4 seconds).
+   - **Hardware Button Priority (GPIO 33):** Pressing the radio cycle button at any point during an NFC story immediately cancels the story and returns to your allow-listed live radio stations.
+   - **5-Second Smartphone Tag Writing:** Any parent can program tokens with the free **NFC Tools** app on iPhone or Android (*Write* &rarr; *Add a record* &rarr; *Custom URL / URI* &rarr; enter link &rarr; hold tag to back of phone).
 
 ---
 
@@ -124,6 +136,16 @@ Connect the components with standard push-on Dupont jumper wires:
    GND               ──► GND
    SCL (I2C Clock)   ──► GPIO 22
    SDA (I2C Data)    ──► GPIO 21
+
+    RC522 RFID Pin        ESP32 Pin (VSPI Bus)
+   ────────────────     ─────────────────────
+   3.3V (VCC)        ──► 3.3V (⚠️ NEVER 5V!)
+   GND               ──► GND
+   RST               ──► GPIO 4
+   SDA (SS / CS)     ──► GPIO 5
+   SCK               ──► GPIO 18 (VSPI Clock)
+   MISO              ──► GPIO 19 (VSPI MISO)
+   MOSI              ──► GPIO 23 (VSPI MOSI)
 
     Station Button        ESP32 Pin
    ────────────────     ─────────────
@@ -165,6 +187,7 @@ Never run a speaker cone bare on a table! The sound wave from the back cancels o
 3. In Library Manager, install:
    - **`ESP32-audioI2S`** (by *schreibfaul1*)
    - **`Adafruit SSD1306`** (by *Adafruit*, which includes *Adafruit GFX*)
+   - **`MFRC522`** (by *GithubCommunity*)
 4. Open [`firmware/KangarooRadio_ABCKids.ino`](firmware/KangarooRadio_ABCKids.ino), enter your Wi-Fi credentials, and hit **Upload**!
 
 ---

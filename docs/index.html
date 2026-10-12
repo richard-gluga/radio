@@ -26,6 +26,7 @@
         <a href="#photo-gallery">Lookbook</a>
         <a href="#child-safe-stations">Child-Safe Stations</a>
         <a href="#oled-display">OLED Screen</a>
+        <a href="#nfc-stories">🎴 NFC Stories</a>
         <a href="#parts-guide">Parts & Australian Stores</a>
         <a href="#sound-science">Sound Secret</a>
         <a href="#wiring-guide">Wiring Diagram</a>
@@ -156,6 +157,9 @@
           <div class="threejs-callout-panel">
             <button class="callout-pill" data-part="oled" title="Zoom in to view glowing monochrome screen">
               <span class="dot cyan"></span> 0.96" OLED Display (Monochrome)
+            </button>
+            <button class="callout-pill" data-part="nfc" title="Tap RFID/NFC Story Tokens on top lid">
+              <span class="dot purple"></span> 🎴 NFC Tap Zone (Top Lid)
             </button>
             <button class="callout-pill" data-part="speaker" title="Inspect acoustic speaker cone">
               <span class="dot orange"></span> 3W Speaker & Grille
@@ -544,6 +548,31 @@
                 <span class="state-name">Volume Adjusted</span>
                 <span class="state-desc">Master volume popup</span>
               </button>
+              <button class="btn-oled-state" data-state="nfc-reading" id="btn-state-nfc-reading">
+                <span class="state-icon">🎴</span>
+                <span class="state-name">NFC: Reading Tag</span>
+                <span class="state-desc">Extracting MP3 URL</span>
+              </button>
+              <button class="btn-oled-state" data-state="nfc-buffering" id="btn-state-nfc-buf">
+                <span class="state-icon">⏳</span>
+                <span class="state-name">NFC: Downloading</span>
+                <span class="state-desc">Buffering MP3 audio</span>
+              </button>
+              <button class="btn-oled-state" data-state="nfc-playing" id="btn-state-nfc-play">
+                <span class="state-icon">▶️</span>
+                <span class="state-name">NFC: Story Progress</span>
+                <span class="state-desc">Timebar & elapsed time</span>
+              </button>
+              <button class="btn-oled-state" data-state="nfc-done" id="btn-state-nfc-done">
+                <span class="state-icon">✨</span>
+                <span class="state-name">NFC: Story DONE</span>
+                <span class="state-desc">Playback complete screen</span>
+              </button>
+              <button class="btn-oled-state" data-state="nfc-error" id="btn-state-nfc-err">
+                <span class="state-icon">⚠️</span>
+                <span class="state-name">NFC: Error Code</span>
+                <span class="state-desc">"NO URL / Write tag"</span>
+              </button>
             </div>
           </div>
         </div>
@@ -581,6 +610,222 @@
               The ESP32 uses <strong>GPIO 22</strong> for I2C Clock (<code>SCL</code>). We moved the MAX98357A amplifier's <code>DIN</code> audio line to <strong>GPIO 27</strong> so audio and display never collide or glitch!
             </p>
           </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NFC Story Tokens & Tap-to-Play Feature Section -->
+  <section class="section nfc-section" id="nfc-stories">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-kicker">Screenless Magic</span>
+        <h2 class="section-title">🎴 NFC Story Tokens & Direct MP3 Streaming</h2>
+        <p class="section-subtitle">
+          Turn your radio into an interactive Australian storybook jukebox! Tap any physical wooden token or card to instantly download, stream, and play MP3 stories and lullabies. The 0.96" OLED screen displays live progress and countdown timers, while the <strong>Station Cycle Button</strong> immediately returns to your allow-listed radio stations.
+        </p>
+      </div>
+
+      <!-- Feature Highlight Row: Visual Photo & Interactive Deck -->
+      <div class="nfc-hero-grid">
+        <div class="nfc-photo-card">
+          <div class="nfc-photo-frame">
+            <img src="assets/nfc_tokens.jpg" alt="Child tapping wooden NFC Wombat Stew story token on top lid of Kangaroo Radio" class="nfc-hero-img" loading="lazy">
+            <div class="nfc-photo-overlay">
+              <span class="nfc-badge-pill">✨ Handcrafted Story Tokens</span>
+              <p>50mm laser-engraved Australian timber tokens with embedded $0.40 NTAG213 NFC stickers.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="nfc-summary-card">
+          <div class="nfc-status-pill">
+            <span class="pulse-dot"></span>
+            <span>Firmware Status: <strong>NFC SPI Engine Active (RC522)</strong></span>
+          </div>
+          <h3>How the Magic Works</h3>
+          <p class="nfc-lead">
+            Traditional kids audio players require proprietary memory cards or expensive subscription figurines. The Kangaroo Radio uses open, rewritable <strong>NTAG213 / NTAG215</strong> chips (under $0.40 each).
+          </p>
+          <ul class="nfc-key-points">
+            <li>
+              <span class="point-icon">🔗</span>
+              <div>
+                <strong>Stores Direct MP3 URL:</strong> The token contains a standard web link to any MP3 audio file (podcasts, public domain stories, cloud links).
+              </div>
+            </li>
+            <li>
+              <span class="point-icon">⚡</span>
+              <div>
+                <strong>Direct Streaming & Buffering:</strong> The ESP32 reads the tag over SPI, connects to the host, and streams digital audio straight into the MAX98357A I2S DAC with zero local SD card required.
+              </div>
+            </li>
+            <li>
+              <span class="point-icon">📊</span>
+              <div>
+                <strong>Full OLED Progress Tracking:</strong> Shows <em>Reading Tag</em>, <em>Downloading / Buffering</em>, live <em>Elapsed / Remaining timebar</em> (<code>03:45 / -08:00</code>), and a celebration <em>DONE</em> screen!
+              </div>
+            </li>
+            <li>
+              <span class="point-icon">📻</span>
+              <div>
+                <strong>Instant Cycle Button Return:</strong> Tapping the radio cycle button (GPIO 33) at any time interrupts the story and resumes the allow-listed radio stations.
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Interactive Story Token Tap Simulator -->
+      <div class="nfc-interactive-deck">
+        <div class="deck-header">
+          <div class="deck-title-group">
+            <span class="deck-badge">Interactive Simulator</span>
+            <h3>Tap a Story Token to Play on Kangaroo Radio</h3>
+            <p>Click any token below to simulate tapping it against the radio's top lid tap zone:</p>
+          </div>
+          <div class="deck-return-group">
+            <button class="btn-return-radio" id="btn-return-radio" title="Simulates pressing the physical radio station push button on GPIO 33">
+              <span class="btn-icon">📻</span>
+              <span class="btn-text">Press Radio Button (Exit Story & Resume Live Radio)</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="nfc-tokens-grid">
+          <!-- Token 1: Wombat Stew -->
+          <div class="nfc-token-card" data-token-id="wombat" data-title="Wombat Stew" data-author="Marcia Vaughan & Pamela Allen" data-duration="11:45" data-url="assets/wombat_stew.wav">
+            <div class="token-disc">
+              <span class="token-art">🦘</span>
+              <span class="token-nfc-wave">((( 🎴 )))</span>
+            </div>
+            <div class="token-details">
+              <span class="token-tag">Aussie Bush Adventure</span>
+              <h4>Wombat Stew</h4>
+              <p class="token-author">By Marcia Vaughan & Pamela Allen</p>
+              <div class="token-meta">
+                <span class="token-dur">⏱️ 11:45</span>
+                <span class="token-format">MP3 Stream • 128 kbps</span>
+              </div>
+            </div>
+            <button class="btn-tap-token" id="btn-tap-wombat">
+              <span class="tap-icon">🎴</span>
+              <span class="tap-text">Tap Token to Play</span>
+            </button>
+          </div>
+
+          <!-- Token 2: Possum Magic -->
+          <div class="nfc-token-card" data-token-id="possum" data-title="Possum Magic" data-author="Mem Fox & Julie Vivas" data-duration="08:30" data-url="assets/possum_magic.wav">
+            <div class="token-disc">
+              <span class="token-art">✨</span>
+              <span class="token-nfc-wave">((( 🎴 )))</span>
+            </div>
+            <div class="token-details">
+              <span class="token-tag">Magical Australian Classic</span>
+              <h4>Possum Magic</h4>
+              <p class="token-author">By Mem Fox & Julie Vivas</p>
+              <div class="token-meta">
+                <span class="token-dur">⏱️ 08:30</span>
+                <span class="token-format">MP3 Stream • 128 kbps</span>
+              </div>
+            </div>
+            <button class="btn-tap-token" id="btn-tap-possum">
+              <span class="tap-icon">🎴</span>
+              <span class="tap-text">Tap Token to Play</span>
+            </button>
+          </div>
+
+          <!-- Token 3: Snugglepot & Cuddlepie -->
+          <div class="nfc-token-card" data-token-id="snugglepot" data-title="Snugglepot & Cuddlepie" data-author="May Gibbs Australian Folklore" data-duration="14:15" data-url="assets/snugglepot.wav">
+            <div class="token-disc">
+              <span class="token-art">🍃</span>
+              <span class="token-nfc-wave">((( 🎴 )))</span>
+            </div>
+            <div class="token-details">
+              <span class="token-tag">Australian Gumnut Babies</span>
+              <h4>Snugglepot & Cuddlepie</h4>
+              <p class="token-author">By May Gibbs</p>
+              <div class="token-meta">
+                <span class="token-dur">⏱️ 14:15</span>
+                <span class="token-format">MP3 Stream • 128 kbps</span>
+              </div>
+            </div>
+            <button class="btn-tap-token" id="btn-tap-snugglepot">
+              <span class="tap-icon">🎴</span>
+              <span class="tap-text">Tap Token to Play</span>
+            </button>
+          </div>
+
+          <!-- Token 4: Kangaroo Beach -->
+          <div class="nfc-token-card" data-token-id="kangaroo" data-title="Kangaroo Beach Lullaby" data-author="ABC Kids Bedtime Tales" data-duration="05:20" data-url="assets/kangaroo_beach.wav">
+            <div class="token-disc">
+              <span class="token-art">🌊</span>
+              <span class="token-nfc-wave">((( 🎴 )))</span>
+            </div>
+            <div class="token-details">
+              <span class="token-tag">Gentle Ocean Lullaby</span>
+              <h4>Kangaroo Beach Lullaby</h4>
+              <p class="token-author">ABC Kids Listen Series</p>
+              <div class="token-meta">
+                <span class="token-dur">⏱️ 05:20</span>
+                <span class="token-format">MP3 Stream • 128 kbps</span>
+              </div>
+            </div>
+            <button class="btn-tap-token" id="btn-tap-kangaroo">
+              <span class="tap-icon">🎴</span>
+              <span class="tap-text">Tap Token to Play</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Custom MP3 URL Tester -->
+        <div class="custom-url-tester-box">
+          <div class="tester-header">
+            <h4>🧪 Test Any Custom MP3 URL on Virtual Radio</h4>
+            <p>Paste any public direct MP3 link below to test how the radio extracts the title and streams it:</p>
+          </div>
+          <div class="tester-input-row">
+            <input type="url" id="custom-mp3-input" placeholder="https://example.com/audio/my_custom_fairytale.mp3" value="https://upload.wikimedia.org/wikipedia/commons/wombat_story.mp3">
+            <button class="btn btn-primary" id="btn-test-custom-nfc">
+              <span>🎴 Tap Custom NFC Token</span>
+            </button>
+          </div>
+          <small class="tester-hint">Supported formats: Direct HTTP/HTTPS links to <code>.mp3</code>, <code>.m4a</code>, or <code>.wav</code> files.</small>
+        </div>
+      </div>
+
+      <!-- Technical Architecture Breakdown Cards -->
+      <div class="nfc-tech-grid">
+        <div class="tech-box">
+          <div class="tech-icon-circle">📱</div>
+          <h4>Write Tags in 5 Seconds via Phone</h4>
+          <p>
+            No computer or code required to make tokens! Download the free <strong>NFC Tools</strong> app (iOS/Android). Open app &rarr; <em>Write</em> &rarr; <em>Add a record</em> &rarr; <em>Custom URL/URI</em> &rarr; paste your MP3 link &rarr; hold your phone against the token sticker. Done!
+          </p>
+        </div>
+
+        <div class="tech-box">
+          <div class="tech-icon-circle">🔌</div>
+          <h4>Hardware VSPI Bus Pinout</h4>
+          <p>
+            The RC522 module uses the ESP32's dedicated hardware SPI bus: <code>SCK</code> &rarr; GPIO 18, <code>MISO</code> &rarr; GPIO 19, <code>MOSI</code> &rarr; GPIO 23, <code>SDA (SS)</code> &rarr; GPIO 5, and <code>RST</code> &rarr; GPIO 4. Powered safely from <strong>3.3V</strong>!
+          </p>
+        </div>
+
+        <div class="tech-box">
+          <div class="tech-icon-circle">🎛️</div>
+          <h4>Hardware Button Priority</h4>
+          <p>
+            Kids get full control: tapping an NFC token starts the story, but pressing the physical <strong>Station Cycle Push Button (GPIO 33)</strong> immediately kills the story stream, resets the buffer, and returns to the curated live radio channels.
+          </p>
+        </div>
+
+        <div class="tech-box">
+          <div class="tech-icon-circle">📺</div>
+          <h4>Intelligent OLED State Machine</h4>
+          <p>
+            The monochrome SSD1306 displays clean, reassuring feedback at every stage: <code>READING TAG</code> &rarr; <code>BUFFERING...</code> &rarr; <code>PLAYING [01:23 / -03:45]</code> with a 128px progress bar &rarr; <code>DONE</code> screen &rarr; auto-resume.
+          </p>
         </div>
       </div>
     </div>
@@ -825,14 +1070,53 @@
               </div>
             </div>
           </div>
+
+          <!-- Item 11: RC522 RFID / NFC Reader Module -->
+          <div class="table-row" data-store="core amazon jaycar">
+            <div class="td col-check">
+              <input type="checkbox" id="part-rc522" class="part-checkbox" data-price="4.50">
+            </div>
+            <div class="td col-part">
+              <strong>RC522 13.56 MHz RFID / NFC Reader Module (SPI)</strong>
+              <span class="part-meta">MF-RC522 SPI Module / Core CE05869 or Jaycar XC5262</span>
+            </div>
+            <div class="td col-why">Mounts hidden directly under the wooden top lid. Reads NTAG213 / NTAG215 story tokens through up to 8mm of timber!</div>
+            <div class="td col-price">$4.50 AUD</div>
+            <div class="td col-link">
+              <div class="link-buttons">
+                <a href="https://core-electronics.com.au/rfid-rc522-reader-module.html" target="_blank" rel="noopener" class="store-badge core-badge">Core: RC522 Module</a>
+                <a href="https://www.jaycar.com.au/arduino-compatible-mifare-rc522-rfid-card-reader-module/p/XC5262" target="_blank" rel="noopener" class="store-badge jaycar-badge">Jaycar: RC522 (XC5262)</a>
+                <a href="https://www.amazon.com.au/s?k=RC522+RFID+reader+module" target="_blank" rel="noopener" class="store-badge amazon-badge">Amazon AU Prime</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Item 12: NTAG213 / NTAG215 NFC Stickers -->
+          <div class="table-row" data-store="amazon core">
+            <div class="td col-check">
+              <input type="checkbox" id="part-nfc-tags" class="part-checkbox" data-price="4.00">
+            </div>
+            <div class="td col-part">
+              <strong>NTAG213 / NTAG215 Rewritable NFC Stickers (10-Pack)</strong>
+              <span class="part-meta">25mm circular self-adhesive NFC chips (144 bytes / 504 bytes NDEF)</span>
+            </div>
+            <div class="td col-why">Stick them on wooden tokens, LEGO bricks, or Aussie flashcards. Rewritable thousands of times with any smartphone!</div>
+            <div class="td col-price">$4.00 AUD</div>
+            <div class="td col-link">
+              <div class="link-buttons">
+                <a href="https://www.amazon.com.au/s?k=NTAG215+NFC+stickers" target="_blank" rel="noopener" class="store-badge amazon-badge">Amazon AU Prime (10pk)</a>
+                <a href="https://core-electronics.com.au/nfc-tag-ntag213-sticker.html" target="_blank" rel="noopener" class="store-badge core-badge">Core: NTAG Stickers</a>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Live Budget Tally -->
         <div class="shopping-footer">
           <div class="budget-tracker">
             <span class="tracker-label">Estimated Total:</span>
-            <span class="tracker-total" id="budget-total-display">$61.20 AUD</span>
-            <span class="tracker-count" id="budget-count-display">(0 of 10 items collected)</span>
+            <span class="tracker-total" id="budget-total-display">$69.70 AUD</span>
+            <span class="tracker-count" id="budget-count-display">(0 of 12 items collected)</span>
           </div>
           <button class="btn btn-outline" id="btn-select-all-parts">Mark All Collected</button>
         </div>
@@ -1222,6 +1506,42 @@
               <div><code>Leg 1 & 2</code></div>
               <div>ESP32 <strong>GPIO 33</strong> & <strong>GND</strong> (internal pull-up)</div>
             </div>
+            <!-- RC522 RFID/NFC Reader Connections (VSPI Bus) -->
+            <div class="pin-row" data-target="wire-nfc-ss">
+              <div><strong>RC522 RFID Reader</strong></div>
+              <div><code>SDA (SS / CS)</code></div>
+              <div>ESP32 <strong>GPIO 5</strong> (VSPI Chip Select)</div>
+            </div>
+            <div class="pin-row" data-target="wire-nfc-sck">
+              <div><strong>RC522 RFID Reader</strong></div>
+              <div><code>SCK</code></div>
+              <div>ESP32 <strong>GPIO 18</strong> (VSPI Hardware Clock)</div>
+            </div>
+            <div class="pin-row" data-target="wire-nfc-mosi">
+              <div><strong>RC522 RFID Reader</strong></div>
+              <div><code>MOSI</code></div>
+              <div>ESP32 <strong>GPIO 23</strong> (VSPI Master Out)</div>
+            </div>
+            <div class="pin-row" data-target="wire-nfc-miso">
+              <div><strong>RC522 RFID Reader</strong></div>
+              <div><code>MISO</code></div>
+              <div>ESP32 <strong>GPIO 19</strong> (VSPI Master In)</div>
+            </div>
+            <div class="pin-row" data-target="wire-nfc-rst">
+              <div><strong>RC522 RFID Reader</strong></div>
+              <div><code>RST</code></div>
+              <div>ESP32 <strong>GPIO 4</strong> (Reader Reset)</div>
+            </div>
+            <div class="pin-row" data-target="wire-oled-vcc">
+              <div><strong>RC522 RFID Reader</strong></div>
+              <div><code>3.3V (VCC)</code></div>
+              <div>ESP32 <strong>3.3V</strong> (⚠️ NEVER 5V or chip will burn!)</div>
+            </div>
+            <div class="pin-row" data-target="wire-oled-gnd">
+              <div><strong>RC522 RFID Reader</strong></div>
+              <div><code>GND</code></div>
+              <div>ESP32 <strong>GND</strong></div>
+            </div>
             <div class="pin-row" data-target="wire-batt">
               <div><strong>18650 Battery</strong></div>
               <div><code>Red (+) / Black (-)</code></div>
@@ -1458,6 +1778,8 @@
 #include &lt;Adafruit_GFX.h&gt;
 #include &lt;Adafruit_SSD1306.h&gt;
 #include "Audio.h"
+#include &lt;SPI.h&gt;
+#include &lt;MFRC522.h&gt;
 
 // Wi-Fi Credentials
 const char* ssid     = "<span class="hl-var" id="code-ssid">MyHomeWiFi</span>";
@@ -1471,15 +1793,18 @@ const char* password = "<span class="hl-var" id="code-pass">SecretPassword123</s
 #define I2C_SCL       22    // Hardware I2C SCL (OLED)
 #define BUTTON_PIN    33    // Station Cycle Push Button (to GND)
 #define POT_PIN       34    // Volume Potentiometer (ADC1, 3.3V reference)
+#define SS_PIN        5     // RC522 RFID Chip Select (VSPI)
+#define RST_PIN       4     // RC522 RFID Reset
 
 // Child-Safe Volume Safety Cap (Scales 10k knob smoothly to safe ceiling)
 #define MAX_VOLUME_LIMIT <span class="hl-var" id="code-volume-cap">14</span>  // Safe ceiling (~75 dBA)
 
-// 0.96" Monochrome SSD1306 OLED (128x64)
+// 0.96" Monochrome SSD1306 OLED (128x64) & Hardware Modules
 #define SCREEN_WIDTH  128
 #define SCREEN_HEIGHT 64
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &amp;Wire, -1);
 Audio audio;
+MFRC522 rfid(SS_PIN, RST_PIN);
 
 struct Station {
   const char* name;

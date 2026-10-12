@@ -276,6 +276,52 @@ document.addEventListener('DOMContentLoaded', () => {
         simLine3.textContent = 'ABC Kids listen';
         simBottom.innerHTML = `<div style="font-size:0.65rem; color:#93c5fd; text-align:center; width:100%;">[ Rotary Dial Turned ]</div>`;
         break;
+
+      case 'nfc-reading':
+        simTopTag.textContent = 'NFC ENGINE';
+        simTopVol.textContent = 'SCAN';
+        simLine1.textContent = 'Reading NFC Tag...';
+        simLine2.textContent = 'Extracting NDEF URI';
+        simLine3.textContent = 'ISO/IEC 14443-A (SPI)';
+        simBottom.innerHTML = `<div style="font-size:0.75rem; color:#38bdf8; text-align:center; width:100%; font-family:var(--font-mono); font-weight:bold;">((( [ 🎴 TAG DETECTED ] )))</div>`;
+        break;
+
+      case 'nfc-buffering':
+        simTopTag.textContent = 'NFC STREAM';
+        simTopVol.textContent = 'BUFFER';
+        simLine1.textContent = 'DOWNLOADING / BUFFERING';
+        simLine2.textContent = 'Wombat Stew (128 kbps)';
+        simLine3.textContent = 'Pre-filling I2S ring buffer...';
+        simBottom.innerHTML = `<div class="oled-progress-track"><div class="oled-progress-fill" style="width: 52%;"></div></div>`;
+        break;
+
+      case 'nfc-playing':
+        simTopTag.textContent = '🎴 NFC STORY';
+        simTopVol.textContent = 'VOL: 67%';
+        simLine1.textContent = 'PLAYING: Wombat Stew';
+        simLine2.innerHTML = `<div style="font-family:monospace; color:#38bdf8; font-weight:bold; font-size:0.95rem;">03:45 <span style="color:#64748b;">/</span> <span style="color:#cbd5e1;">-08:00</span></div>`;
+        simLine3.innerHTML = `<div class="oled-progress-track" style="height:7px; margin:4px 0;"><div class="oled-progress-fill" style="width: 32%;"></div></div>`;
+        simBottom.innerHTML = `<div style="font-size:0.62rem; color:#f59e0b; text-align:center; width:100%;">[ Cycle Btn: Return to Radio ]</div>`;
+        break;
+
+      case 'nfc-done':
+        simTopTag.textContent = 'STORY COMPLETE';
+        simTopVol.textContent = 'DONE';
+        simLine1.textContent = '★ STORY FINISHED ★';
+        simLine2.textContent = 'Wombat Stew';
+        simLine3.textContent = 'Resuming Radio in 4s...';
+        simBottom.innerHTML = `<div class="oled-progress-track"><div class="oled-progress-fill" style="width: 100%;"></div></div>`;
+        break;
+
+      case 'nfc-error':
+        simTopBar.classList.add('error-top');
+        simTopTag.textContent = '[ ! ] NFC ERROR';
+        simTopVol.textContent = 'ALERT';
+        simLine1.textContent = 'Reason: NO MP3 URL';
+        simLine2.textContent = 'Unformatted tag or no URI';
+        simLine3.textContent = 'Write URL with NFC Tools';
+        simBottom.innerHTML = `<div style="font-size:0.65rem; color:#94a3b8; text-align:center; width:100%;">[ Re-tap Formatted Tag ]</div>`;
+        break;
     }
   }
 
@@ -771,6 +817,261 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ==========================================
+  // 5.5. NFC STORY TOKENS & TAP-TO-PLAY ENGINE
+  // ==========================================
+  const nfcTokenCards = document.querySelectorAll('.nfc-token-card');
+  const btnReturnRadio = document.getElementById('btn-return-radio');
+  const customMp3Input = document.getElementById('custom-mp3-input');
+  const btnTestCustomNfc = document.getElementById('btn-test-custom-nfc');
+
+  let currentNfcStory = null;
+  let nfcProgressInterval = null;
+  let nfcAutoReturnTimeout = null;
+
+  function formatTime(seconds) {
+    const s = Math.max(0, Math.floor(seconds));
+    const m = Math.floor(s / 60);
+    const remS = s % 60;
+    return `${m.toString().padStart(2, '0')}:${remS.toString().padStart(2, '0')}`;
+  }
+
+  function playNfcStory(tokenData) {
+    if (!tokenData || !tokenData.url) return;
+
+    if (nfcProgressInterval) {
+      clearInterval(nfcProgressInterval);
+      nfcProgressInterval = null;
+    }
+    if (nfcAutoReturnTimeout) {
+      clearTimeout(nfcAutoReturnTimeout);
+      nfcAutoReturnTimeout = null;
+    }
+
+    // Stop live radio stream
+    stopCurrentStream();
+
+    currentNfcStory = {
+      id: tokenData.id || 'custom',
+      title: tokenData.title || 'Custom Story',
+      author: tokenData.author || 'Custom Audio Track',
+      url: tokenData.url,
+      curTimeStr: '00:00',
+      remTimeStr: '-00:00',
+      progressPct: 0,
+      state: 'reading'
+    };
+
+    // Highlight active token card
+    nfcTokenCards.forEach(card => {
+      if (card.dataset.tokenId === tokenData.id) {
+        card.classList.add('active-token');
+      } else {
+        card.classList.remove('active-token');
+      }
+    });
+
+    // Show on floating player bar
+    if (livePlayerBar) livePlayerBar.classList.remove('hidden');
+    if (playerStationTitle) playerStationTitle.textContent = `🎴 ${tokenData.title}`;
+    if (playerStationStatus) playerStationStatus.textContent = 'Reading NFC Tag (SPI)...';
+    if (playerBtnToggle) playerBtnToggle.textContent = '⏸';
+
+    playChirp();
+
+    // Trigger 3D token animation if Three.js is active
+    if (typeof window.trigger3dNfcToken === 'function') {
+      window.trigger3dNfcToken(tokenData.title);
+    }
+
+    // Step 1: Reading Tag (0 - 500ms)
+    renderOledState('nfc-reading');
+    if (simLine2) simLine2.textContent = tokenData.title;
+    if (typeof window.update3dRadioOled === 'function') window.update3dRadioOled(0);
+
+    // Step 2: Buffering / Downloading (500ms - 1200ms)
+    setTimeout(() => {
+      if (!currentNfcStory || currentNfcStory.title !== tokenData.title) return;
+      currentNfcStory.state = 'buffering';
+      renderOledState('nfc-buffering');
+      if (simLine2) simLine2.textContent = `${tokenData.title} (MP3)`;
+      if (playerStationStatus) playerStationStatus.textContent = 'Downloading / Buffering...';
+      if (typeof window.update3dRadioOled === 'function') window.update3dRadioOled(0);
+
+      // Step 3: Start Playing Audio after buffer
+      setTimeout(() => {
+        if (!currentNfcStory || currentNfcStory.title !== tokenData.title) return;
+        currentNfcStory.state = 'playing';
+
+        const audio = new Audio();
+        audio.crossOrigin = 'anonymous';
+        const vol = playerVolSlider ? parseFloat(playerVolSlider.value) : 0.8;
+        audio.volume = vol;
+        audio.src = tokenData.url;
+        activeStreamAudio = audio;
+
+        audio.addEventListener('loadedmetadata', () => {
+          if (!currentNfcStory) return;
+          const duration = audio.duration || 12;
+          currentNfcStory.totalDuration = duration;
+        });
+
+        audio.play().then(() => {
+          isStreamPlaying = true;
+          if (playerStationStatus) playerStationStatus.textContent = '▶ PLAYING STORY';
+          if (playerBtnToggle) playerBtnToggle.textContent = '⏸';
+
+          // Start dynamic progress bar loop
+          nfcProgressInterval = setInterval(() => {
+            if (!activeStreamAudio || !currentNfcStory) {
+              clearInterval(nfcProgressInterval);
+              return;
+            }
+
+            const cur = activeStreamAudio.currentTime || 0;
+            const dur = activeStreamAudio.duration && !isNaN(activeStreamAudio.duration) ? activeStreamAudio.duration : 12;
+            const rem = Math.max(0, dur - cur);
+            const pct = Math.min(100, (cur / dur) * 100);
+
+            const curStr = formatTime(cur);
+            const remStr = `-${formatTime(rem)}`;
+
+            currentNfcStory.curTimeStr = curStr;
+            currentNfcStory.remTimeStr = remStr;
+            currentNfcStory.progressPct = pct;
+
+            // Update Page OLED
+            if (simTopBar && simLine1 && simLine2 && simLine3 && simBottom) {
+              simTopBar.classList.remove('error-top');
+              simTopTag.textContent = '🎴 NFC STORY';
+              simTopVol.textContent = 'VOL: 67%';
+              simLine1.textContent = `PLAYING: ${currentNfcStory.title}`;
+              simLine2.innerHTML = `<div style="font-family:monospace; color:#38bdf8; font-weight:bold; font-size:0.95rem;">${curStr} <span style="color:#64748b;">/</span> <span style="color:#cbd5e1;">${remStr}</span></div>`;
+              simLine3.innerHTML = `<div class="oled-progress-track" style="height:7px; margin:4px 0;"><div class="oled-progress-fill" style="width: ${pct}%;"></div></div>`;
+              simBottom.innerHTML = `<div style="font-size:0.62rem; color:#f59e0b; text-align:center; width:100%;">[ Cycle Btn: Return to Radio ]</div>`;
+            }
+
+            if (typeof window.update3dRadioOled === 'function') {
+              window.update3dRadioOled(Math.floor(cur * 4));
+            }
+          }, 250);
+        }).catch(err => {
+          console.warn('Playback blocked or URL error: ', err);
+          renderOledState('nfc-error');
+        });
+
+        // Step 4: When Audio Ends -> Show DONE screen and auto-return to radio
+        audio.addEventListener('ended', () => {
+          if (!currentNfcStory) return;
+          clearInterval(nfcProgressInterval);
+          currentNfcStory.state = 'done';
+          currentNfcStory.progressPct = 100;
+          isStreamPlaying = false;
+
+          renderOledState('nfc-done');
+          if (simLine2) simLine2.textContent = currentNfcStory.title;
+          if (playerStationStatus) playerStationStatus.textContent = '✨ STORY COMPLETED (DONE)';
+          if (typeof window.update3dRadioOled === 'function') window.update3dRadioOled(0);
+
+          // Graceful auto-return to radio after 4 seconds (same as in firmware)
+          nfcAutoReturnTimeout = setTimeout(() => {
+            returnToRadioChannels();
+          }, 4000);
+        });
+
+      }, 700);
+    }, 500);
+  }
+
+  function returnToRadioChannels() {
+    if (nfcProgressInterval) {
+      clearInterval(nfcProgressInterval);
+      nfcProgressInterval = null;
+    }
+    if (nfcAutoReturnTimeout) {
+      clearTimeout(nfcAutoReturnTimeout);
+      nfcAutoReturnTimeout = null;
+    }
+
+    if (activeStreamAudio) {
+      try { activeStreamAudio.pause(); activeStreamAudio.src = ''; } catch(e) {}
+      activeStreamAudio = null;
+    }
+
+    currentNfcStory = null;
+    isStreamPlaying = false;
+
+    // Reset token card highlights
+    nfcTokenCards.forEach(card => card.classList.remove('active-token'));
+
+    // Remove 3D token if active
+    if (typeof window.remove3dNfcToken === 'function') {
+      window.remove3dNfcToken();
+    }
+
+    playChirp();
+
+    // Resume allow-listed live radio stations
+    const resumeIdx = currentActiveIndex >= 0 ? currentActiveIndex : 0;
+    playStationByIndex(resumeIdx);
+  }
+
+  // Bind Return to Radio button (GPIO 33 simulation)
+  if (btnReturnRadio) {
+    btnReturnRadio.addEventListener('click', (e) => {
+      e.preventDefault();
+      returnToRadioChannels();
+    });
+  }
+
+  // Bind click handlers for all NFC token cards
+  nfcTokenCards.forEach(card => {
+    card.addEventListener('click', (e) => {
+      e.preventDefault();
+      const tokenData = {
+        id: card.dataset.tokenId,
+        title: card.dataset.title,
+        author: card.dataset.author,
+        duration: card.dataset.duration,
+        url: card.dataset.url
+      };
+      playNfcStory(tokenData);
+    });
+  });
+
+  // Custom MP3 URL Tester
+  if (btnTestCustomNfc && customMp3Input) {
+    btnTestCustomNfc.addEventListener('click', (e) => {
+      e.preventDefault();
+      const url = customMp3Input.value.trim();
+      if (!url) return;
+
+      // Extract title from filename
+      let title = 'Custom Story';
+      try {
+        const path = new URL(url).pathname;
+        const filename = path.substring(path.lastIndexOf('/') + 1);
+        if (filename) {
+          title = decodeURIComponent(filename)
+            .replace(/[-_]/g, ' ')
+            .replace(/\.(mp3|wav|m4a|aac|ogg)$/i, '');
+          title = title.replace(/\b\w/g, l => l.toUpperCase());
+        }
+      } catch(e) {}
+
+      playNfcStory({
+        id: 'custom',
+        title: title || 'Custom MP3 Stream',
+        author: 'User Provided URL',
+        duration: 'Streaming',
+        url: url
+      });
+    });
+  }
+
+  // Expose returnToRadioChannels globally
+  window.returnToRadioChannels = returnToRadioChannels;
+
+  // ==========================================
   // 6. THREE.JS INTERACTIVE 3D RADIO EXPLORER
   // ==========================================
   function initThreeJsRadio() {
@@ -897,6 +1198,74 @@ document.addEventListener('DOMContentLoaded', () => {
       const stationIdx = currentActiveIndex >= 0 ? currentActiveIndex : 0;
       const st = stationStreamList[stationIdx] || stationStreamList[0];
       const isPlaying = isStreamPlaying;
+
+      if (currentNfcStory) {
+        // --- 3D OLED SCREEN: NFC STORY STREAMING MODE ---
+        // 2. Inverted Top Bar (Purple / Cyan)
+        oledCtx.fillStyle = '#a855f7';
+        oledCtx.fillRect(0, 0, 512, 44);
+
+        oledCtx.fillStyle = '#02050c';
+        oledCtx.font = 'bold 22px monospace';
+        oledCtx.fillText('WIFI: OK', 16, 30);
+        oledCtx.fillText('🎴 NFC STORY', 315, 30);
+
+        // 3. State Subhead
+        oledCtx.fillStyle = '#38bdf8';
+        oledCtx.font = 'bold 18px monospace';
+        if (currentNfcStory.state === 'reading') {
+          oledCtx.fillText('READING NFC TAG (SPI)...', 16, 82);
+        } else if (currentNfcStory.state === 'buffering') {
+          oledCtx.fillText('DOWNLOADING / BUFFERING MP3...', 16, 82);
+        } else if (currentNfcStory.state === 'done') {
+          oledCtx.fillText('★ STORY COMPLETED (DONE) ★', 16, 82);
+        } else {
+          oledCtx.fillText('PLAYING STORY • DIRECT STREAM', 16, 82);
+        }
+
+        // 4. Main Story Title (White Pixels)
+        oledCtx.fillStyle = '#ffffff';
+        oledCtx.font = 'bold 30px sans-serif';
+        oledCtx.fillText(currentNfcStory.title, 16, 126);
+
+        // 5. Time Progress Display (e.g. 03:45 / -08:00)
+        oledCtx.fillStyle = '#38bdf8';
+        oledCtx.font = 'bold 22px monospace';
+        const timeDisplay = `${currentNfcStory.curTimeStr || '00:00'} / ${currentNfcStory.remTimeStr || '-00:00'}`;
+        oledCtx.fillText(timeDisplay, 16, 168);
+
+        // 6. Dynamic Graphical Progress Bar
+        const barX = 16;
+        const barY = 188;
+        const barW = 480;
+        const barH = 18;
+
+        // Progress bar background track
+        oledCtx.fillStyle = '#1e293b';
+        oledCtx.fillRect(barX, barY, barW, barH);
+        oledCtx.strokeStyle = '#38bdf8';
+        oledCtx.lineWidth = 2;
+        oledCtx.strokeRect(barX, barY, barW, barH);
+
+        // Fill bar
+        const fillW = Math.max(4, Math.min(barW, ((currentNfcStory.progressPct || 0) / 100) * barW));
+        oledCtx.fillStyle = '#38bdf8';
+        oledCtx.fillRect(barX, barY, fillW, barH);
+
+        // Scrub head dot
+        oledCtx.fillStyle = '#ffffff';
+        oledCtx.beginPath();
+        oledCtx.arc(barX + fillW, barY + barH / 2, 7, 0, Math.PI * 2);
+        oledCtx.fill();
+
+        // Footer hint
+        oledCtx.fillStyle = '#94a3b8';
+        oledCtx.font = '14px monospace';
+        oledCtx.fillText('[ Cycle Push Button: Return to Radio ]', 16, 236);
+
+        oledTexture.needsUpdate = true;
+        return;
+      }
 
       // 2. Inverted Status Top Bar (Classic SSD1306)
       oledCtx.fillStyle = '#38bdf8';
@@ -1120,6 +1489,57 @@ document.addEventListener('DOMContentLoaded', () => {
       soundwaveRings.push(swMesh);
     }
 
+    // 8.5. 3D NFC Tap Zone on Top Cabinet Lid
+    const nfcDecalGeo = new THREE.CylinderGeometry(0.52, 0.52, 0.01, 32);
+    const nfcDecalMat = new THREE.MeshStandardMaterial({
+      color: 0x422006,
+      roughness: 0.85
+    });
+    const nfcDecalMesh = new THREE.Mesh(nfcDecalGeo, nfcDecalMat);
+    nfcDecalMesh.position.set(0.0, 1.104, 0.0);
+    radioGroup.add(nfcDecalMesh);
+
+    // Glowing NFC Antenna Target Ring
+    const nfcRingGeo = new THREE.RingGeometry(0.32, 0.38, 32);
+    nfcRingGeo.rotateX(-Math.PI / 2);
+    const nfcRingMat = new THREE.MeshBasicMaterial({ color: 0xc084fc, side: THREE.DoubleSide, transparent: true, opacity: 0.85 });
+    const nfcRingMesh = new THREE.Mesh(nfcRingGeo, nfcRingMat);
+    nfcRingMesh.position.set(0.0, 1.11, 0.0);
+    radioGroup.add(nfcRingMesh);
+
+    // 3D Animated Wooden Story Token Disc
+    const tokenDiscMat = new THREE.MeshStandardMaterial({
+      color: 0xd4a373,
+      roughness: 0.6,
+      metalness: 0.1
+    });
+    const tokenDiscGeo = new THREE.CylinderGeometry(0.40, 0.40, 0.04, 32);
+    const tokenDiscMesh = new THREE.Mesh(tokenDiscGeo, tokenDiscMat);
+    tokenDiscMesh.castShadow = true;
+    tokenDiscMesh.position.set(0.0, 1.13, 0.0);
+    tokenDiscMesh.visible = false;
+    radioGroup.add(tokenDiscMesh);
+
+    const tokenRimGeo = new THREE.TorusGeometry(0.40, 0.015, 12, 32);
+    tokenRimGeo.rotateX(Math.PI / 2);
+    const tokenRimMat = new THREE.MeshStandardMaterial({ color: 0x8b4513 });
+    const tokenRimMesh = new THREE.Mesh(tokenRimGeo, tokenRimMat);
+    tokenRimMesh.position.set(0.0, 1.145, 0.0);
+    tokenRimMesh.visible = false;
+    radioGroup.add(tokenRimMesh);
+
+    window.trigger3dNfcToken = (title) => {
+      tokenDiscMesh.visible = true;
+      tokenRimMesh.visible = true;
+      tokenDiscMesh.position.y = 2.4;
+      tokenRimMesh.position.y = 2.415;
+    };
+
+    window.remove3dNfcToken = () => {
+      tokenDiscMesh.visible = false;
+      tokenRimMesh.visible = false;
+    };
+
     // 9. Floating Background Particle Field
     const particleCount = 70;
     const particleGeo = new THREE.BufferGeometry();
@@ -1190,6 +1610,9 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (part === 'switch') {
           camera.position.set(0.12, -0.42, 2.2);
           if (controls) controls.target.set(0.12, -0.42, 1.02);
+        } else if (part === 'nfc') {
+          camera.position.set(0.0, 2.7, 1.8);
+          if (controls) controls.target.set(0.0, 1.1, 0.0);
         }
       });
     });
@@ -1208,8 +1631,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const clickedMesh = intersects[0].object;
         if (clickedMesh === btnMesh || clickedMesh === btnBaseMesh) {
           playChirp();
-          const nextIdx = (currentActiveIndex + 1) % stationStreamList.length;
-          playStationByIndex(nextIdx);
+          if (currentNfcStory) {
+            // Priority hardware button interrupt: Exit story -> Resume radio stations!
+            returnToRadioChannels();
+          } else {
+            const nextIdx = (currentActiveIndex + 1) % stationStreamList.length;
+            playStationByIndex(nextIdx);
+          }
         } else if (clickedMesh === oledMesh) {
           playChirp();
           camera.position.set(0.75, 0.42, 2.1);
@@ -1227,6 +1655,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function animate() {
       requestAnimationFrame(animate);
       animClock++;
+
+      // Smoothly drop the 3D wooden token onto the NFC tap zone if active
+      if (tokenDiscMesh.visible && tokenDiscMesh.position.y > 1.13) {
+        tokenDiscMesh.position.y += (1.13 - tokenDiscMesh.position.y) * 0.16;
+        tokenRimMesh.position.y = tokenDiscMesh.position.y + 0.015;
+      }
 
       // Pulse dynamic soundwaves if audio is playing
       soundwaveRings.forEach((ring, idx) => {
