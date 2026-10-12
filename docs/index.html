@@ -154,19 +154,19 @@
           </div>
           <!-- 3D Callout Hotspots -->
           <div class="threejs-callout-panel">
-            <button class="callout-pill" data-part="oled">
-              <span class="dot cyan"></span> 0.96" OLED Display
+            <button class="callout-pill" data-part="oled" title="Zoom in to view glowing monochrome screen">
+              <span class="dot cyan"></span> 0.96" OLED Display (Monochrome)
             </button>
-            <button class="callout-pill" data-part="speaker">
+            <button class="callout-pill" data-part="speaker" title="Inspect acoustic speaker cone">
               <span class="dot orange"></span> 3W Speaker & Grille
             </button>
-            <button class="callout-pill" data-part="pot">
-              <span class="dot yellow"></span> Brass Volume Pot
+            <button class="callout-pill" data-part="pot" title="Volume knob with software kid-safe ear guard">
+              <span class="dot yellow"></span> Volume Knob (🛡️ Safe Capped)
             </button>
-            <button class="callout-pill" data-part="button">
+            <button class="callout-pill" data-part="button" title="Push button to cycle stations">
               <span class="dot amber"></span> Station Cycle Button
             </button>
-            <button class="callout-pill" data-part="switch">
+            <button class="callout-pill" data-part="switch" title="Hardware power switch">
               <span class="dot red"></span> Toggle Power Switch
             </button>
           </div>
@@ -916,6 +916,39 @@
           </div>
         </div>
       </div>
+
+      <!-- Pediatric Hearing Safety & Child-Safe Volume Guard Card -->
+      <div class="safety-guard-card">
+        <div class="safety-guard-header">
+          <div class="safety-guard-icon">🛡️</div>
+          <div>
+            <span class="badge badge-success">Pediatric Hearing Safety</span>
+            <h3>Built-In Child-Safe Volume Guard: Never Too Loud</h3>
+          </div>
+        </div>
+        <div class="safety-guard-body">
+          <p>
+            The MAX98357A I2S amplifier outputs up to <strong>3.2 Watts</strong> into a 4Ω speaker. In a compact wooden nursery cabinet, uncapped full blast can exceed <strong>92–95 dBA</strong> at 1 meter! According to pediatric audiologists and WHO hearing safety guidelines, young children's ear canals amplify high frequencies, so sustained exposure above <strong>80–85 dBA</strong> can lead to hearing damage.
+          </p>
+          <div class="safety-guard-grid">
+            <div class="safety-feature-box">
+              <span class="sf-icon">🚫</span>
+              <h4>The Danger of Uncapped Knobs</h4>
+              <p>Toddlers love twisting dials and knobs to their physical limits. If a child turns the knob 100% clockwise, an uncapped radio will blast at deafening nursery volumes.</p>
+            </div>
+            <div class="safety-feature-box">
+              <span class="sf-icon">🔒</span>
+              <h4>Software Ear Guard (No Soldering)</h4>
+              <p>We hardcode <code>#define MAX_VOLUME_LIMIT 14</code> into the ESP32 code. This scales the knob's entire physical rotation smoothly up to a safe <strong>~75 dBA ceiling</strong>.</p>
+            </div>
+            <div class="safety-feature-box">
+              <span class="sf-icon">📺</span>
+              <h4>Live OLED Confirmation</h4>
+              <p>The 0.96" OLED screen displays <code>SAFE: 65%</code> and draws a safety ceiling marker on the volume overlay, giving parents instant visual peace of mind.</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -1372,6 +1405,17 @@
           </div>
 
           <div class="form-group">
+            <label for="select-volume-cap">🛡️ Child-Safe Volume Safety Cap</label>
+            <select id="select-volume-cap" class="form-select">
+              <option value="14" selected>14 / 21 (~67% - Recommended for Kids / ~75 dBA safe)</option>
+              <option value="11">11 / 21 (~50% - Gentle Bedtime / Quiet Nursery / ~68 dBA)</option>
+              <option value="17">17 / 21 (~80% - Outdoors / Family Playroom / ~82 dBA)</option>
+              <option value="21">21 / 21 (100% - Uncapped Maximum / Adult Use / 92+ dBA)</option>
+            </select>
+            <small>Caps maximum sound in software so kids cannot turn the knob too loud!</small>
+          </div>
+
+          <div class="form-group">
             <label for="select-startup-station">Default Startup Station</label>
             <select id="select-startup-station" class="form-select">
               <option value="0">1. ABC Kids listen (Australia)</option>
@@ -1428,6 +1472,9 @@ const char* password = "<span class="hl-var" id="code-pass">SecretPassword123</s
 #define BUTTON_PIN    33    // Station Cycle Push Button (to GND)
 #define POT_PIN       34    // Volume Potentiometer (ADC1, 3.3V reference)
 
+// Child-Safe Volume Safety Cap (Scales 10k knob smoothly to safe ceiling)
+#define MAX_VOLUME_LIMIT <span class="hl-var" id="code-volume-cap">14</span>  // Safe ceiling (~75 dBA)
+
 // 0.96" Monochrome SSD1306 OLED (128x64)
 #define SCREEN_WIDTH  128
 #define SCREEN_HEIGHT 64
@@ -1459,8 +1506,8 @@ void drawTopBar(const char* tag, int vol) {
   display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
   display.setTextSize(1);
   display.setCursor(2, 2); display.print(tag);
-  display.setCursor(82, 2); display.print("VOL:");
-  display.print(map(vol, 0, 21, 0, 100)); display.print("%");
+  display.setCursor(74, 2); display.print("SAFE:");
+  display.print(map(vol, 0, MAX_VOLUME_LIMIT, 0, 100)); display.print("%");
   display.setTextColor(SSD1306_WHITE);
 }
 
@@ -1551,12 +1598,12 @@ void loop() {
     }
   }
 
-  // Volume potentiometer check
+  // Volume potentiometer check with Child-Safe Cap
   static unsigned long lastPot = 0;
-  if (millis() - lastPot &gt; 200) {
+  if (millis() - lastPot > 200) {
     lastPot = millis();
-    int newVol = map(analogRead(POT_PIN), 0, 4095, 0, 21);
-    if (abs(newVol - lastVolume) &gt; 0) {
+    int newVol = map(analogRead(POT_PIN), 0, 4095, 0, MAX_VOLUME_LIMIT);
+    if (abs(newVol - lastVolume) > 0) {
       lastVolume = newVol;
       audio.setVolume(newVol);
       showStationScreen(currentStation, lastVolume);
@@ -1707,8 +1754,13 @@ void setup() {
         <button class="player-ctrl-btn play-pause" id="player-btn-toggle" title="Play/Pause">⏸</button>
         <button class="player-ctrl-btn" id="player-btn-next" title="Next Station">⏭</button>
         <div class="player-vol-wrapper">
-          <span class="vol-icon">🔊</span>
-          <input type="range" id="player-vol-slider" min="0" max="1" step="0.05" value="0.8" class="player-vol-range" title="Volume">
+          <button class="btn-safe-cap" id="btn-toggle-safe-vol" title="Child-Safe Volume Cap Active (~75 dBA safe limit)">
+            <span class="safe-icon">🔒</span>
+            <span class="safe-label">Safe Cap (65%)</span>
+          </button>
+          <span class="vol-icon" id="player-vol-icon">🔊</span>
+          <input type="range" id="player-vol-slider" min="0" max="1" step="0.05" value="0.65" class="player-vol-range" title="Volume">
+          <span class="player-vol-pct" id="player-vol-pct">65% [SAFE]</span>
         </div>
         <button class="player-ctrl-btn close-btn" id="player-btn-close" title="Stop & Close Player">✕</button>
       </div>

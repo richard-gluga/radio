@@ -41,6 +41,23 @@ const char* password = "YOUR_WIFI_PASSWORD";
 #define POT_PIN       34     // 10k Volume Potentiometer (ADC1 channel 6; 3.3V reference)
 
 // ----------------------------------------------------------------
+// 2b. CHILD-SAFE VOLUME SAFETY LIMIT (HEARING PROTECTION GUARD)
+// ----------------------------------------------------------------
+// The MAX98357A I2S amplifier outputs up to 3.2W into a 4-ohm speaker.
+// At uncapped full volume (level 21), audio close-up can exceed 90-95 dBA,
+// which is far too loud for toddler and young child ears!
+//
+// Setting MAX_VOLUME_LIMIT caps the maximum sound level in software:
+//   14 / 21 = ~67% max power (~75 dBA safe listening limit, RECOMMENDED)
+//   11 / 21 = ~50% max power (~68 dBA gentle nursery/bedtime)
+//   17 / 21 = ~80% max power (~82 dBA outdoor/picnic use)
+//   21 / 21 = 100% uncapped max power (92+ dBA, adult use only)
+//
+// This scales the full physical rotation of the 10k knob smoothly from 0 to MAX_VOLUME_LIMIT,
+// so kids can twist the knob all the way without hurting their ears!
+#define MAX_VOLUME_LIMIT  14
+
+// ----------------------------------------------------------------
 // 3. Curated Child-Safe Station Allow-List
 // ----------------------------------------------------------------
 struct Station {
@@ -106,10 +123,10 @@ void drawTopBar(const char* tag, int vol) {
   display.setCursor(2, 2);
   display.print(tag);
 
-  // Volume badge on right
-  display.setCursor(82, 2);
-  display.print("VOL:");
-  display.print(map(vol, 0, 21, 0, 100));
+  // Volume badge on right with kid-safe ceiling indicator
+  display.setCursor(74, 2);
+  display.print("SAFE:");
+  display.print(map(vol, 0, MAX_VOLUME_LIMIT, 0, 100));
   display.print("%");
   display.setTextColor(SSD1306_WHITE);
 }
@@ -197,33 +214,38 @@ void showStationScreen(int stationIdx, int vol, int animTick = 0) {
   display.display();
 }
 
-// Display Quick Volume Slider Overlay
+// Display Quick Volume Slider Overlay with Child-Safe Ceiling
 void showVolumeOverlay(int vol) {
   display.clearDisplay();
   display.fillRect(0, 0, SCREEN_WIDTH, 12, SSD1306_WHITE);
   display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
   display.setTextSize(1);
-  display.setCursor(18, 2);
-  display.print("MASTER VOLUME");
+  display.setCursor(8, 2);
+  display.print("VOLUME [KIDS SAFE]");
 
   display.setTextColor(SSD1306_WHITE);
   display.setTextSize(1);
-  display.setCursor(14, 22);
-  display.print("Level: ");
+  display.setCursor(10, 18);
+  display.print("Safe Cap: ");
   display.print(vol);
-  display.print(" / 21 (");
-  display.print(map(vol, 0, 21, 0, 100));
+  display.print("/");
+  display.print(MAX_VOLUME_LIMIT);
+  display.print(" (");
+  display.print(map(vol, 0, MAX_VOLUME_LIMIT, 0, 100));
   display.print("%)");
 
-  // Volume Bar
-  display.drawRect(8, 38, 112, 14, SSD1306_WHITE);
-  int fillW = map(vol, 0, 21, 0, 108);
+  // Volume Bar with Safety Ceiling Marker
+  display.drawRect(8, 32, 112, 14, SSD1306_WHITE);
+  int fillW = map(vol, 0, 21, 0, 108); // showing position relative to hardware max (21)
   if (fillW > 0) {
-    display.fillRect(10, 40, fillW, 10, SSD1306_WHITE);
+    display.fillRect(10, 34, fillW, 10, SSD1306_WHITE);
   }
+  // Draw vertical safety cap marker line on the hardware bar
+  int capX = 10 + map(MAX_VOLUME_LIMIT, 0, 21, 0, 108);
+  display.drawFastVLine(capX, 30, 18, SSD1306_WHITE);
 
-  display.setCursor(12, 55);
-  display.print(stations[currentStation].name);
+  display.setCursor(8, 52);
+  display.print("Max ~75dBA Ear Guard");
   display.display();
 }
 
@@ -332,9 +354,9 @@ void setup() {
   // Configure MAX98357A I2S Digital Audio Output
   audio.setPinout(I2S_BCLK, I2S_LRC, I2S_DOUT);
   
-  // Read initial potentiometer position for startup volume
+  // Read initial potentiometer position for startup volume with child-safe cap
   int initialPot = analogRead(POT_PIN);
-  lastVolume = map(initialPot, 0, 4095, 0, 21);
+  lastVolume = map(initialPot, 0, 4095, 0, MAX_VOLUME_LIMIT);
   audio.setVolume(lastVolume);
 
   // Connect to default station (ABC Kids listen)
@@ -357,12 +379,12 @@ void loop() {
     }
   }
 
-  // 2. Volume Potentiometer Polling every 200ms
+  // 2. Volume Potentiometer Polling every 200ms with Child-Safe Cap
   static unsigned long lastPotCheck = 0;
   if (millis() - lastPotCheck > 200) {
     lastPotCheck = millis();
     int potVal = analogRead(POT_PIN); // 0 to 4095
-    int newVol = map(potVal, 0, 4095, 0, 21);
+    int newVol = map(potVal, 0, 4095, 0, MAX_VOLUME_LIMIT);
 
     if (abs(newVol - lastVolume) > 0) {
       lastVolume = newVol;

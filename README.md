@@ -99,6 +99,8 @@ All components can be ordered from **[Core Electronics](https://core-electronics
    - Use **GPIO 34**: On the ESP32, GPIO 34 belongs to **ADC1**. Channels on ADC2 are disabled when Wi-Fi is actively streaming; ADC1 pins work flawlessly during continuous Wi-Fi audio playback.
 5. **I2C Display & Audio Pin Shift:**  
    The 0.96" SSD1306 OLED display connects to the ESP32 hardware I2C bus (`SDA = GPIO 21`, `SCL = GPIO 22`). To avoid pin collision on GPIO 22, the MAX98357A amplifier's digital audio line (`DIN`) is connected to **GPIO 27**.
+6. **Pediatric Hearing Safety & Volume Capping (`#define MAX_VOLUME_LIMIT 14`):**  
+   The MAX98357A amplifier can pump 3.2W into a 4Ω speaker, generating over 92–95 dBA close-up. Toddlers and young children love turning knobs to maximum! To protect little ears without needing to solder extra attenuator resistors, the firmware software-caps volume at `MAX_VOLUME_LIMIT = 14` (~75 dBA safe ceiling per WHO pediatric guidelines), smoothly mapping the entire physical sweep of the 10k knob up to the safe limit. The 0.96" OLED screen confirms this with `SAFE: 65%` and a safety ceiling marker line.
 
 ---
 

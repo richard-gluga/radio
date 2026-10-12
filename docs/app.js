@@ -84,18 +84,22 @@ document.addEventListener('DOMContentLoaded', () => {
   const codeVol = document.getElementById('code-vol');
   const selectStation = document.getElementById('select-startup-station');
   const codeStartup = document.getElementById('code-startup-station');
+  const selectVolumeCap = document.getElementById('select-volume-cap');
+  const codeVolumeCap = document.getElementById('code-volume-cap');
   const btnCopy = document.getElementById('btn-copy-code');
 
   function updateCodePreview() {
-    const ssid = inputSsid.value.trim() || 'MyHomeWiFi';
-    const pass = inputPass.value || 'SecretPassword123';
-    const vol = inputVol.value || '14';
+    const ssid = inputSsid ? (inputSsid.value.trim() || 'MyHomeWiFi') : 'MyHomeWiFi';
+    const pass = inputPass ? (inputPass.value || 'SecretPassword123') : 'SecretPassword123';
+    const vol = inputVol ? (inputVol.value || '14') : '14';
     const startStation = selectStation ? selectStation.value : '0';
+    const volCap = selectVolumeCap ? selectVolumeCap.value : '14';
 
     if (codeSsid) codeSsid.textContent = ssid;
     if (codePass) codePass.textContent = pass;
     if (codeVol) codeVol.textContent = vol;
     if (codeStartup) codeStartup.textContent = startStation;
+    if (codeVolumeCap) codeVolumeCap.textContent = volCap;
     if (volDisplay) volDisplay.textContent = `${vol} / 21`;
   }
 
@@ -103,6 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (inputPass) inputPass.addEventListener('input', updateCodePreview);
   if (inputVol) inputVol.addEventListener('input', updateCodePreview);
   if (selectStation) selectStation.addEventListener('change', updateCodePreview);
+  if (selectVolumeCap) selectVolumeCap.addEventListener('change', updateCodePreview);
 
   // ==========================================
   // STATION CYCLE SIMULATOR WIDGET
@@ -707,10 +712,53 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  const btnToggleSafeVol = document.getElementById('btn-toggle-safe-vol');
+  const playerVolPct = document.getElementById('player-vol-pct');
+  let isKidSafeVolumeCapped = true; // Enabled by default to protect little ears
+
+  function applyVolumeSafety(val) {
+    let effectiveVal = val;
+    if (isKidSafeVolumeCapped && effectiveVal > 0.65) {
+      effectiveVal = 0.65;
+      if (playerVolSlider) playerVolSlider.value = 0.65;
+    }
+    if (activeStreamAudio) {
+      try { activeStreamAudio.volume = effectiveVal; } catch(e) {}
+    }
+    if (playerVolPct) {
+      const pct = Math.round(effectiveVal * 100);
+      playerVolPct.textContent = isKidSafeVolumeCapped ? `${pct}% [SAFE]` : `${pct}%`;
+    }
+    if (typeof window.update3dRadioOled === 'function') {
+      window.update3dRadioOled(0);
+    }
+  }
+
+  if (btnToggleSafeVol) {
+    btnToggleSafeVol.addEventListener('click', () => {
+      isKidSafeVolumeCapped = !isKidSafeVolumeCapped;
+      btnToggleSafeVol.classList.toggle('unlocked', !isKidSafeVolumeCapped);
+      const icon = btnToggleSafeVol.querySelector('.safe-icon');
+      const label = btnToggleSafeVol.querySelector('.safe-label');
+      if (isKidSafeVolumeCapped) {
+        if (icon) icon.textContent = '🔒';
+        if (label) label.textContent = 'Safe Cap (65%)';
+        btnToggleSafeVol.title = 'Child-Safe Volume Cap Active (~75 dBA safe limit)';
+        if (playerVolSlider && parseFloat(playerVolSlider.value) > 0.65) {
+          playerVolSlider.value = 0.65;
+        }
+      } else {
+        if (icon) icon.textContent = '🔓';
+        if (label) label.textContent = 'Unlocked (100%)';
+        btnToggleSafeVol.title = 'Warning: Volume cap disabled. Full volume enabled.';
+      }
+      if (playerVolSlider) applyVolumeSafety(parseFloat(playerVolSlider.value));
+    });
+  }
+
   if (playerVolSlider) {
     playerVolSlider.addEventListener('input', () => {
-      const val = parseFloat(playerVolSlider.value);
-      if (activeStreamAudio) activeStreamAudio.volume = val;
+      applyVolumeSafety(parseFloat(playerVolSlider.value));
     });
   }
 
@@ -775,8 +823,8 @@ document.addEventListener('DOMContentLoaded', () => {
     scene.add(fillLight);
 
     // Subtle blue point light glowing near OLED screen
-    const oledLight = new THREE.PointLight(0x38bdf8, 1.2, 3.5);
-    oledLight.position.set(0.7, 0.2, 1.1);
+    const oledLight = new THREE.PointLight(0x38bdf8, 2.2, 2.8);
+    oledLight.position.set(0.75, 0.42, 1.15);
     scene.add(oledLight);
 
     // Procedural Wood Texture Canvas
@@ -825,44 +873,92 @@ document.addEventListener('DOMContentLoaded', () => {
       return new THREE.CanvasTexture(canvas);
     }
 
-    // Dynamic 3D OLED Canvas Texture
+    // Dynamic 3D Monochrome OLED Canvas Texture (High DPI 512 x 256)
     const oledCanvas = document.createElement('canvas');
-    oledCanvas.width = 256;
-    oledCanvas.height = 128;
+    oledCanvas.width = 512;
+    oledCanvas.height = 256;
     const oledCtx = oledCanvas.getContext('2d');
     const oledTexture = new THREE.CanvasTexture(oledCanvas);
+    oledTexture.minFilter = THREE.LinearFilter;
+    oledTexture.magFilter = THREE.LinearFilter;
 
     function updateOledCanvas(tick) {
-      oledCtx.fillStyle = '#020408';
-      oledCtx.fillRect(0, 0, 256, 128);
+      // 1. Pitch Black OLED Panel Background
+      oledCtx.fillStyle = '#02050c';
+      oledCtx.fillRect(0, 0, 512, 256);
 
-      // Top bar
-      oledCtx.fillStyle = '#38bdf8';
-      oledCtx.fillRect(0, 0, 256, 24);
-      oledCtx.fillStyle = '#020408';
-      oledCtx.font = 'bold 13px monospace';
-      oledCtx.fillText('WIFI OK', 6, 17);
-      oledCtx.fillText('VOL: 67%', 170, 17);
-
-      // Station Title
-      oledCtx.fillStyle = '#38bdf8';
-      oledCtx.font = '12px monospace';
-      oledCtx.fillText('STATION [1/6]', 6, 46);
-      oledCtx.font = 'bold 19px monospace';
-      oledCtx.fillText('ABC Kids listen', 6, 74);
-      oledCtx.font = '11px monospace';
-      oledCtx.fillStyle = '#93c5fd';
-      oledCtx.fillText('Stories & Tunes', 6, 94);
-
-      // Dynamic Equalizer bars
-      oledCtx.fillStyle = '#38bdf8';
-      const bars = [6, 12, 22, 16, 26, 18, 12, 24, 20, 10, 16, 28, 14, 20, 12, 24];
-      for (let i = 0; i < 16; i++) {
-        const h = bars[(i + tick) % 16];
-        oledCtx.fillRect(10 + i * 15, 126 - h, 8, h);
+      // Subtle OLED scanline raster effect
+      oledCtx.fillStyle = 'rgba(56, 189, 248, 0.03)';
+      for (let y = 0; y < 256; y += 4) {
+        oledCtx.fillRect(0, y, 512, 1);
       }
+
+      // Station info & live audio state
+      const stationIdx = currentActiveIndex >= 0 ? currentActiveIndex : 0;
+      const st = stationStreamList[stationIdx] || stationStreamList[0];
+      const isPlaying = isStreamPlaying;
+
+      // 2. Inverted Status Top Bar (Classic SSD1306)
+      oledCtx.fillStyle = '#38bdf8';
+      oledCtx.fillRect(0, 0, 512, 44);
+
+      // Status Bar Text (Deep Navy Black on Vibrant Cyan)
+      oledCtx.fillStyle = '#02050c';
+      oledCtx.font = 'bold 22px monospace';
+      oledCtx.fillText('WIFI: OK', 16, 30);
+
+      // Child-Safe Volume Status
+      const volText = isKidSafeVolumeCapped ? '🔒 SAFE 65%' : 'VOL: 80%';
+      oledCtx.fillText(volText, 325, 30);
+
+      // 3. Station Number / Live State
+      oledCtx.fillStyle = '#38bdf8';
+      oledCtx.font = 'bold 20px monospace';
+      oledCtx.fillText(`STATION [${stationIdx + 1}/6] • ${isPlaying ? 'LIVE STREAM' : 'READY'}`, 16, 82);
+
+      // 4. Main Station Title (Crisp White OLED Pixels)
+      oledCtx.fillStyle = '#ffffff';
+      oledCtx.font = 'bold 32px sans-serif';
+      oledCtx.fillText(st.title, 16, 126);
+
+      // 5. Genre Subtitle
+      oledCtx.fillStyle = '#94a3b8';
+      oledCtx.font = '19px sans-serif';
+      oledCtx.fillText(st.genre, 16, 162);
+
+      // 6. Dynamic 16-Bar Equalizer with Floating Peak Dots
+      oledCtx.fillStyle = '#38bdf8';
+      const baseBars = [8, 16, 28, 20, 36, 24, 18, 34, 28, 14, 24, 40, 20, 30, 18, 32];
+      const numBars = 16;
+      const barW = 24;
+      const gap = 7;
+      const startX = 14;
+
+      for (let i = 0; i < numBars; i++) {
+        let h;
+        if (isPlaying) {
+          const wave = Math.sin((tick * 0.4) + (i * 0.6)) * 14;
+          h = Math.max(6, Math.min(62, baseBars[(i + tick) % numBars] + wave));
+        } else {
+          h = 8 + Math.sin((tick * 0.1) + (i * 0.4)) * 5;
+        }
+
+        // Draw bouncing bar
+        oledCtx.fillStyle = '#38bdf8';
+        oledCtx.fillRect(startX + i * (barW + gap), 244 - h, barW, h);
+
+        // Floating white peak cap
+        oledCtx.fillStyle = '#ffffff';
+        oledCtx.fillRect(startX + i * (barW + gap), 244 - h - 5, barW, 3);
+      }
+
       oledTexture.needsUpdate = true;
     }
+
+    // Expose hook globally so on-page buttons immediately refresh 3D screen
+    window.update3dRadioOled = updateOledCanvas;
+    // Paint frame 0 immediately upon startup
+    updateOledCanvas(0);
 
     // Radio Group
     const radioGroup = new THREE.Group();
@@ -876,21 +972,22 @@ document.addEventListener('DOMContentLoaded', () => {
       metalness: 0.05
     });
 
+    // Main cabinet body: 3.6 wide, 2.2 high, 1.8 deep (front at z = 0.90)
     const cabinetGeo = new THREE.BoxGeometry(3.6, 2.2, 1.8);
     const cabinetMesh = new THREE.Mesh(cabinetGeo, woodMat);
     cabinetMesh.castShadow = true;
     cabinetMesh.receiveShadow = true;
     radioGroup.add(cabinetMesh);
 
-    // Front Face Rim Bezel
-    const rimMat = new THREE.MeshStandardMaterial({
-      color: 0x6e3d1b,
-      roughness: 0.6
+    // Front Fascia Board: 3.52 wide, 2.12 high, 0.04 thick at z = 0.91 (front face at z = 0.93)
+    const fasciaMat = new THREE.MeshStandardMaterial({
+      color: 0x8b4513,
+      roughness: 0.65
     });
-    const rimGeo = new THREE.BoxGeometry(3.64, 2.24, 0.08);
-    const rimMesh = new THREE.Mesh(rimGeo, rimMat);
-    rimMesh.position.z = 0.91;
-    radioGroup.add(rimMesh);
+    const fasciaGeo = new THREE.BoxGeometry(3.52, 2.12, 0.04);
+    const fasciaMesh = new THREE.Mesh(fasciaGeo, fasciaMat);
+    fasciaMesh.position.z = 0.91;
+    radioGroup.add(fasciaMesh);
 
     // 2. Circular Speaker Grille
     const fabricTex = createFabricTexture();
@@ -901,34 +998,63 @@ document.addEventListener('DOMContentLoaded', () => {
     const speakerGeo = new THREE.CylinderGeometry(0.72, 0.72, 0.04, 32);
     speakerGeo.rotateX(Math.PI / 2);
     const speakerMesh = new THREE.Mesh(speakerGeo, speakerClothMat);
-    speakerMesh.position.set(-0.85, 0.05, 0.93);
+    speakerMesh.position.set(-0.85, 0.05, 0.94);
     radioGroup.add(speakerMesh);
 
     // Speaker Outer Ring Frame
-    const ringGeo = new THREE.TorusGeometry(0.72, 0.05, 16, 32);
+    const ringGeo = new THREE.TorusGeometry(0.72, 0.06, 16, 32);
     const ringMat = new THREE.MeshStandardMaterial({ color: 0x4a2810, roughness: 0.5 });
     const ringMesh = new THREE.Mesh(ringGeo, ringMat);
-    ringMesh.position.set(-0.85, 0.05, 0.95);
+    ringMesh.position.set(-0.85, 0.05, 0.96);
     radioGroup.add(ringMesh);
 
-    // 3. OLED Monochrome Display
-    const oledMat = new THREE.MeshStandardMaterial({
-      map: oledTexture,
-      roughness: 0.2,
-      emissive: 0x0369a1,
-      emissiveIntensity: 0.4
+    // 3. 0.96" MONOCHROME OLED DISPLAY MODULE ASSEMBLY (Centered at x=0.75, y=0.42)
+    // a. Breakout Board PCB (Navy Blue FR4 with solder pads)
+    const oledPcbMat = new THREE.MeshStandardMaterial({ color: 0x0c1e36, roughness: 0.4 });
+    const oledPcbGeo = new THREE.BoxGeometry(1.48, 0.88, 0.03);
+    const oledPcbMesh = new THREE.Mesh(oledPcbGeo, oledPcbMat);
+    oledPcbMesh.position.set(0.75, 0.42, 0.945); // front at z = 0.96
+    radioGroup.add(oledPcbMesh);
+
+    // b. Corner Mounting Screws on PCB
+    const screwMat = new THREE.MeshStandardMaterial({ color: 0xc0c8d0, metalness: 0.8, roughness: 0.3 });
+    const screwGeo = new THREE.CylinderGeometry(0.025, 0.025, 0.02, 12);
+    screwGeo.rotateX(Math.PI / 2);
+    [[-0.66, -0.38], [0.66, -0.38], [-0.66, 0.38], [0.66, 0.38]].forEach(([ox, oy]) => {
+      const screw = new THREE.Mesh(screwGeo, screwMat);
+      screw.position.set(0.75 + ox, 0.42 + oy, 0.965);
+      radioGroup.add(screw);
     });
-    const oledGeo = new THREE.PlaneGeometry(1.25, 0.65);
+
+    // c. Piano-Black OLED Glass Bezel Frame (recessed border)
+    const oledBezelMat = new THREE.MeshStandardMaterial({ color: 0x070b12, roughness: 0.2 });
+    const oledBezelGeo = new THREE.BoxGeometry(1.34, 0.72, 0.03);
+    const oledBezel = new THREE.Mesh(oledBezelGeo, oledBezelMat);
+    oledBezel.position.set(0.75, 0.42, 0.975); // front at z = 0.99
+    radioGroup.add(oledBezel);
+
+    // d. Active Self-Luminous Monochrome OLED Screen (Completely in front, zero occlusion!)
+    const oledMat = new THREE.MeshBasicMaterial({
+      map: oledTexture,
+      side: THREE.FrontSide
+    });
+    const oledGeo = new THREE.PlaneGeometry(1.24, 0.62);
     const oledMesh = new THREE.Mesh(oledGeo, oledMat);
-    oledMesh.position.set(0.75, 0.45, 0.94);
+    oledMesh.position.set(0.75, 0.42, 1.002); // proudly in front at z = 1.002
     radioGroup.add(oledMesh);
 
-    // OLED Recessed Bezel Frame
-    const oledBezelGeo = new THREE.BoxGeometry(1.35, 0.75, 0.04);
-    const oledBezelMat = new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.3 });
-    const oledBezel = new THREE.Mesh(oledBezelGeo, oledBezelMat);
-    oledBezel.position.set(0.75, 0.45, 0.92);
-    radioGroup.add(oledBezel);
+    // e. Protective Acrylic Glass Sheen Cover
+    const glassMat = new THREE.MeshPhysicalMaterial({
+      color: 0xffffff,
+      transparent: true,
+      opacity: 0.12,
+      roughness: 0.08,
+      reflectivity: 0.9
+    });
+    const glassGeo = new THREE.PlaneGeometry(1.26, 0.64);
+    const glassMesh = new THREE.Mesh(glassGeo, glassMat);
+    glassMesh.position.set(0.75, 0.42, 1.006);
+    radioGroup.add(glassMesh);
 
     // Brass Material for Hardware
     const brassMat = new THREE.MeshStandardMaterial({
@@ -937,32 +1063,38 @@ document.addEventListener('DOMContentLoaded', () => {
       roughness: 0.28
     });
 
-    // 4. Brass Knurled Volume Potentiometer
-    const potGeo = new THREE.CylinderGeometry(0.24, 0.24, 0.22, 24);
+    // 4. Brass Knurled Volume Potentiometer (Safe Capped)
+    const potGeo = new THREE.CylinderGeometry(0.24, 0.24, 0.24, 24);
     potGeo.rotateX(Math.PI / 2);
     const potMesh = new THREE.Mesh(potGeo, brassMat);
-    potMesh.position.set(0.55, -0.42, 1.01);
+    potMesh.position.set(0.55, -0.42, 1.06);
     radioGroup.add(potMesh);
 
-    // 5. Tactile Push Button
-    const btnGeo = new THREE.CylinderGeometry(0.12, 0.12, 0.14, 20);
-    btnGeo.rotateX(Math.PI / 2);
-    const btnMesh = new THREE.Mesh(btnGeo, brassMat);
-    btnMesh.position.set(1.15, -0.42, 0.98);
+    // 5. Tactile Push Button (Station Switcher)
+    const btnBaseGeo = new THREE.CylinderGeometry(0.18, 0.18, 0.06, 20);
+    btnBaseGeo.rotateX(Math.PI / 2);
+    const btnBaseMesh = new THREE.Mesh(btnBaseGeo, brassMat);
+    btnBaseMesh.position.set(1.15, -0.42, 0.96);
+    radioGroup.add(btnBaseMesh);
+
+    const btnPlungerGeo = new THREE.CylinderGeometry(0.12, 0.12, 0.14, 20);
+    btnPlungerGeo.rotateX(Math.PI / 2);
+    const btnMesh = new THREE.Mesh(btnPlungerGeo, brassMat);
+    btnMesh.position.set(1.15, -0.42, 1.04);
     radioGroup.add(btnMesh);
 
     // 6. Metal Toggle Power Switch
     const switchBaseGeo = new THREE.BoxGeometry(0.2, 0.28, 0.05);
     const switchBaseMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.9, roughness: 0.2 });
     const switchBase = new THREE.Mesh(switchBaseGeo, switchBaseMat);
-    switchBase.position.set(0.12, -0.42, 0.93);
+    switchBase.position.set(0.12, -0.42, 0.96);
     radioGroup.add(switchBase);
 
-    const leverGeo = new THREE.CylinderGeometry(0.035, 0.04, 0.28, 12);
+    const leverGeo = new THREE.CylinderGeometry(0.035, 0.045, 0.28, 12);
     leverGeo.rotateZ(0.25);
     leverGeo.rotateX(Math.PI / 2);
     const leverMesh = new THREE.Mesh(leverGeo, switchBaseMat);
-    leverMesh.position.set(0.12, -0.38, 1.04);
+    leverMesh.position.set(0.12, -0.38, 1.08);
     radioGroup.add(leverMesh);
 
     // 7. USB-C Port Slot on the Left Side
@@ -1044,16 +1176,50 @@ document.addEventListener('DOMContentLoaded', () => {
         if (rotateStatusText) rotateStatusText.textContent = 'OFF';
 
         if (part === 'oled') {
-          camera.position.set(0.9, 0.6, 2.5);
-          if (controls) controls.target.set(0.75, 0.45, 0.9);
+          camera.position.set(0.75, 0.42, 2.1);
+          if (controls) controls.target.set(0.75, 0.42, 1.0);
         } else if (part === 'speaker') {
-          camera.position.set(-1.0, 0.2, 2.6);
-          if (controls) controls.target.set(-0.85, 0.05, 0.9);
-        } else if (part === 'pot' || part === 'button' || part === 'switch') {
-          camera.position.set(0.7, -0.4, 2.4);
-          if (controls) controls.target.set(0.6, -0.4, 0.9);
+          camera.position.set(-0.85, 0.05, 2.3);
+          if (controls) controls.target.set(-0.85, 0.05, 0.95);
+        } else if (part === 'pot') {
+          camera.position.set(0.55, -0.42, 2.2);
+          if (controls) controls.target.set(0.55, -0.42, 1.05);
+        } else if (part === 'button') {
+          camera.position.set(1.15, -0.42, 2.2);
+          if (controls) controls.target.set(1.15, -0.42, 1.04);
+        } else if (part === 'switch') {
+          camera.position.set(0.12, -0.42, 2.2);
+          if (controls) controls.target.set(0.12, -0.42, 1.02);
         }
       });
+    });
+
+    // 3D Canvas Click / Raycaster to cycle station when clicking the 3D button
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    renderer.domElement.addEventListener('pointerdown', (e) => {
+      const rect = renderer.domElement.getBoundingClientRect();
+      mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+      raycaster.setFromCamera(mouse, camera);
+
+      const intersects = raycaster.intersectObjects([btnMesh, btnBaseMesh, oledMesh]);
+      if (intersects.length > 0) {
+        const clickedMesh = intersects[0].object;
+        if (clickedMesh === btnMesh || clickedMesh === btnBaseMesh) {
+          playChirp();
+          const nextIdx = (currentActiveIndex + 1) % stationStreamList.length;
+          playStationByIndex(nextIdx);
+        } else if (clickedMesh === oledMesh) {
+          playChirp();
+          camera.position.set(0.75, 0.42, 2.1);
+          if (controls) {
+            controls.autoRotate = false;
+            if (rotateStatusText) rotateStatusText.textContent = 'OFF';
+            controls.target.set(0.75, 0.42, 1.0);
+          }
+        }
+      }
     });
 
     // Animation Loop
