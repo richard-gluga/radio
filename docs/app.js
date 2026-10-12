@@ -82,22 +82,82 @@ document.addEventListener('DOMContentLoaded', () => {
   const codeSsid = document.getElementById('code-ssid');
   const codePass = document.getElementById('code-pass');
   const codeVol = document.getElementById('code-vol');
+  const selectStation = document.getElementById('select-startup-station');
+  const codeStartup = document.getElementById('code-startup-station');
   const btnCopy = document.getElementById('btn-copy-code');
 
   function updateCodePreview() {
     const ssid = inputSsid.value.trim() || 'MyHomeWiFi';
     const pass = inputPass.value || 'SecretPassword123';
     const vol = inputVol.value || '14';
+    const startStation = selectStation ? selectStation.value : '0';
 
     if (codeSsid) codeSsid.textContent = ssid;
     if (codePass) codePass.textContent = pass;
     if (codeVol) codeVol.textContent = vol;
+    if (codeStartup) codeStartup.textContent = startStation;
     if (volDisplay) volDisplay.textContent = `${vol} / 21`;
   }
 
   if (inputSsid) inputSsid.addEventListener('input', updateCodePreview);
   if (inputPass) inputPass.addEventListener('input', updateCodePreview);
   if (inputVol) inputVol.addEventListener('input', updateCodePreview);
+  if (selectStation) selectStation.addEventListener('change', updateCodePreview);
+
+  // ==========================================
+  // STATION CYCLE SIMULATOR WIDGET
+  // ==========================================
+  const btnCycle = document.getElementById('btn-simulate-station-cycle');
+  const cycleName = document.getElementById('cycle-station-name');
+  const stationCards = document.querySelectorAll('.station-card');
+
+  const stationList = [
+    "1. ABC Kids listen (Australia)",
+    "2. Fun Kids UK (Live)",
+    "3. Fun Kids Junior (Toddlers)",
+    "4. Rock the Cradle (MPR Kids)",
+    "5. Positively Sleep Kids (Lullabies)",
+    "6. ABC Classic (NSW)"
+  ];
+  let currentSimStation = 0;
+
+  function playChirp() {
+    try {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      const ctx = new AudioContext();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
+      osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.12); // A5
+      gain.gain.setValueAtTime(0.15, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.18);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.18);
+    } catch(e) {}
+  }
+
+  if (btnCycle && cycleName) {
+    btnCycle.addEventListener('click', () => {
+      currentSimStation = (currentSimStation + 1) % stationList.length;
+      cycleName.textContent = stationList[currentSimStation];
+
+      // Highlight active card
+      stationCards.forEach(card => {
+        const idx = parseInt(card.dataset.stationIndex, 10);
+        if (idx === currentSimStation) {
+          card.classList.add('active-station');
+          card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        } else {
+          card.classList.remove('active-station');
+        }
+      });
+
+      playChirp();
+    });
+  }
 
   if (btnCopy) {
     btnCopy.addEventListener('click', () => {

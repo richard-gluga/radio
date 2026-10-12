@@ -22,6 +22,7 @@
       </a>
       <nav class="nav-links">
         <a href="#the-truth">The FM Catch</a>
+        <a href="#child-safe-stations">Child-Safe Stations</a>
         <a href="#parts-guide">Parts & Australian Stores</a>
         <a href="#sound-science">Sound Secret</a>
         <a href="#wiring-guide">Wiring Diagram</a>
@@ -39,11 +40,11 @@
       <div class="hero-text-content">
         <div class="hero-pill-badge">
           <span class="pill-dot"></span>
-          <span>Sydney, Australia &bull; ABC Kids Listen Project</span>
+          <span>Sydney, Australia &bull; ABC Kids & Multi-Station Project</span>
         </div>
-        <h1 class="hero-title">Build a One-Switch, USB-C Rechargeable <span>ABC Kids Radio</span></h1>
+        <h1 class="hero-title">Build a USB-C Rechargeable <span>ABC Kids & Family Radio</span></h1>
         <p class="hero-lead">
-          Flick the toggle switch on, and it instantly plays <strong>ABC Kids Listen</strong>. No fiddling with apps, no tiny buzzers, and no screen time. A warm, wooden, high-quality speaker build designed for complete beginners with <strong>zero previous electronics experience</strong>.
+          Flick the toggle switch on to play <strong>ABC Kids Listen</strong>, or press the tactile button to <strong>cycle through 6 curated child-safe stations</strong> (including nursery rhymes, British children's radio, and calming bedtime lullabies). Designed for complete beginners with <strong>zero soldering required</strong>.
         </p>
 
         <div class="hero-stats-grid">
@@ -115,6 +116,162 @@
           </div>
           <div class="truth-footer">
             <span>✨ <em>Still want analog FM for other stations (like Triple J or ABC Classic)? We include an optional FM module guide at the bottom!</em></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Curated Child-Safe Stations Directory & Cycling Feature -->
+  <section class="section stations-section" id="child-safe-stations">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-kicker">Parent-Approved Audio</span>
+        <h2 class="section-title">Curated Child-Safe Stations (Allow-List)</h2>
+        <p class="section-subtitle">
+          Every stream below is <strong>100% child-safe, commercial-free or family-friendly</strong>, and verified to work seamlessly on this ESP32 radio. Pressing the tactile button cycles through them in order.
+        </p>
+      </div>
+
+      <!-- Interactive Station Cycle Simulator Widget -->
+      <div class="stations-hero-intro">
+        <div class="stations-intro-text">
+          <h3>🔘 Push Button Station Cycling</h3>
+          <p>
+            When turned on, the radio immediately tunes into <strong>ABC Kids Listen</strong>. Tapping the momentary brass button triggers an instant switch to the next allow-listed station, so kids can find morning energy, afternoon stories, or bedtime lullabies all on their own!
+          </p>
+        </div>
+        <div class="cycle-demo-box">
+          <button class="btn-cycle-demo" id="btn-simulate-station-cycle">
+            <span>🔘</span>
+            <span>Tap to Cycle Station</span>
+          </button>
+          <div class="cycle-display-badge">
+            <span class="cycle-label">Current Station:</span>
+            <span class="cycle-current-station" id="cycle-station-name">1. ABC Kids listen</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- The 6 Curated Station Cards -->
+      <div class="stations-grid" id="stations-cards-grid">
+        <!-- Station 1 -->
+        <div class="station-card active-station" data-station-index="0">
+          <div class="station-card-top">
+            <span class="station-flag">🇦🇺</span>
+            <div class="station-badges-group">
+              <span class="station-age-badge">Ages 0–6</span>
+              <span class="station-type-badge">Default</span>
+            </div>
+          </div>
+          <h4>ABC Kids listen</h4>
+          <div class="station-genre">Stories, Play School & Aussie Music</div>
+          <p class="station-desc">
+            Australia's premier preschool station. Ad-free music, stories with Bluey and Kangaroo Beach characters, and Australian childhood classics.
+          </p>
+          <div class="station-stream-meta">
+            <span>Codec: HLS / AAC</span>
+            <span>CDN: ABC Australia</span>
+          </div>
+        </div>
+
+        <!-- Station 2 -->
+        <div class="station-card" data-station-index="1">
+          <div class="station-card-top">
+            <span class="station-flag">🇬🇧</span>
+            <div class="station-badges-group">
+              <span class="station-age-badge">Ages 4–12</span>
+              <span class="station-type-badge">Family Pop</span>
+            </div>
+          </div>
+          <h4>Fun Kids UK (Live)</h4>
+          <div class="station-genre">Upbeat Kids Hits, Science & Fun</div>
+          <p class="station-desc">
+            The world's leading children's digital station from London. High-energy family-safe pop music, educational science quizzes, and children's book readings.
+          </p>
+          <div class="station-stream-meta">
+            <span>Codec: MP3 128kbps</span>
+            <span>Origin: UK</span>
+          </div>
+        </div>
+
+        <!-- Station 3 -->
+        <div class="station-card" data-station-index="2">
+          <div class="station-card-top">
+            <span class="station-flag">🇬🇧</span>
+            <div class="station-badges-group">
+              <span class="station-age-badge">Ages 0–4</span>
+              <span class="station-type-badge">Toddlers</span>
+            </div>
+          </div>
+          <h4>Fun Kids Junior</h4>
+          <div class="station-genre">Nursery Rhymes & Gentle Stories</div>
+          <p class="station-desc">
+            Specially tailored for babies, toddlers, and preschool mornings. Classic nursery rhymes, gentle animal songs, and slow-paced stories.
+          </p>
+          <div class="station-stream-meta">
+            <span>Codec: MP3 128kbps</span>
+            <span>Origin: UK</span>
+          </div>
+        </div>
+
+        <!-- Station 4 -->
+        <div class="station-card" data-station-index="3">
+          <div class="station-card-top">
+            <span class="station-flag">🇺🇸</span>
+            <div class="station-badges-group">
+              <span class="station-age-badge">All Ages</span>
+              <span class="station-type-badge">Public Radio</span>
+            </div>
+          </div>
+          <h4>Rock the Cradle (MPR)</h4>
+          <div class="station-genre">Indie Music for Kids & Parents</div>
+          <p class="station-desc">
+            Produced by Minnesota Public Radio. Completely commercial-free music that parents and kids love together: indie folk, soulful acoustic, and clever children's songwriters.
+          </p>
+          <div class="station-stream-meta">
+            <span>Codec: MP3 128kbps</span>
+            <span>Origin: USA (MPR)</span>
+          </div>
+        </div>
+
+        <!-- Station 5 -->
+        <div class="station-card" data-station-index="4">
+          <div class="station-card-top">
+            <span class="station-flag">🌙</span>
+            <div class="station-badges-group">
+              <span class="station-age-badge">Bedtime</span>
+              <span class="station-type-badge">Sleep & Calm</span>
+            </div>
+          </div>
+          <h4>Positively Sleep Kids</h4>
+          <div class="station-genre">Lullabies & Ambient Sleep Music</div>
+          <p class="station-desc">
+            A 24/7 dedicated lullaby and sleep stream. Zero talking, zero jarring sounds—just soothing acoustic guitar, music box chimes, and calming sleep soundscapes.
+          </p>
+          <div class="station-stream-meta">
+            <span>Codec: MP3 128kbps</span>
+            <span>Origin: Global</span>
+          </div>
+        </div>
+
+        <!-- Station 6 -->
+        <div class="station-card" data-station-index="5">
+          <div class="station-card-top">
+            <span class="station-flag">🇦🇺</span>
+            <div class="station-badges-group">
+              <span class="station-age-badge">Quiet Time</span>
+              <span class="station-type-badge">Classical</span>
+            </div>
+          </div>
+          <h4>ABC Classic (NSW)</h4>
+          <div class="station-genre">Peaceful Classical for Craft & Study</div>
+          <p class="station-desc">
+            Commercial-free classical masterpieces from the ABC. Proven to encourage focus during Lego building, colouring-in, craft afternoons, and quiet resting.
+          </p>
+          <div class="station-stream-meta">
+            <span>Codec: HLS / AAC</span>
+            <span>CDN: ABC Australia</span>
           </div>
         </div>
       </div>
@@ -282,7 +439,27 @@
             </div>
           </div>
 
-          <!-- Item 7: Dupont Jumper Wires -->
+          <!-- Item 7: Station Cycle Push Button -->
+          <div class="table-row" data-store="core amazon jaycar">
+            <div class="td col-check">
+              <input type="checkbox" id="part-button" class="part-checkbox" data-price="2.00">
+            </div>
+            <div class="td col-part">
+              <strong>Station Cycle Push Button (12mm / 16mm Momentary NO)</strong>
+              <span class="part-meta">Tactile Pushbutton (Normally Open) / Core COM-09190 or Jaycar SP0600</span>
+            </div>
+            <div class="td col-why">Cycles through the 6 allow-listed child-safe stations. Connects directly to GPIO 33 & GND (uses internal pull-up!).</div>
+            <div class="td col-price">$2.00 AUD</div>
+            <div class="td col-link">
+              <div class="link-buttons">
+                <a href="https://core-electronics.com.au/momentary-pushbutton-switch-12mm-square.html" target="_blank" rel="noopener" class="store-badge core-badge">Core: 12mm Button (COM-09190)</a>
+                <a href="https://www.jaycar.com.au/spst-standard-pushbutton-switch/p/SP0600" target="_blank" rel="noopener" class="store-badge jaycar-badge">Jaycar: Pushbutton (SP0600)</a>
+                <a href="https://www.amazon.com.au/s?k=momentary+push+button+16mm" target="_blank" rel="noopener" class="store-badge amazon-badge">Amazon AU Prime</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Item 8: Dupont Jumper Wires -->
           <div class="table-row" data-store="core amazon jaycar">
             <div class="td col-check">
               <input type="checkbox" id="part-wires" class="part-checkbox" data-price="4.00">
@@ -302,7 +479,7 @@
             </div>
           </div>
 
-          <!-- Item 8: Wooden Box Enclosure -->
+          <!-- Item 9: Wooden Box Enclosure -->
           <div class="table-row" data-store="all">
             <div class="td col-check">
               <input type="checkbox" id="part-box" class="part-checkbox" data-price="5.00">
@@ -326,8 +503,8 @@
         <div class="shopping-footer">
           <div class="budget-tracker">
             <span class="tracker-label">Estimated Total:</span>
-            <span class="tracker-total" id="budget-total-display">$50.70 AUD</span>
-            <span class="tracker-count" id="budget-count-display">(0 of 8 items collected)</span>
+            <span class="tracker-total" id="budget-total-display">$52.70 AUD</span>
+            <span class="tracker-count" id="budget-count-display">(0 of 9 items collected)</span>
           </div>
           <button class="btn btn-outline" id="btn-select-all-parts">Mark All Collected</button>
         </div>
@@ -498,7 +675,8 @@
                 <!-- Pins on ESP32 Left -->
                 <circle cx="350" cy="170" r="5" fill="#ef4444"/><text x="360" y="174" fill="#fff" font-size="10">VIN / 5V</text>
                 <circle cx="350" cy="195" r="5" fill="#3b82f6"/><text x="360" y="199" fill="#fff" font-size="10">GND</text>
-                <circle cx="350" cy="225" r="5" fill="#eab308"/><text x="360" y="229" fill="#fff" font-size="10">GPIO 34 (Pot)</text>
+                <circle cx="350" cy="220" r="5" fill="#eab308"/><text x="360" y="224" fill="#fff" font-size="10">GPIO 34 (Pot)</text>
+                <circle cx="350" cy="245" r="5" fill="#f59e0b"/><text x="360" y="249" fill="#fff" font-size="10">GPIO 33 (Btn)</text>
 
                 <!-- Pins on ESP32 Right -->
                 <circle cx="500" cy="170" r="5" fill="#10b981"/><text x="450" y="174" fill="#fff" font-size="10">GPIO 25</text>
@@ -533,6 +711,14 @@
                 <text x="650" y="465" text-anchor="middle" fill="#94a3b8" font-size="11">Speaker</text>
               </g>
 
+              <!-- 7. Station Cycle Push Button -->
+              <g class="comp-box" id="svg-comp-btn">
+                <rect x="230" y="145" width="60" height="50" rx="6" fill="#334155" stroke="#f59e0b" stroke-width="2"/>
+                <circle cx="260" cy="170" r="10" fill="#f59e0b"/>
+                <text x="260" y="188" text-anchor="middle" fill="#fff" font-size="8">BTN</text>
+                <text x="260" y="210" text-anchor="middle" fill="#f59e0b" font-size="9" font-weight="bold">Station</text>
+              </g>
+
               <!-- WIRES (Color-coded) -->
               <!-- Battery to TP4056 B+/B- -->
               <path d="M 45 210 L 45 170 L 160 115" fill="none" stroke="#ef4444" stroke-width="2.5" class="wire-path wire-batt"/>
@@ -544,6 +730,10 @@
 
               <!-- TP4056 OUT- to ESP32 GND -->
               <path d="M 160 85 L 210 85 L 210 195 L 350 195" fill="none" stroke="#3b82f6" stroke-width="3" class="wire-path wire-gnd"/>
+
+              <!-- Station Button to GPIO 33 & GND -->
+              <path d="M 350 245 L 305 245 L 305 170 L 290 170" fill="none" stroke="#f59e0b" stroke-width="2.5" class="wire-path wire-btn"/>
+              <path d="M 230 170 L 210 170 L 210 195" fill="none" stroke="#3b82f6" stroke-width="2" class="wire-path wire-gnd"/>
 
               <!-- ESP32 to MAX98357A I2S Lines -->
               <!-- GPIO 25 (LRC) -> LRC -->
@@ -568,6 +758,7 @@
             <span class="legend-item"><span class="color-dot green"></span> LRC (Word Clock)</span>
             <span class="legend-item"><span class="color-dot cyan"></span> BCLK (Bit Clock)</span>
             <span class="legend-item"><span class="color-dot purple"></span> DIN (Digital Audio)</span>
+            <span class="legend-item"><span class="color-dot" style="background:#f59e0b"></span> Station Button</span>
             <span class="legend-item"><span class="color-dot orange"></span> Speaker Leads</span>
           </div>
         </div>
@@ -613,6 +804,11 @@
               <div><strong>MAX98357A</strong></div>
               <div><code>+ / -</code> Terminals</div>
               <div>Speaker <strong>+ and -</strong></div>
+            </div>
+            <div class="pin-row" data-target="wire-btn">
+              <div><strong>Station Button</strong></div>
+              <div><code>Leg 1 & 2</code></div>
+              <div>ESP32 <strong>GPIO 33</strong> & <strong>GND</strong> (internal pull-up)</div>
             </div>
             <div class="pin-row" data-target="wire-batt">
               <div><strong>18650 Battery</strong></div>
@@ -795,9 +991,22 @@
             <small>Level 14 is a comfortable, pleasant room volume for nursery or kitchen.</small>
           </div>
 
+          <div class="form-group">
+            <label for="select-startup-station">Default Startup Station</label>
+            <select id="select-startup-station" class="form-select">
+              <option value="0">1. ABC Kids listen (Australia)</option>
+              <option value="1">2. Fun Kids UK (Live)</option>
+              <option value="2">3. Fun Kids Junior (Toddlers)</option>
+              <option value="3">4. Rock the Cradle (Minnesota Public Radio)</option>
+              <option value="4">5. Positively Sleep Kids (Bedtime Lullabies)</option>
+              <option value="5">6. ABC Classic (NSW)</option>
+            </select>
+            <small>Tap the push button on GPIO 33 at any time to cycle to the next station!</small>
+          </div>
+
           <div class="stream-info-pill">
             <span class="status-indicator"></span>
-            <span>Target Stream: <strong>ABC Kids Listen (Sydney/National MP3)</strong></span>
+            <span>Allow-List: <strong>6 Verified Child-Safe Stations Pre-Configured</strong></span>
           </div>
         </div>
 
@@ -816,9 +1025,9 @@
             </button>
           </div>
 
-          <pre class="code-block"><code id="code-display">// Kangaroo Radio — DIY ABC Kids Radio
-// Hardware: ESP32 + MAX98357A I2S DAC Amp + 3W Speaker
-// Stream: ABC Kids Listen (Australian Broadcast Corporation)
+          <pre class="code-block"><code id="code-display">// Kangaroo Radio — DIY Child-Safe Multi-Station Radio
+// Hardware: ESP32 + MAX98357A I2S DAC Amp + 3W Speaker + Station Button
+// Target: Curated Child-Safe Streams (ABC Kids, Fun Kids, Lullabies)
 
 #include &lt;Arduino.h&gt;
 #include &lt;WiFi.h&gt;
@@ -828,52 +1037,84 @@
 const char* ssid     = "<span class="hl-var" id="code-ssid">MyHomeWiFi</span>";
 const char* password = "<span class="hl-var" id="code-pass">SecretPassword123</span>";
 
-// I2S Digital Audio Pinout for MAX98357A
-#define I2S_DOUT      22    // Connects to DIN on MAX98357A
-#define I2S_BCLK      26    // Connects to BCLK on MAX98357A
-#define I2S_LRC       25    // Connects to LRC (WS) on MAX98357A
+// Pinout Definitions
+#define I2S_DOUT      22    // DIN on MAX98357A
+#define I2S_BCLK      26    // BCLK on MAX98357A
+#define I2S_LRC       25    // LRC (WS) on MAX98357A
+#define BUTTON_PIN    33    // Station Cycle Button (Pin to GND, uses INPUT_PULLUP)
+#define POT_PIN       34    // Volume Potentiometer (ADC1, 3.3V reference)
 
-// Optional: Hardware Volume Potentiometer Pin
-#define POT_PIN       34    // Connects to Center Pin of 10k Pot
+struct Station {
+  const char* name;
+  const char* genre;
+  const char* url;
+};
+
+const Station stations[] = {
+  { "ABC Kids listen (Australia)", "Preschool Stories & Music", "https://streaming.abc-cdn.net.au/audio/hls/abcextra.m3u8?source=web" },
+  { "Fun Kids UK (Live)", "Children's Pop & Stories", "https://listen-funkids.sharp-stream.com/funkids.mp3" },
+  { "Fun Kids Junior (Toddlers)", "Nursery Rhymes (Ages 0-5)", "http://listen-funkids.sharp-stream.com/funkidsjunior.mp3" },
+  { "Rock the Cradle (MPR Kids)", "Commercial-Free Family Tunes", "http://rockthecradle.stream.publicradio.org/rockthecradle.mp3" },
+  { "Positively Sleep Kids", "Bedtime Lullabies & Ambient Calm", "https://streaming.positivity.radio/pr/sleepkids/icecast.audio" },
+  { "ABC Classic (Calm / Reading)", "Peaceful Classical Music", "https://streaming.abc-cdn.net.au/audio/hls/classicfmnsw.m3u8?source=web" }
+};
+
+const int TOTAL_STATIONS = sizeof(stations) / sizeof(stations[0]);
+int currentStation = <span class="hl-var" id="code-startup-station">0</span>;
 
 Audio audio;
 int lastVolume = -1;
+unsigned long lastButtonPress = 0;
+
+void switchStation(int index) {
+  if (index &lt; 0 || index &gt;= TOTAL_STATIONS) return;
+  currentStation = index;
+  Serial.print(">>> Switching to: ");
+  Serial.println(stations[currentStation].name);
+  audio.connecttohost(stations[currentStation].url);
+}
 
 void setup() {
   Serial.begin(115200);
-  Serial.println("\n--- Kangaroo Radio Starting Up ---");
+  pinMode(BUTTON_PIN, INPUT_PULLUP);
 
-  // 1. Connect to Home Wi-Fi
+  // 1. Connect to Wi-Fi
+  WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
   Serial.print("Connecting to Wi-Fi");
   while (WiFi.status() != WL_CONNECTED) {
     delay(400);
     Serial.print(".");
   }
-  Serial.println("\nWi-Fi Connected successfully!");
-  Serial.print("IP Address: ");
-  Serial.println(WiFi.localIP());
+  Serial.println("\nWi-Fi Connected!");
 
   // 2. Configure Digital Audio Output
   audio.setPinout(I2S_BCLK, I2S_LRC, I2S_DOUT);
-  audio.setVolume(<span class="hl-var" id="code-vol">14</span>); // Default volume (range: 0 to 21)
+  audio.setVolume(<span class="hl-var" id="code-vol">14</span>);
 
-  // 3. Connect directly to ABC Kids Listen Live Stream (Verified ABC CDN)
-  Serial.println("Tuning to ABC Kids Listen...");
-  audio.connecttohost("https://streaming.abc-cdn.net.au/audio/hls/abcextra.m3u8?source=web");
+  // 3. Connect to Startup Station
+  switchStation(currentStation);
 }
 
 void loop() {
-  // Keeps audio buffer filled smoothly
   audio.loop();
 
-  // Read volume potentiometer every 250ms
+  // 1. Handle Station Cycle Button (Debounced)
+  if (digitalRead(BUTTON_PIN) == LOW) {
+    if (millis() - lastButtonPress &gt; 450) {
+      lastButtonPress = millis();
+      int next = (currentStation + 1) % TOTAL_STATIONS;
+      switchStation(next);
+    }
+  }
+
+  // 2. Handle Volume Potentiometer
   static unsigned long lastCheck = 0;
-  if (millis() - lastCheck > 250) {
+  if (millis() - lastCheck &gt; 250) {
     lastCheck = millis();
-    int potVal = analogRead(POT_PIN); // 0 to 4095
+    int potVal = analogRead(POT_PIN);
     int newVol = map(potVal, 0, 4095, 0, 21);
-    if (abs(newVol - lastVolume) > 0) {
+    if (abs(newVol - lastVolume) &gt; 0) {
       lastVolume = newVol;
       audio.setVolume(newVol);
     }

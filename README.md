@@ -39,6 +39,21 @@ We build a dedicated **ESP32 Wi-Fi Radio**:
 
 ---
 
+## 📻 Curated Child-Safe Live Stations (Allow-List)
+
+The radio comes pre-configured with **6 verified, commercial-free or family-friendly live streams**. A single push button cycles through them:
+
+| # | Station Name | Country / Network | Target Age | Description |
+| :-: | :--- | :--- | :--- | :--- |
+| **1** | **ABC Kids listen** | 🇦🇺 Australia (ABC) | Ages 0–6 | **Default startup station.** Stories, Play School, Kangaroo Beach, and early childhood songs. |
+| **2** | **Fun Kids UK (Live)** | 🇬🇧 UK / Global | Ages 4–12 | Award-winning children's station: family-safe pop, science quizzes, and children's book readings. |
+| **3** | **Fun Kids Junior** | 🇬🇧 UK / Global | Ages 0–4 | Soft nursery rhymes, animal songs, and gentle toddler bedtime stories. |
+| **4** | **Rock the Cradle** | 🇺🇸 USA (Minnesota Public Radio) | All Ages | Commercial-free public radio for kids and parents. Indie folk and acoustic tunes. |
+| **5** | **Positively Sleep Kids** | 🌙 Global | Bedtime | 24/7 calming lullabies, music box chimes, and ambient sleep soundscapes (no talking). |
+| **6** | **ABC Classic (NSW)** | 🇦🇺 Australia (ABC) | All Ages | Peaceful classical music, ideal for Lego building, craft afternoons, and quiet resting. |
+
+---
+
 ## 🛒 Bill of Materials & Australian Retailers
 
 All components can be ordered from **[Core Electronics](https://core-electronics.com.au)** (Newcastle, NSW) in a single order, or via **Jaycar Electronics** across Sydney:
@@ -48,6 +63,7 @@ All components can be ordered from **[Core Electronics](https://core-electronics
 | **Brain** | FireBeetle 2 ESP32-E (DFR0654) or DevKitC (DEV-19900) | ~$9.50 – $14 | [Core: FireBeetle 2 ESP32-E](https://core-electronics.com.au/firebeetle-2-esp32-e-iot-microcontroller.html) / [Jaycar: ESP32 (XC3800)](https://www.jaycar.com.au/esp32-main-development-board/p/XC3800) |
 | **DAC & Amp** | Adafruit MAX98357A 3.2W I2S Class D Amp (ADA3006) | ~$6.90 – $10 | [Core: Adafruit MAX98357A](https://core-electronics.com.au/adafruit-i2s-3w-class-d-amplifier-breakout-max98357a.html) / [Core: SparkFun (DEV-14809)](https://core-electronics.com.au/sparkfun-i2s-audio-breakout-max98357a.html) |
 | **Speaker** | Adafruit 3" 4Ω 3W Full-Range Speaker (ADA1314) | ~$6.50 | [Core: Adafruit 3" 4Ω 3W](https://core-electronics.com.au/speaker-3-diameter-4-ohm-3-watt.html) / [Jaycar: 50mm 4Ω (AS3004)](https://www.jaycar.com.au/mini-4-ohm-speaker-50mm/p/AS3004) |
+| **Station Button** | 12mm / 16mm Tactile Momentary Push Button (NO) | ~$1.80 | [Core: 12mm Button (COM-09190)](https://core-electronics.com.au/momentary-pushbutton-switch-12mm-square.html) / [Jaycar: Pushbutton (SP0600)](https://www.jaycar.com.au/spst-standard-pushbutton-switch/p/SP0600) |
 | **Battery** | 18650 3.7V ~2600mAh Cell + Single Slot Holder with Leads | ~$11.50 | [Jaycar: 18650 Cell (SB2423)](https://www.jaycar.com.au/18650-li-ion-rechargeable-battery-2600mah/p/SB2423) / [Jaycar: Holder (PH9201)](https://www.jaycar.com.au/1-x-18650-pcb-battery-holder/p/PH9201) / [Core: 2000mAh LiPo](https://core-electronics.com.au/polymer-lithium-ion-battery-2000mah.html) |
 | **Charger & Boost** | Makerverse USB-C LiPo Charger (CE08374) + 5V Step-Up (POLOLU-2115) | ~$6.50 – $10 | [Core: USB-C Charger (CE08374)](https://core-electronics.com.au/makerverse-usb-c-lipo-charger.html) / [Core: Pololu 5V Boost](https://core-electronics.com.au/pololu-5v-step-up-voltage-regulator-u3v12f5.html) / [Amazon AU: 18650 Shield V3](https://www.amazon.com.au/s?k=18650+battery+shield+v3+type+c) |
 | **Controls** | SPST Toggle Switch + 10kΩ Linear Potentiometer with Knob | ~$3.80 | [Core: Switch (COM-00102)](https://core-electronics.com.au/spdt-mini-power-switch.html) / [Core: 10k Pot (COM-09939)](https://core-electronics.com.au/rotary-potentiometer-10k-ohm-linear.html) / [Jaycar: Toggle (ST0570)](https://www.jaycar.com.au/spst-standard-toggle-switch/p/ST0570) |
@@ -63,7 +79,9 @@ All components can be ordered from **[Core Electronics](https://core-electronics
    👉 **Solution:** Use the **Pololu 5V Step-Up Booster** or an **All-in-One 18650 Battery Shield V3** to supply a clean, regulated **5.0V** to both the ESP32 and MAX98357A. (If using the *FireBeetle 2 ESP32-E*, its onboard ultra-low dropout regulator accepts 3.7V LiPo batteries directly).
 2. **I2S Audio Clocking:**  
    The MAX98357A features an internal phase-locked loop (PLL) that automatically derives the master clock (MCLK) from the bit clock (`BCLK`). You only need **3 data wires** (`BCLK`, `LRC`, and `DIN`). No master clock wire is required.
-3. **Volume Potentiometer Voltage & Pin Selection:**  
+3. **Station Push Button (Internal Pull-Up):**  
+   Connect one terminal of the push button to **GPIO 33** and the other to **GND**. The ESP32's built-in `INPUT_PULLUP` resistor eliminates the need for any external resistors.
+4. **Volume Potentiometer Voltage & Pin Selection:**  
    - Connect the potentiometer's power leg to **3.3V (NOT 5V!)**. The ESP32 analog pins are 3.3V max.
    - Use **GPIO 34**: On the ESP32, GPIO 34 belongs to **ADC1**. Channels on ADC2 are disabled when Wi-Fi is actively streaming; ADC1 pins work flawlessly during continuous Wi-Fi audio playback.
 
@@ -82,6 +100,11 @@ Connect the components with standard push-on Dupont jumper wires:
    GND               ──► GND
    VIN               ──► 5V (from Boost Converter or Shield)
    GAIN              ──► Leave Floating (defaults to 9dB)
+
+    Station Button        ESP32 Pin
+   ────────────────     ─────────────
+   Terminal 1        ──► GPIO 33
+   Terminal 2        ──► GND (uses internal pull-up)
 
     10k Volume Pot        ESP32 Pin
    ────────────────     ─────────────
