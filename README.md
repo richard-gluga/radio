@@ -6,12 +6,12 @@
 [![Hardware](https://img.shields.io/badge/Hardware-ESP32_&_MAX98357A-blue?style=for-the-badge&logo=espressif)](https://richard-gluga.github.io/radio/#parts-guide)
 [![Location](https://img.shields.io/badge/Broadcast-Sydney,_Australia-amber?style=for-the-badge)](https://richard-gluga.github.io/radio/#the-truth)
 
-![Finished DIY Wooden Radio](docs/assets/hero.jpg)
+![Finished DIY Wooden Radio](docs/assets/final_hero.jpg)
 
 ---
 
 ## 🌐 Live Interactive Guide
-Visit the published interactive website with our **Live Budget Calculator**, **Acoustic Simulator**, **Interactive Pinout Explorer**, and **Wi-Fi Firmware Generator**:
+Visit the published interactive website with our **Interactive 3D CAD Explorer (Three.js)**, **Finished Product Lookbook Gallery**, **Live Audio Station Sampler**, **Live Budget Calculator**, **Acoustic Simulator**, **Interactive Pinout Explorer**, and **Wi-Fi Firmware Generator**:
 👉 **[https://richard-gluga.github.io/radio/](https://richard-gluga.github.io/radio/)**
 
 ---
@@ -36,6 +36,18 @@ We build a dedicated **ESP32 Wi-Fi Radio**:
 
 ## 📸 Component Flat Lay
 ![Parts Flat Lay](docs/assets/parts.jpg)
+
+---
+
+## 🎨 Finished Product Lookbook
+
+### 1. Macro Craftsmanship & Controls
+Close-up of the handcrafted Tasmanian oak cabinet, knurled solid brass rotary volume potentiometer, industrial metallic toggle switch, tactile station cycle button, and the crisp high-contrast 0.96" monochrome OLED screen (128×64 SSD1306):
+![Control Panel Details](docs/assets/final_details.jpg)
+
+### 2. Bedtime Nursery Routine
+The Kangaroo Radio in action at bedtime, glowing softly under warm lamp light while streaming soothing lullabies from *Positively Sleep Kids*:
+![Bedtime Nursery Setting](docs/assets/final_bedtime.jpg)
 
 ---
 

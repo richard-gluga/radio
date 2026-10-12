@@ -22,6 +22,8 @@
       </a>
       <nav class="nav-links">
         <a href="#the-truth">The FM Catch</a>
+        <a href="#threejs-radio">3D Model</a>
+        <a href="#photo-gallery">Lookbook</a>
         <a href="#child-safe-stations">Child-Safe Stations</a>
         <a href="#oled-display">OLED Screen</a>
         <a href="#parts-guide">Parts & Australian Stores</a>
@@ -69,16 +71,16 @@
 
         <div class="hero-actions">
           <a href="#parts-guide" class="btn btn-primary" id="btn-hero-start">View Australian Shopping List</a>
-          <a href="#step-by-step" class="btn btn-secondary" id="btn-hero-guide">Jump to Step-by-Step Instructions</a>
+          <a href="#threejs-radio" class="btn btn-secondary" id="btn-hero-guide">Explore 3D Radio Model</a>
         </div>
       </div>
 
       <div class="hero-image-wrapper">
         <div class="hero-image-card">
-          <img src="assets/hero.jpg" alt="Finished DIY handmade wooden ABC Kids Radio sitting on a bedside table with a knitted kangaroo toy" class="hero-img" id="hero-display-img">
+          <img src="assets/final_hero.jpg" alt="Finished DIY handmade wooden ABC Kids Radio sitting on a sunny shelf with children's books and a wooden kangaroo" class="hero-img" id="hero-display-img">
           <div class="image-caption-overlay">
             <span class="caption-title">The Finished Radio</span>
-            <span class="caption-desc">Solid Tasmanian Oak/Plywood case, 3W speaker grille, brass volume knob, toggle switch & USB-C</span>
+            <span class="caption-desc">Solid Tasmanian Oak case, 0.96" OLED screen, tweed speaker cloth, knurled brass volume knob, toggle switch & USB-C</span>
           </div>
         </div>
       </div>
@@ -117,6 +119,122 @@
           </div>
           <div class="truth-footer">
             <span>✨ <em>Still want analog FM for other stations (like Triple J or ABC Classic)? We include an optional FM module guide at the bottom!</em></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive 3D Radio Explorer (Three.js) -->
+  <section class="section threejs-section" id="threejs-radio">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-kicker">Real-time 3D CAD</span>
+        <h2 class="section-title">Interactive 3D Radio Explorer</h2>
+        <p class="section-subtitle">
+          Click and drag with your mouse (or swipe on touchscreens) to rotate the radio 360°, scroll to zoom in, and inspect the real components before building!
+        </p>
+      </div>
+
+      <div class="threejs-viewer-card">
+        <div class="threejs-canvas-wrapper" id="threejs-canvas-container">
+          <!-- Three.js Canvas will be mounted here -->
+          <div class="threejs-overlay-controls">
+            <div class="threejs-hint">
+              <span>🖱️ <strong>Click & Drag</strong> to rotate • <strong>Scroll</strong> to zoom</span>
+            </div>
+            <div class="threejs-btn-group">
+              <button class="btn-3d-action" id="btn-3d-rotate" title="Toggle Auto-Rotation">
+                <span>🔄 Auto-Rotate: <span id="rotate-status-text">ON</span></span>
+              </button>
+              <button class="btn-3d-action" id="btn-3d-reset" title="Reset View">
+                <span>🎯 Reset View</span>
+              </button>
+            </div>
+          </div>
+          <!-- 3D Callout Hotspots -->
+          <div class="threejs-callout-panel">
+            <button class="callout-pill" data-part="oled">
+              <span class="dot cyan"></span> 0.96" OLED Display
+            </button>
+            <button class="callout-pill" data-part="speaker">
+              <span class="dot orange"></span> 3W Speaker & Grille
+            </button>
+            <button class="callout-pill" data-part="pot">
+              <span class="dot yellow"></span> Brass Volume Pot
+            </button>
+            <button class="callout-pill" data-part="button">
+              <span class="dot amber"></span> Station Cycle Button
+            </button>
+            <button class="callout-pill" data-part="switch">
+              <span class="dot red"></span> Toggle Power Switch
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Finished Product Lookbook & Photo Gallery -->
+  <section class="section gallery-section" id="photo-gallery">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-kicker">Photorealistic Lookbook</span>
+        <h2 class="section-title">What Your Finished Radio Looks Like</h2>
+        <p class="section-subtitle">
+          Built with Tasmanian oak, warm brass hardware, vintage woven speaker cloth, and a crisp monochrome OLED screen. Here is what your finished build looks like in real life.
+        </p>
+      </div>
+
+      <div class="gallery-grid">
+        <!-- Photo 1: Nursery Shelf Hero -->
+        <div class="gallery-card featured" id="gallery-card-1">
+          <div class="gallery-img-wrapper">
+            <img src="assets/final_hero.jpg" alt="Finished DIY Kangaroo Radio on a sunny timber shelf next to Australian children's picture books and a wooden kangaroo" class="gallery-img" loading="lazy">
+            <div class="gallery-badge">Shelf Display</div>
+          </div>
+          <div class="gallery-info">
+            <h4>Handcrafted Nursery Shelf Display</h4>
+            <p>Compact, warm, and natural. Sitting alongside Australian classics like <em>Wombat Stew</em> and <em>Snugglepot & Cuddlepie</em>, the radio feels like a cherished family heirloom.</p>
+            <div class="gallery-tags">
+              <span>Tasmanian Oak</span>
+              <span>Tweed Speaker Cloth</span>
+              <span>Monochrome OLED</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Photo 2: Control Panel Details -->
+        <div class="gallery-card" id="gallery-card-2">
+          <div class="gallery-img-wrapper">
+            <img src="assets/final_details.jpg" alt="Close-up macro photography of the radio control panel showing the glowing 0.96 inch monochrome OLED screen, brass knurled volume knob, and toggle switch" class="gallery-img" loading="lazy">
+            <div class="gallery-badge">Artisanal Details</div>
+          </div>
+          <div class="gallery-info">
+            <h4>Tactile Vintage Hardware</h4>
+            <p>Every knob and switch gives rich mechanical feedback. The 0.96" OLED screen sits recessed inside the timber faceplate, displaying crisp retro pixel typography.</p>
+            <div class="gallery-tags">
+              <span>Knurled Brass Knob</span>
+              <span>Metal Toggle Switch</span>
+              <span>128×64 OLED</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Photo 3: Bedtime Lullaby Routine -->
+        <div class="gallery-card" id="gallery-card-3">
+          <div class="gallery-img-wrapper">
+            <img src="assets/final_bedtime.jpg" alt="Cozy bedtime nursery scene with the radio gently glowing on a bedside table playing Positively Sleep lullabies" class="gallery-img" loading="lazy">
+            <div class="gallery-badge">Bedtime Routine</div>
+          </div>
+          <div class="gallery-info">
+            <h4>Warm Bedtime Lullaby Routine</h4>
+            <p>Soft night light ambiance. Tune into <em>Positively Sleep</em> for 24/7 soothing music box lullabies that lull toddlers to sleep without phone screens or ads.</p>
+            <div class="gallery-tags">
+              <span>Calm Lullabies</span>
+              <span>Subtle 15mA Glow</span>
+              <span>18-Hour Battery</span>
+            </div>
           </div>
         </div>
       </div>
@@ -170,6 +288,15 @@
           <p class="station-desc">
             Australia's premier preschool station. Ad-free music, stories with Bluey and Kangaroo Beach characters, and Australian childhood classics.
           </p>
+          <div class="station-actions-row">
+            <button class="btn-sample-stream" data-station-index="0" data-stream="https://streaming.abc-cdn.net.au/audio/hls/abcextra.m3u8?source=web" data-title="ABC Kids listen" data-type="hls">
+              <span class="sample-icon">▶</span>
+              <span class="sample-text">Listen Live Sample</span>
+            </button>
+            <a href="https://www.abc.net.au/listen/live/kids" target="_blank" rel="noopener" class="btn-external-station" title="Open official ABC Listen player">
+              <span>🔗 Web Player</span>
+            </a>
+          </div>
           <div class="station-stream-meta">
             <span>Codec: HLS / AAC</span>
             <span>CDN: ABC Australia</span>
@@ -190,6 +317,15 @@
           <p class="station-desc">
             The world's leading children's digital station from London. High-energy family-safe pop music, educational science quizzes, and children's book readings.
           </p>
+          <div class="station-actions-row">
+            <button class="btn-sample-stream" data-station-index="1" data-stream="https://listen-funkids.sharp-stream.com/funkids.mp3" data-title="Fun Kids UK" data-type="audio">
+              <span class="sample-icon">▶</span>
+              <span class="sample-text">Listen Live Sample</span>
+            </button>
+            <a href="https://www.funkidslive.com/player/" target="_blank" rel="noopener" class="btn-external-station" title="Open official Fun Kids player">
+              <span>🔗 Web Player</span>
+            </a>
+          </div>
           <div class="station-stream-meta">
             <span>Codec: MP3 128kbps</span>
             <span>Origin: UK</span>
@@ -210,6 +346,15 @@
           <p class="station-desc">
             Specially tailored for babies, toddlers, and preschool mornings. Classic nursery rhymes, gentle animal songs, and slow-paced stories.
           </p>
+          <div class="station-actions-row">
+            <button class="btn-sample-stream" data-station-index="2" data-stream="https://listen-funkids.sharp-stream.com/funkidsjunior.mp3" data-title="Fun Kids Junior" data-type="audio">
+              <span class="sample-icon">▶</span>
+              <span class="sample-text">Listen Live Sample</span>
+            </button>
+            <a href="https://www.funkidslive.com/" target="_blank" rel="noopener" class="btn-external-station" title="Open official Fun Kids website">
+              <span>🔗 Web Player</span>
+            </a>
+          </div>
           <div class="station-stream-meta">
             <span>Codec: MP3 128kbps</span>
             <span>Origin: UK</span>
@@ -230,6 +375,15 @@
           <p class="station-desc">
             Produced by Minnesota Public Radio. Completely commercial-free music that parents and kids love together: indie folk, soulful acoustic, and clever children's songwriters.
           </p>
+          <div class="station-actions-row">
+            <button class="btn-sample-stream" data-station-index="3" data-stream="https://rockthecradle.stream.publicradio.org/rockthecradle.mp3" data-title="Rock the Cradle (MPR)" data-type="audio">
+              <span class="sample-icon">▶</span>
+              <span class="sample-text">Listen Live Sample</span>
+            </button>
+            <a href="https://www.yourclassical.org/listen/rock-the-cradle" target="_blank" rel="noopener" class="btn-external-station" title="Open official MPR player">
+              <span>🔗 Web Player</span>
+            </a>
+          </div>
           <div class="station-stream-meta">
             <span>Codec: MP3 128kbps</span>
             <span>Origin: USA (MPR)</span>
@@ -250,6 +404,15 @@
           <p class="station-desc">
             A 24/7 dedicated lullaby and sleep stream. Zero talking, zero jarring sounds—just soothing acoustic guitar, music box chimes, and calming sleep soundscapes.
           </p>
+          <div class="station-actions-row">
+            <button class="btn-sample-stream" data-station-index="4" data-stream="https://streaming.positivity.radio/pr/sleepkids/icecast.audio" data-title="Positively Sleep Kids" data-type="audio">
+              <span class="sample-icon">▶</span>
+              <span class="sample-text">Listen Live Sample</span>
+            </button>
+            <a href="https://positivity.radio/stations/sleepkids" target="_blank" rel="noopener" class="btn-external-station" title="Open Positivity Radio website">
+              <span>🔗 Web Player</span>
+            </a>
+          </div>
           <div class="station-stream-meta">
             <span>Codec: MP3 128kbps</span>
             <span>Origin: Global</span>
@@ -270,6 +433,15 @@
           <p class="station-desc">
             Commercial-free classical masterpieces from the ABC. Proven to encourage focus during Lego building, colouring-in, craft afternoons, and quiet resting.
           </p>
+          <div class="station-actions-row">
+            <button class="btn-sample-stream" data-station-index="5" data-stream="https://streaming.abc-cdn.net.au/audio/hls/classicfmnsw.m3u8?source=web" data-title="ABC Classic" data-type="hls">
+              <span class="sample-icon">▶</span>
+              <span class="sample-text">Listen Live Sample</span>
+            </button>
+            <a href="https://www.abc.net.au/listen/live/classic" target="_blank" rel="noopener" class="btn-external-station" title="Open official ABC Classic player">
+              <span>🔗 Web Player</span>
+            </a>
+          </div>
           <div class="station-stream-meta">
             <span>Codec: HLS / AAC</span>
             <span>CDN: ABC Australia</span>
@@ -1517,6 +1689,32 @@ void setup() {
     </div>
   </section>
 
+  <!-- Persistent Floating Live Radio Player Dock -->
+  <div class="live-player-bar hidden" id="live-player-bar">
+    <div class="live-player-container">
+      <div class="live-player-info">
+        <div class="live-player-pulsing-dot"></div>
+        <div class="live-player-meta">
+          <span class="live-player-station" id="player-station-title">ABC Kids listen</span>
+          <span class="live-player-status" id="player-station-status">🔴 LIVE STREAMING</span>
+        </div>
+      </div>
+      <div class="live-player-eq" id="player-live-eq">
+        <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+      </div>
+      <div class="live-player-controls">
+        <button class="player-ctrl-btn" id="player-btn-prev" title="Previous Station">⏮</button>
+        <button class="player-ctrl-btn play-pause" id="player-btn-toggle" title="Play/Pause">⏸</button>
+        <button class="player-ctrl-btn" id="player-btn-next" title="Next Station">⏭</button>
+        <div class="player-vol-wrapper">
+          <span class="vol-icon">🔊</span>
+          <input type="range" id="player-vol-slider" min="0" max="1" step="0.05" value="0.8" class="player-vol-range" title="Volume">
+        </div>
+        <button class="player-ctrl-btn close-btn" id="player-btn-close" title="Stop & Close Player">✕</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Footer -->
   <footer class="footer">
     <div class="container footer-content">
@@ -1535,6 +1733,10 @@ void setup() {
     </div>
   </footer>
 
+  <!-- External High Performance Libraries for Audio & 3D WebGL -->
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

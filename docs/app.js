@@ -498,4 +498,611 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // ==========================================
+  // 5. LIVE AUDIO STREAM PLAYERS & SAMPLING
+  // ==========================================
+  const sampleButtons = document.querySelectorAll('.btn-sample-stream');
+  const livePlayerBar = document.getElementById('live-player-bar');
+  const playerStationTitle = document.getElementById('player-station-title');
+  const playerStationStatus = document.getElementById('player-station-status');
+  const playerBtnToggle = document.getElementById('player-btn-toggle');
+  const playerBtnPrev = document.getElementById('player-btn-prev');
+  const playerBtnNext = document.getElementById('player-btn-next');
+  const playerVolSlider = document.getElementById('player-vol-slider');
+  const playerBtnClose = document.getElementById('player-btn-close');
+
+  let activeStreamAudio = null;
+  let activeHls = null;
+  let currentActiveIndex = -1;
+  let isStreamPlaying = false;
+
+  const stationStreamList = [
+    { title: "ABC Kids listen", url: "https://streaming.abc-cdn.net.au/audio/hls/abcextra.m3u8?source=web", type: "hls", genre: "Preschool Stories & Aussie Music" },
+    { title: "Fun Kids UK", url: "https://listen-funkids.sharp-stream.com/funkids.mp3", type: "audio", genre: "Upbeat Kids Hits, Science & Fun" },
+    { title: "Fun Kids Junior", url: "https://listen-funkids.sharp-stream.com/funkidsjunior.mp3", type: "audio", genre: "Nursery Rhymes & Gentle Stories" },
+    { title: "Rock the Cradle (MPR)", url: "https://rockthecradle.stream.publicradio.org/rockthecradle.mp3", type: "audio", genre: "Indie Music for Kids & Parents" },
+    { title: "Positively Sleep Kids", url: "https://streaming.positivity.radio/pr/sleepkids/icecast.audio", type: "audio", genre: "Lullabies & Ambient Sleep Music" },
+    { title: "ABC Classic (NSW)", url: "https://streaming.abc-cdn.net.au/audio/hls/classicfmnsw.m3u8?source=web", type: "hls", genre: "Peaceful Classical for Craft & Study" }
+  ];
+
+  function stopCurrentStream() {
+    if (activeHls) {
+      try { activeHls.destroy(); } catch(e) {}
+      activeHls = null;
+    }
+    if (activeStreamAudio) {
+      try {
+        activeStreamAudio.pause();
+        activeStreamAudio.src = '';
+      } catch(e) {}
+      activeStreamAudio = null;
+    }
+    isStreamPlaying = false;
+
+    // Reset button states
+    sampleButtons.forEach(btn => {
+      btn.classList.remove('playing');
+      const textSpan = btn.querySelector('.sample-text');
+      const iconSpan = btn.querySelector('.sample-icon');
+      if (textSpan) textSpan.textContent = 'Listen Live Sample';
+      if (iconSpan) iconSpan.textContent = '▶';
+    });
+
+    if (playerBtnToggle) playerBtnToggle.textContent = '▶';
+  }
+
+  function playStationByIndex(index) {
+    if (index < 0 || index >= stationStreamList.length) return;
+    const st = stationStreamList[index];
+
+    // If clicking same station that is already playing, toggle pause
+    if (currentActiveIndex === index && activeStreamAudio && isStreamPlaying) {
+      activeStreamAudio.pause();
+      isStreamPlaying = false;
+      if (playerBtnToggle) playerBtnToggle.textContent = '▶';
+      sampleButtons.forEach(b => {
+        if (parseInt(b.dataset.stationIndex, 10) === index) {
+          b.classList.remove('playing');
+          b.querySelector('.sample-text').textContent = 'Resume Sample';
+          b.querySelector('.sample-icon').textContent = '▶';
+        }
+      });
+      if (playerStationStatus) playerStationStatus.textContent = '⏸ Paused';
+      return;
+    }
+
+    // Stop current stream if different or stopped
+    stopCurrentStream();
+    currentActiveIndex = index;
+
+    // Show floating bar
+    if (livePlayerBar) livePlayerBar.classList.remove('hidden');
+    if (playerStationTitle) playerStationTitle.textContent = st.title;
+    if (playerStationStatus) playerStationStatus.textContent = 'Connecting...';
+    if (playerBtnToggle) playerBtnToggle.textContent = '⏸';
+
+    const btn = Array.from(sampleButtons).find(b => parseInt(b.dataset.stationIndex, 10) === index);
+    if (btn) {
+      btn.classList.add('playing');
+      btn.querySelector('.sample-text').textContent = 'Buffering Live...';
+      btn.querySelector('.sample-icon').textContent = '⏳';
+    }
+
+    // Update the OLED Simulator on the page as well!
+    if (typeof renderOledState === 'function') {
+      simTopBar.classList.remove('error-top');
+      simTopTag.textContent = 'WIFI OK';
+      simTopVol.textContent = 'LIVE';
+      simLine1.textContent = `STATION [${index + 1}/6]`;
+      simLine2.textContent = st.title;
+      simLine3.textContent = st.genre;
+      simBottom.innerHTML = `<div class="oled-equalizer animating"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>`;
+    }
+
+    // Create audio element
+    const audio = new Audio();
+    audio.crossOrigin = 'anonymous';
+    const vol = playerVolSlider ? parseFloat(playerVolSlider.value) : 0.8;
+    audio.volume = vol;
+    activeStreamAudio = audio;
+
+    const onAudioReady = () => {
+      audio.play().then(() => {
+        isStreamPlaying = true;
+        if (playerStationStatus) playerStationStatus.textContent = '🔴 LIVE STREAMING';
+        if (playerBtnToggle) playerBtnToggle.textContent = '⏸';
+        if (btn) {
+          btn.querySelector('.sample-text').textContent = 'Pause Sample';
+          btn.querySelector('.sample-icon').textContent = '⏸';
+        }
+      }).catch(err => {
+        console.warn('Auto-play blocked or error: ', err);
+        if (playerStationStatus) playerStationStatus.textContent = 'Click to Play';
+        if (playerBtnToggle) playerBtnToggle.textContent = '▶';
+        if (btn) {
+          btn.querySelector('.sample-text').textContent = 'Listen Live Sample';
+          btn.querySelector('.sample-icon').textContent = '▶';
+        }
+      });
+    };
+
+    if (st.type === 'hls' && window.Hls && window.Hls.isSupported()) {
+      const hls = new window.Hls({
+        enableWorker: true,
+        lowLatencyMode: true,
+        backBufferLength: 30
+      });
+      activeHls = hls;
+      hls.loadSource(st.url);
+      hls.attachMedia(audio);
+      hls.on(window.Hls.Events.MANIFEST_PARSED, onAudioReady);
+      hls.on(window.Hls.Events.ERROR, (event, data) => {
+        if (data.fatal) {
+          console.warn('HLS error: ', data);
+          if (playerStationStatus) playerStationStatus.textContent = 'Stream error / offline';
+        }
+      });
+    } else {
+      // Native audio
+      audio.src = st.url;
+      audio.addEventListener('canplay', onAudioReady, { once: true });
+      audio.load();
+    }
+  }
+
+  sampleButtons.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const idx = parseInt(btn.dataset.stationIndex, 10);
+      playStationByIndex(idx);
+    });
+  });
+
+  if (playerBtnToggle) {
+    playerBtnToggle.addEventListener('click', () => {
+      if (!activeStreamAudio && currentActiveIndex >= 0) {
+        playStationByIndex(currentActiveIndex);
+        return;
+      }
+      if (activeStreamAudio) {
+        if (isStreamPlaying) {
+          activeStreamAudio.pause();
+          isStreamPlaying = false;
+          playerBtnToggle.textContent = '▶';
+          if (playerStationStatus) playerStationStatus.textContent = '⏸ Paused';
+          const activeBtn = Array.from(sampleButtons).find(b => parseInt(b.dataset.stationIndex, 10) === currentActiveIndex);
+          if (activeBtn) {
+            activeBtn.classList.remove('playing');
+            activeBtn.querySelector('.sample-text').textContent = 'Resume Sample';
+            activeBtn.querySelector('.sample-icon').textContent = '▶';
+          }
+        } else {
+          activeStreamAudio.play().then(() => {
+            isStreamPlaying = true;
+            playerBtnToggle.textContent = '⏸';
+            if (playerStationStatus) playerStationStatus.textContent = '🔴 LIVE STREAMING';
+            const activeBtn = Array.from(sampleButtons).find(b => parseInt(b.dataset.stationIndex, 10) === currentActiveIndex);
+            if (activeBtn) {
+              activeBtn.classList.add('playing');
+              activeBtn.querySelector('.sample-text').textContent = 'Pause Sample';
+              activeBtn.querySelector('.sample-icon').textContent = '⏸';
+            }
+          });
+        }
+      }
+    });
+  }
+
+  if (playerBtnPrev) {
+    playerBtnPrev.addEventListener('click', () => {
+      const prevIdx = (currentActiveIndex - 1 + stationStreamList.length) % stationStreamList.length;
+      playStationByIndex(prevIdx);
+    });
+  }
+
+  if (playerBtnNext) {
+    playerBtnNext.addEventListener('click', () => {
+      const nextIdx = (currentActiveIndex + 1) % stationStreamList.length;
+      playStationByIndex(nextIdx);
+    });
+  }
+
+  if (playerVolSlider) {
+    playerVolSlider.addEventListener('input', () => {
+      const val = parseFloat(playerVolSlider.value);
+      if (activeStreamAudio) activeStreamAudio.volume = val;
+    });
+  }
+
+  if (playerBtnClose) {
+    playerBtnClose.addEventListener('click', () => {
+      stopCurrentStream();
+      currentActiveIndex = -1;
+      if (livePlayerBar) livePlayerBar.classList.add('hidden');
+    });
+  }
+
+  // ==========================================
+  // 6. THREE.JS INTERACTIVE 3D RADIO EXPLORER
+  // ==========================================
+  function initThreeJsRadio() {
+    const container = document.getElementById('threejs-canvas-container');
+    if (!container || !window.THREE) return;
+
+    const width = container.clientWidth || 700;
+    const height = container.clientHeight || 500;
+
+    // Scene & Camera
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x0a101e, 0.08);
+
+    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
+    camera.position.set(0, 1.2, 5.2);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(width, height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.15;
+    container.appendChild(renderer.domElement);
+
+    // Orbit Controls
+    let controls = null;
+    if (window.THREE.OrbitControls) {
+      controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.05;
+      controls.minDistance = 3.2;
+      controls.maxDistance = 8.0;
+      controls.maxPolarAngle = Math.PI / 2 + 0.15;
+      controls.autoRotate = true;
+      controls.autoRotateSpeed = 1.0;
+    }
+
+    // Lights
+    const ambientLight = new THREE.AmbientLight(0xfff7ed, 0.9);
+    scene.add(ambientLight);
+
+    const keyLight = new THREE.DirectionalLight(0xfffbeb, 1.4);
+    keyLight.position.set(5, 8, 6);
+    keyLight.castShadow = true;
+    scene.add(keyLight);
+
+    const fillLight = new THREE.DirectionalLight(0x38bdf8, 0.5);
+    fillLight.position.set(-6, 3, -4);
+    scene.add(fillLight);
+
+    // Subtle blue point light glowing near OLED screen
+    const oledLight = new THREE.PointLight(0x38bdf8, 1.2, 3.5);
+    oledLight.position.set(0.7, 0.2, 1.1);
+    scene.add(oledLight);
+
+    // Procedural Wood Texture Canvas
+    function createWoodTexture() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 512;
+      canvas.height = 512;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#b77341';
+      ctx.fillRect(0, 0, 512, 512);
+
+      // Grain lines
+      for (let i = 0; i < 512; i += 2) {
+        const v = Math.sin(i * 0.08) * 15 + Math.random() * 8;
+        ctx.fillStyle = `rgba(139, 74, 30, ${0.12 + Math.random() * 0.15})`;
+        ctx.fillRect(0, i + v, 512, 2);
+      }
+      ctx.fillStyle = 'rgba(105, 50, 18, 0.2)';
+      ctx.beginPath();
+      ctx.ellipse(180, 260, 40, 16, 0.2, 0, Math.PI * 2);
+      ctx.fill();
+
+      const tex = new THREE.CanvasTexture(canvas);
+      tex.wrapS = THREE.RepeatWrapping;
+      tex.wrapT = THREE.RepeatWrapping;
+      return tex;
+    }
+
+    // Procedural Speaker Fabric Cloth Texture
+    function createFabricTexture() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 256;
+      canvas.height = 256;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#3a312a';
+      ctx.fillRect(0, 0, 256, 256);
+
+      ctx.fillStyle = '#a8947f';
+      for (let x = 0; x < 256; x += 8) {
+        for (let y = 0; y < 256; y += 8) {
+          if ((x + y) % 16 === 0) {
+            ctx.fillRect(x, y, 6, 6);
+          }
+        }
+      }
+      return new THREE.CanvasTexture(canvas);
+    }
+
+    // Dynamic 3D OLED Canvas Texture
+    const oledCanvas = document.createElement('canvas');
+    oledCanvas.width = 256;
+    oledCanvas.height = 128;
+    const oledCtx = oledCanvas.getContext('2d');
+    const oledTexture = new THREE.CanvasTexture(oledCanvas);
+
+    function updateOledCanvas(tick) {
+      oledCtx.fillStyle = '#020408';
+      oledCtx.fillRect(0, 0, 256, 128);
+
+      // Top bar
+      oledCtx.fillStyle = '#38bdf8';
+      oledCtx.fillRect(0, 0, 256, 24);
+      oledCtx.fillStyle = '#020408';
+      oledCtx.font = 'bold 13px monospace';
+      oledCtx.fillText('WIFI OK', 6, 17);
+      oledCtx.fillText('VOL: 67%', 170, 17);
+
+      // Station Title
+      oledCtx.fillStyle = '#38bdf8';
+      oledCtx.font = '12px monospace';
+      oledCtx.fillText('STATION [1/6]', 6, 46);
+      oledCtx.font = 'bold 19px monospace';
+      oledCtx.fillText('ABC Kids listen', 6, 74);
+      oledCtx.font = '11px monospace';
+      oledCtx.fillStyle = '#93c5fd';
+      oledCtx.fillText('Stories & Tunes', 6, 94);
+
+      // Dynamic Equalizer bars
+      oledCtx.fillStyle = '#38bdf8';
+      const bars = [6, 12, 22, 16, 26, 18, 12, 24, 20, 10, 16, 28, 14, 20, 12, 24];
+      for (let i = 0; i < 16; i++) {
+        const h = bars[(i + tick) % 16];
+        oledCtx.fillRect(10 + i * 15, 126 - h, 8, h);
+      }
+      oledTexture.needsUpdate = true;
+    }
+
+    // Radio Group
+    const radioGroup = new THREE.Group();
+    scene.add(radioGroup);
+
+    // 1. Solid Oak Wooden Cabinet
+    const woodTex = createWoodTexture();
+    const woodMat = new THREE.MeshStandardMaterial({
+      map: woodTex,
+      roughness: 0.55,
+      metalness: 0.05
+    });
+
+    const cabinetGeo = new THREE.BoxGeometry(3.6, 2.2, 1.8);
+    const cabinetMesh = new THREE.Mesh(cabinetGeo, woodMat);
+    cabinetMesh.castShadow = true;
+    cabinetMesh.receiveShadow = true;
+    radioGroup.add(cabinetMesh);
+
+    // Front Face Rim Bezel
+    const rimMat = new THREE.MeshStandardMaterial({
+      color: 0x6e3d1b,
+      roughness: 0.6
+    });
+    const rimGeo = new THREE.BoxGeometry(3.64, 2.24, 0.08);
+    const rimMesh = new THREE.Mesh(rimGeo, rimMat);
+    rimMesh.position.z = 0.91;
+    radioGroup.add(rimMesh);
+
+    // 2. Circular Speaker Grille
+    const fabricTex = createFabricTexture();
+    const speakerClothMat = new THREE.MeshStandardMaterial({
+      map: fabricTex,
+      roughness: 0.8
+    });
+    const speakerGeo = new THREE.CylinderGeometry(0.72, 0.72, 0.04, 32);
+    speakerGeo.rotateX(Math.PI / 2);
+    const speakerMesh = new THREE.Mesh(speakerGeo, speakerClothMat);
+    speakerMesh.position.set(-0.85, 0.05, 0.93);
+    radioGroup.add(speakerMesh);
+
+    // Speaker Outer Ring Frame
+    const ringGeo = new THREE.TorusGeometry(0.72, 0.05, 16, 32);
+    const ringMat = new THREE.MeshStandardMaterial({ color: 0x4a2810, roughness: 0.5 });
+    const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+    ringMesh.position.set(-0.85, 0.05, 0.95);
+    radioGroup.add(ringMesh);
+
+    // 3. OLED Monochrome Display
+    const oledMat = new THREE.MeshStandardMaterial({
+      map: oledTexture,
+      roughness: 0.2,
+      emissive: 0x0369a1,
+      emissiveIntensity: 0.4
+    });
+    const oledGeo = new THREE.PlaneGeometry(1.25, 0.65);
+    const oledMesh = new THREE.Mesh(oledGeo, oledMat);
+    oledMesh.position.set(0.75, 0.45, 0.94);
+    radioGroup.add(oledMesh);
+
+    // OLED Recessed Bezel Frame
+    const oledBezelGeo = new THREE.BoxGeometry(1.35, 0.75, 0.04);
+    const oledBezelMat = new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.3 });
+    const oledBezel = new THREE.Mesh(oledBezelGeo, oledBezelMat);
+    oledBezel.position.set(0.75, 0.45, 0.92);
+    radioGroup.add(oledBezel);
+
+    // Brass Material for Hardware
+    const brassMat = new THREE.MeshStandardMaterial({
+      color: 0xdfab34,
+      metalness: 0.88,
+      roughness: 0.28
+    });
+
+    // 4. Brass Knurled Volume Potentiometer
+    const potGeo = new THREE.CylinderGeometry(0.24, 0.24, 0.22, 24);
+    potGeo.rotateX(Math.PI / 2);
+    const potMesh = new THREE.Mesh(potGeo, brassMat);
+    potMesh.position.set(0.55, -0.42, 1.01);
+    radioGroup.add(potMesh);
+
+    // 5. Tactile Push Button
+    const btnGeo = new THREE.CylinderGeometry(0.12, 0.12, 0.14, 20);
+    btnGeo.rotateX(Math.PI / 2);
+    const btnMesh = new THREE.Mesh(btnGeo, brassMat);
+    btnMesh.position.set(1.15, -0.42, 0.98);
+    radioGroup.add(btnMesh);
+
+    // 6. Metal Toggle Power Switch
+    const switchBaseGeo = new THREE.BoxGeometry(0.2, 0.28, 0.05);
+    const switchBaseMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.9, roughness: 0.2 });
+    const switchBase = new THREE.Mesh(switchBaseGeo, switchBaseMat);
+    switchBase.position.set(0.12, -0.42, 0.93);
+    radioGroup.add(switchBase);
+
+    const leverGeo = new THREE.CylinderGeometry(0.035, 0.04, 0.28, 12);
+    leverGeo.rotateZ(0.25);
+    leverGeo.rotateX(Math.PI / 2);
+    const leverMesh = new THREE.Mesh(leverGeo, switchBaseMat);
+    leverMesh.position.set(0.12, -0.38, 1.04);
+    radioGroup.add(leverMesh);
+
+    // 7. USB-C Port Slot on the Left Side
+    const usbSlotGeo = new THREE.BoxGeometry(0.04, 0.12, 0.32);
+    const usbSlotMat = new THREE.MeshStandardMaterial({ color: 0x05070c, roughness: 0.8 });
+    const usbSlot = new THREE.Mesh(usbSlotGeo, usbSlotMat);
+    usbSlot.position.set(-1.81, -0.4, 0);
+    radioGroup.add(usbSlot);
+
+    // 8. 3D Floating Soundwave Rings from Speaker
+    const soundwaveRings = [];
+    for (let r = 0; r < 3; r++) {
+      const swGeo = new THREE.RingGeometry(0.75 + r * 0.28, 0.78 + r * 0.28, 32);
+      const swMat = new THREE.MeshBasicMaterial({
+        color: 0x38bdf8,
+        transparent: true,
+        opacity: 0.35 - r * 0.1,
+        side: THREE.DoubleSide
+      });
+      const swMesh = new THREE.Mesh(swGeo, swMat);
+      swMesh.position.set(-0.85, 0.05, 0.96 + r * 0.08);
+      radioGroup.add(swMesh);
+      soundwaveRings.push(swMesh);
+    }
+
+    // 9. Floating Background Particle Field
+    const particleCount = 70;
+    const particleGeo = new THREE.BufferGeometry();
+    const particlePos = new Float32Array(particleCount * 3);
+    for (let p = 0; p < particleCount * 3; p += 3) {
+      particlePos[p] = (Math.random() - 0.5) * 8;
+      particlePos[p + 1] = (Math.random() - 0.5) * 6;
+      particlePos[p + 2] = (Math.random() - 0.5) * 6;
+    }
+    particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePos, 3));
+    const particleMat = new THREE.PointsMaterial({
+      color: 0xf59e0b,
+      size: 0.05,
+      transparent: true,
+      opacity: 0.6
+    });
+    const particleSystem = new THREE.Points(particleGeo, particleMat);
+    scene.add(particleSystem);
+
+    // Interactive Button Hooks
+    const btn3dRotate = document.getElementById('btn-3d-rotate');
+    const rotateStatusText = document.getElementById('rotate-status-text');
+    const btn3dReset = document.getElementById('btn-3d-reset');
+    const calloutPills = document.querySelectorAll('.callout-pill');
+
+    let autoRotateActive = true;
+    if (btn3dRotate && controls) {
+      btn3dRotate.addEventListener('click', () => {
+        autoRotateActive = !autoRotateActive;
+        controls.autoRotate = autoRotateActive;
+        if (rotateStatusText) rotateStatusText.textContent = autoRotateActive ? 'ON' : 'OFF';
+        playChirp();
+      });
+    }
+
+    if (btn3dReset && controls) {
+      btn3dReset.addEventListener('click', () => {
+        controls.reset();
+        camera.position.set(0, 1.2, 5.2);
+        controls.target.set(0, 0, 0);
+        playChirp();
+      });
+    }
+
+    // Callout Focus Transitions
+    calloutPills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        calloutPills.forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        const part = pill.dataset.part;
+        playChirp();
+
+        if (controls) controls.autoRotate = false;
+        if (rotateStatusText) rotateStatusText.textContent = 'OFF';
+
+        if (part === 'oled') {
+          camera.position.set(0.9, 0.6, 2.5);
+          if (controls) controls.target.set(0.75, 0.45, 0.9);
+        } else if (part === 'speaker') {
+          camera.position.set(-1.0, 0.2, 2.6);
+          if (controls) controls.target.set(-0.85, 0.05, 0.9);
+        } else if (part === 'pot' || part === 'button' || part === 'switch') {
+          camera.position.set(0.7, -0.4, 2.4);
+          if (controls) controls.target.set(0.6, -0.4, 0.9);
+        }
+      });
+    });
+
+    // Animation Loop
+    let animClock = 0;
+    function animate() {
+      requestAnimationFrame(animate);
+      animClock++;
+
+      // Pulse dynamic soundwaves if audio is playing
+      soundwaveRings.forEach((ring, idx) => {
+        const isLive = isStreamPlaying;
+        const scaleVal = isLive ? (1 + Math.sin(animClock * 0.15 + idx) * 0.12) : 1;
+        ring.scale.set(scaleVal, scaleVal, 1);
+        ring.material.opacity = isLive ? (0.45 - idx * 0.12 + Math.sin(animClock * 0.2) * 0.1) : 0.08;
+      });
+
+      // Update 3D OLED screen equalizer animation
+      if (animClock % 6 === 0) {
+        updateOledCanvas(Math.floor(animClock / 6));
+      }
+
+      // Rotate particle field gently
+      particleSystem.rotation.y += 0.0008;
+
+      if (controls) controls.update();
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // Window Resize Handler
+    function onWindowResize() {
+      if (!container) return;
+      const w = container.clientWidth;
+      const h = container.clientHeight;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+    }
+    window.addEventListener('resize', onWindowResize);
+  }
+
+  // Initialize Three.js when ready
+  if (window.THREE) {
+    initThreeJsRadio();
+  } else {
+    window.addEventListener('load', () => {
+      if (window.THREE) initThreeJsRadio();
+    });
+  }
+
 });
+
