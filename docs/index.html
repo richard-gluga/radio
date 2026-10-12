@@ -23,6 +23,7 @@
       <nav class="nav-links">
         <a href="#the-truth">The FM Catch</a>
         <a href="#child-safe-stations">Child-Safe Stations</a>
+        <a href="#oled-display">OLED Screen</a>
         <a href="#parts-guide">Parts & Australian Stores</a>
         <a href="#sound-science">Sound Secret</a>
         <a href="#wiring-guide">Wiring Diagram</a>
@@ -278,6 +279,141 @@
     </div>
   </section>
 
+  <!-- Monochrome OLED Status Display & Interactive Simulator -->
+  <section class="section oled-section" id="oled-display">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-kicker">Live Visual Feedback</span>
+        <h2 class="section-title">0.96" Monochrome Status & Error Display</h2>
+        <p class="section-subtitle">
+          Add an ultra-crisp, low-power monochrome OLED panel (SSD1306). It takes only 4 push-on wires and tells you exactly what the radio is doing—from Wi-Fi connection steps to specific diagnostic errors and live station titles.
+        </p>
+      </div>
+
+      <div class="oled-showcase-grid">
+        <!-- Interactive OLED Hardware Mockup -->
+        <div class="oled-simulator-card">
+          <div class="oled-card-header">
+            <span>📺 Live Monochrome OLED Simulator (128×64)</span>
+            <span class="oled-badge-live">Interactive Preview</span>
+          </div>
+
+          <div class="oled-device-wrapper">
+            <!-- Physical PCB breakout representation -->
+            <div class="oled-pcb">
+              <div class="oled-pin-header">
+                <span class="pcb-pin" title="3.3V Power"><span class="pin-dot red"></span>VCC</span>
+                <span class="pcb-pin" title="Ground"><span class="pin-dot blue"></span>GND</span>
+                <span class="pcb-pin" title="I2C Clock (GPIO 22)"><span class="pin-dot yellow"></span>SCL</span>
+                <span class="pcb-pin" title="I2C Data (GPIO 21)"><span class="pin-dot cyan"></span>SDA</span>
+              </div>
+              <div class="oled-screen-bezel">
+                <div class="oled-screen-glare"></div>
+                <div class="oled-screen" id="sim-oled-screen">
+                  <!-- Top Bar -->
+                  <div class="oled-top-bar" id="sim-oled-topbar">
+                    <span class="oled-top-tag" id="sim-oled-top-tag">WIFI OK</span>
+                    <span class="oled-top-vol" id="sim-oled-top-vol">VOL: 67%</span>
+                  </div>
+                  <!-- Main Body -->
+                  <div class="oled-content" id="sim-oled-content">
+                    <div class="oled-line-small" id="sim-oled-line1">STATION [1/6]</div>
+                    <div class="oled-line-title" id="sim-oled-line2">ABC Kids listen</div>
+                    <div class="oled-line-sub" id="sim-oled-line3">Preschool & Aussie Stories</div>
+                  </div>
+                  <!-- Bottom Area: Equalizer or Progress bar -->
+                  <div class="oled-bottom-bar" id="sim-oled-bottom">
+                    <div class="oled-equalizer animating" id="sim-oled-eq">
+                      <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="oled-pcb-label">SSD1306 0.96" I2C 128×64 OLED</div>
+            </div>
+          </div>
+
+          <!-- Controls to switch modes -->
+          <div class="oled-controls-panel">
+            <span class="oled-controls-title">Click a state to test the display:</span>
+            <div class="oled-btn-grid">
+              <button class="btn-oled-state active" data-state="playing-abc" id="btn-state-abc">
+                <span class="state-icon">📻</span>
+                <span class="state-name">Playing: ABC Kids</span>
+                <span class="state-desc">Station title & live EQ</span>
+              </button>
+              <button class="btn-oled-state" data-state="playing-funkids" id="btn-state-funkids">
+                <span class="state-icon">🎶</span>
+                <span class="state-name">Playing: Fun Kids</span>
+                <span class="state-desc">Station #2 display</span>
+              </button>
+              <button class="btn-oled-state" data-state="connecting" id="btn-state-connecting">
+                <span class="state-icon">📶</span>
+                <span class="state-name">Connecting to Wi-Fi</span>
+                <span class="state-desc">Startup progress bar</span>
+              </button>
+              <button class="btn-oled-state" data-state="err-notfound" id="btn-state-notfound">
+                <span class="state-icon">🔍</span>
+                <span class="state-name">Wi-Fi Not Found</span>
+                <span class="state-desc">"Wifi FooBar not found"</span>
+              </button>
+              <button class="btn-oled-state" data-state="err-password" id="btn-state-password">
+                <span class="state-icon">🔑</span>
+                <span class="state-name">Wrong Password</span>
+                <span class="state-desc">Auth rejected error</span>
+              </button>
+              <button class="btn-oled-state" data-state="err-internet" id="btn-state-internet">
+                <span class="state-icon">🌐</span>
+                <span class="state-name">No Internet</span>
+                <span class="state-desc">Stream unreachable</span>
+              </button>
+              <button class="btn-oled-state" data-state="volume-adjust" id="btn-state-vol">
+                <span class="state-icon">🔊</span>
+                <span class="state-name">Volume Adjusted</span>
+                <span class="state-desc">Master volume popup</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Explanatory Feature Cards -->
+        <div class="oled-features-column">
+          <div class="oled-feature-card">
+            <div class="feature-icon-badge">⚡</div>
+            <h4>Why 0.96" Monochrome OLED?</h4>
+            <p>
+              Unlike bulky LCD screens with backlights that leak light, monochrome OLED pixels emit their own light. When a pixel is black, it consumes <strong>0 mA</strong>. The entire display draws barely 15mA—saving battery while providing infinite contrast and wide viewing angles.
+            </p>
+          </div>
+
+          <div class="oled-feature-card">
+            <div class="feature-icon-badge">🔌</div>
+            <h4>Only 4 Jumper Wires (I2C)</h4>
+            <p>
+              It communicates over the ESP32's hardware I2C bus: <code>VCC</code> to 3.3V, <code>GND</code> to Ground, <code>SCL</code> to GPIO 22, and <code>SDA</code> to GPIO 21. No soldering—simply push female Dupont wires onto the header pins!
+            </p>
+          </div>
+
+          <div class="oled-feature-card">
+            <div class="feature-icon-badge">🛠️</div>
+            <h4>No More Guessing Blind</h4>
+            <p>
+              Without a screen, if Wi-Fi fails or someone typos the password, an audio device sits in complete silence. This display gives crystal-clear feedback in plain English so you know immediately whether to check your router, password, or internet connection.
+            </p>
+          </div>
+
+          <div class="oled-feature-card warning">
+            <div class="feature-icon-badge">⚠️</div>
+            <h4>Hardware Pin Allocation Rule</h4>
+            <p>
+              The ESP32 uses <strong>GPIO 22</strong> for I2C Clock (<code>SCL</code>). We moved the MAX98357A amplifier's <code>DIN</code> audio line to <strong>GPIO 27</strong> so audio and display never collide or glitch!
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Parts Breakdown & Interactive Shopping List -->
   <section class="section" id="parts-guide">
     <div class="container">
@@ -497,14 +633,34 @@
               </div>
             </div>
           </div>
+
+          <!-- Item 10: 0.96" Monochrome I2C OLED Display -->
+          <div class="table-row" data-store="core amazon jaycar">
+            <div class="td col-check">
+              <input type="checkbox" id="part-oled" class="part-checkbox" data-price="8.50">
+            </div>
+            <div class="td col-part">
+              <strong>0.96" I2C Monochrome OLED Display (128×64 SSD1306)</strong>
+              <span class="part-meta">DFRobot DFR0650, Makerverse 0.96" I2C OLED, or Jaycar XC4384</span>
+            </div>
+            <div class="td col-why">Monochrome status panel. Displays "Connecting to Wi-Fi", clear diagnostics ("WiFi FooBar not found", "Wrong password", "No internet"), station name, and volume bar!</div>
+            <div class="td col-price">$8.50 AUD</div>
+            <div class="td col-link">
+              <div class="link-buttons">
+                <a href="https://core-electronics.com.au/gravity-i2c-oled-2864-display.html" target="_blank" rel="noopener" class="store-badge core-badge">Core: DFR0650 OLED</a>
+                <a href="https://www.jaycar.com.au/0-96-inch-oled-display-module/p/XC4384" target="_blank" rel="noopener" class="store-badge jaycar-badge">Jaycar: 0.96" OLED (XC4384)</a>
+                <a href="https://www.amazon.com.au/s?k=0.96+I2C+OLED+display+SSD1306" target="_blank" rel="noopener" class="store-badge amazon-badge">Amazon AU Prime</a>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Live Budget Tally -->
         <div class="shopping-footer">
           <div class="budget-tracker">
             <span class="tracker-label">Estimated Total:</span>
-            <span class="tracker-total" id="budget-total-display">$52.70 AUD</span>
-            <span class="tracker-count" id="budget-count-display">(0 of 9 items collected)</span>
+            <span class="tracker-total" id="budget-total-display">$61.20 AUD</span>
+            <span class="tracker-count" id="budget-count-display">(0 of 10 items collected)</span>
           </div>
           <button class="btn btn-outline" id="btn-select-all-parts">Mark All Collected</button>
         </div>
@@ -673,16 +829,18 @@
                 <text x="425" y="48" text-anchor="middle" fill="#38bdf8" font-weight="700" font-size="13">ESP32 Dev Board</text>
 
                 <!-- Pins on ESP32 Left -->
+                <circle cx="350" cy="145" r="5" fill="#ef4444"/><text x="360" y="149" fill="#fff" font-size="10">3.3V (OLED)</text>
                 <circle cx="350" cy="170" r="5" fill="#ef4444"/><text x="360" y="174" fill="#fff" font-size="10">VIN / 5V</text>
                 <circle cx="350" cy="195" r="5" fill="#3b82f6"/><text x="360" y="199" fill="#fff" font-size="10">GND</text>
                 <circle cx="350" cy="220" r="5" fill="#eab308"/><text x="360" y="224" fill="#fff" font-size="10">GPIO 34 (Pot)</text>
                 <circle cx="350" cy="245" r="5" fill="#f59e0b"/><text x="360" y="249" fill="#fff" font-size="10">GPIO 33 (Btn)</text>
 
                 <!-- Pins on ESP32 Right -->
-                <circle cx="500" cy="170" r="5" fill="#10b981"/><text x="450" y="174" fill="#fff" font-size="10">GPIO 25</text>
-                <circle cx="500" cy="195" r="5" fill="#06b6d4"/><text x="450" y="199" fill="#fff" font-size="10">GPIO 26</text>
-                <circle cx="500" cy="220" r="5" fill="#a855f7"/><text x="450" y="224" fill="#fff" font-size="10">GPIO 22</text>
-                <circle cx="500" cy="245" r="5" fill="#3b82f6"/><text x="465" y="249" fill="#fff" font-size="10">GND</text>
+                <circle cx="500" cy="165" r="5" fill="#10b981"/><text x="425" y="169" fill="#fff" font-size="10">GPIO 25 (LRC)</text>
+                <circle cx="500" cy="190" r="5" fill="#06b6d4"/><text x="425" y="194" fill="#fff" font-size="10">GPIO 26 (BCLK)</text>
+                <circle cx="500" cy="215" r="5" fill="#a855f7"/><text x="425" y="219" fill="#fff" font-size="10">GPIO 27 (DIN)</text>
+                <circle cx="500" cy="240" r="5" fill="#eab308"/><text x="425" y="244" fill="#fff" font-size="10">GPIO 22 (SCL)</text>
+                <circle cx="500" cy="265" r="5" fill="#06b6d4"/><text x="425" y="269" fill="#fff" font-size="10">GPIO 21 (SDA)</text>
               </g>
 
               <!-- 5. MAX98357A I2S Amp -->
@@ -719,6 +877,23 @@
                 <text x="260" y="210" text-anchor="middle" fill="#f59e0b" font-size="9" font-weight="bold">Station</text>
               </g>
 
+              <!-- 8. Monochrome OLED Display Breakout -->
+              <g class="comp-box" id="svg-comp-oled">
+                <rect x="180" y="240" width="135" height="135" rx="8" fill="#0f172a" stroke="#38bdf8" stroke-width="2"/>
+                <rect x="190" y="265" width="115" height="58" rx="4" fill="#020408" stroke="#1e293b"/>
+                <text x="247" y="282" fill="#38bdf8" font-size="8" font-weight="bold" text-anchor="middle">ABC Kids listen</text>
+                <text x="247" y="295" fill="#93c5fd" font-size="7" text-anchor="middle">WIFI OK | VOL 67%</text>
+                <text x="247" y="310" fill="#38bdf8" font-size="7" text-anchor="middle">ılı.lıllılı.ıllı</text>
+                <text x="247" y="256" text-anchor="middle" fill="#fff" font-weight="700" font-size="10">OLED SSD1306</text>
+                <text x="247" y="337" text-anchor="middle" fill="#64748b" font-size="8">128x64 Monochrome</text>
+
+                <!-- Pins on bottom of OLED -->
+                <circle cx="205" cy="365" r="4" fill="#ef4444" id="pin-oled-vcc"/><text x="205" y="356" fill="#fca5a5" font-size="7" text-anchor="middle">VCC</text>
+                <circle cx="230" cy="365" r="4" fill="#3b82f6" id="pin-oled-gnd"/><text x="230" y="356" fill="#93c5fd" font-size="7" text-anchor="middle">GND</text>
+                <circle cx="255" cy="365" r="4" fill="#eab308" id="pin-oled-scl"/><text x="255" y="356" fill="#fef08a" font-size="7" text-anchor="middle">SCL</text>
+                <circle cx="280" cy="365" r="4" fill="#06b6d4" id="pin-oled-sda"/><text x="280" y="356" fill="#a5f3fc" font-size="7" text-anchor="middle">SDA</text>
+              </g>
+
               <!-- WIRES (Color-coded) -->
               <!-- Battery to TP4056 B+/B- -->
               <path d="M 45 210 L 45 170 L 160 115" fill="none" stroke="#ef4444" stroke-width="2.5" class="wire-path wire-batt"/>
@@ -737,15 +912,25 @@
 
               <!-- ESP32 to MAX98357A I2S Lines -->
               <!-- GPIO 25 (LRC) -> LRC -->
-              <path d="M 500 170 L 540 170 L 540 180 L 580 180" fill="none" stroke="#10b981" stroke-width="2.5" class="wire-path wire-lrc"/>
+              <path d="M 500 165 L 540 165 L 540 180 L 580 180" fill="none" stroke="#10b981" stroke-width="2.5" class="wire-path wire-lrc"/>
               <!-- GPIO 26 (BCLK) -> BCLK -->
-              <path d="M 500 195 L 580 195 L 580 205" fill="none" stroke="#06b6d4" stroke-width="2.5" class="wire-path wire-bclk"/>
-              <!-- GPIO 22 (DIN) -> DIN -->
-              <path d="M 500 220 L 540 220 L 540 230 L 580 230" fill="none" stroke="#a855f7" stroke-width="2.5" class="wire-path wire-din"/>
+              <path d="M 500 190 L 580 190 L 580 205" fill="none" stroke="#06b6d4" stroke-width="2.5" class="wire-path wire-bclk"/>
+              <!-- GPIO 27 (DIN) -> DIN (Moved from 22 to free I2C SCL) -->
+              <path d="M 500 215 L 540 215 L 540 230 L 580 230" fill="none" stroke="#a855f7" stroke-width="2.5" class="wire-path wire-din"/>
 
               <!-- Power branch to MAX98357A VIN & GND -->
               <path d="M 320 170 L 320 295 L 595 295 L 595 260 L 580 260" fill="none" stroke="#ef4444" stroke-dasharray="4,3" stroke-width="2" class="wire-path wire-pwr"/>
-              <path d="M 500 245 L 560 245 L 560 268 L 575 268" fill="none" stroke="#3b82f6" stroke-dasharray="4,3" stroke-width="2" class="wire-path wire-gnd"/>
+              <path d="M 350 195 L 340 195 L 340 310 L 575 310 L 575 268" fill="none" stroke="#3b82f6" stroke-dasharray="4,3" stroke-width="2" class="wire-path wire-gnd"/>
+
+              <!-- OLED Display Wires (I2C & 3.3V) -->
+              <!-- OLED VCC (3.3V) -> ESP32 3.3V -->
+              <path d="M 205 365 L 205 405 L 330 405 L 330 145 L 350 145" fill="none" stroke="#ef4444" stroke-width="2.5" class="wire-path wire-oled-vcc"/>
+              <!-- OLED GND -> ESP32 GND -->
+              <path d="M 230 365 L 230 420 L 340 420 L 340 195 L 350 195" fill="none" stroke="#3b82f6" stroke-width="2.5" class="wire-path wire-oled-gnd"/>
+              <!-- OLED SCL -> ESP32 GPIO 22 -->
+              <path d="M 255 365 L 255 435 L 480 435 L 480 240 L 500 240" fill="none" stroke="#eab308" stroke-width="2.5" class="wire-path wire-scl"/>
+              <!-- OLED SDA -> ESP32 GPIO 21 -->
+              <path d="M 280 365 L 280 450 L 495 450 L 495 265 L 500 265" fill="none" stroke="#06b6d4" stroke-width="2.5" class="wire-path wire-sda"/>
 
               <!-- MAX98357A to Speaker -->
               <path d="M 720 195 L 740 195 L 740 370 L 690 370" fill="none" stroke="#f97316" stroke-width="2.5" class="wire-path wire-spk"/>
@@ -753,11 +938,12 @@
             </svg>
           </div>
           <div class="diagram-legend">
-            <span class="legend-item"><span class="color-dot red"></span> 5V Power</span>
+            <span class="legend-item"><span class="color-dot red"></span> 5V / 3.3V Power</span>
             <span class="legend-item"><span class="color-dot blue"></span> Ground (GND)</span>
             <span class="legend-item"><span class="color-dot green"></span> LRC (Word Clock)</span>
-            <span class="legend-item"><span class="color-dot cyan"></span> BCLK (Bit Clock)</span>
-            <span class="legend-item"><span class="color-dot purple"></span> DIN (Digital Audio)</span>
+            <span class="legend-item"><span class="color-dot cyan"></span> BCLK & SDA (Data)</span>
+            <span class="legend-item"><span class="color-dot" style="background:#eab308"></span> SCL (I2C Clock)</span>
+            <span class="legend-item"><span class="color-dot purple"></span> DIN (GPIO 27)</span>
             <span class="legend-item"><span class="color-dot" style="background:#f59e0b"></span> Station Button</span>
             <span class="legend-item"><span class="color-dot orange"></span> Speaker Leads</span>
           </div>
@@ -788,7 +974,7 @@
             <div class="pin-row" data-target="wire-din">
               <div><strong>MAX98357A</strong></div>
               <div><code>DIN</code></div>
-              <div>ESP32 <strong>GPIO 22</strong></div>
+              <div>ESP32 <strong>GPIO 27</strong> (freed GPIO 22 for I2C)</div>
             </div>
             <div class="pin-row" data-target="wire-gnd">
               <div><strong>MAX98357A</strong></div>
@@ -804,6 +990,27 @@
               <div><strong>MAX98357A</strong></div>
               <div><code>+ / -</code> Terminals</div>
               <div>Speaker <strong>+ and -</strong></div>
+            </div>
+            <!-- OLED Connections -->
+            <div class="pin-row" data-target="wire-scl">
+              <div><strong>0.96" OLED</strong></div>
+              <div><code>SCL</code></div>
+              <div>ESP32 <strong>GPIO 22</strong> (Hardware I2C Clock)</div>
+            </div>
+            <div class="pin-row" data-target="wire-sda">
+              <div><strong>0.96" OLED</strong></div>
+              <div><code>SDA</code></div>
+              <div>ESP32 <strong>GPIO 21</strong> (Hardware I2C Data)</div>
+            </div>
+            <div class="pin-row" data-target="wire-oled-vcc">
+              <div><strong>0.96" OLED</strong></div>
+              <div><code>VCC</code></div>
+              <div>ESP32 <strong>3.3V</strong> (NEVER 5V!)</div>
+            </div>
+            <div class="pin-row" data-target="wire-oled-gnd">
+              <div><strong>0.96" OLED</strong></div>
+              <div><code>GND</code></div>
+              <div>ESP32 <strong>GND</strong></div>
             </div>
             <div class="pin-row" data-target="wire-btn">
               <div><strong>Station Button</strong></div>
@@ -895,14 +1102,14 @@
                 <strong>2. Add ESP32 Boards:</strong> In Arduino IDE, go to <em>Settings > Additional Board Manager URLs</em> and paste: <code>https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json</code>. Then go to <em>Boards Manager</em>, search "esp32", and click <strong>Install</strong>.
               </div>
               <div class="sub-step">
-                <strong>3. Install the Audio Library:</strong> Go to <em>Tools > Manage Libraries...</em>, search for <strong>ESP32-audioI2S</strong> (by schreibfaul1), and click <strong>Install</strong>.
+                <strong>3. Install the Libraries:</strong> Go to <em>Tools > Manage Libraries...</em>, search for and install <strong>ESP32-audioI2S</strong> (by schreibfaul1) and <strong>Adafruit SSD1306</strong> (by Adafruit, which automatically includes <em>Adafruit GFX</em>).
               </div>
               <div class="sub-step">
                 <strong>4. Flash the Code:</strong> Use our code generator below to generate your sketch, select your ESP32 board and COM port in the menu, and hit the <strong>Upload</strong> arrow!
               </div>
             </div>
             <div class="callout-box">
-              🎉 <strong>The Magic Moment:</strong> Within 5 seconds of uploading, your speaker will announce connection and ABC Kids will start playing live through the speaker!
+              🎉 <strong>The Magic Moment:</strong> Within 5 seconds of uploading, your OLED screen will light up, display "Connecting to Wi-Fi", then switch to "ABC Kids listen" with live bouncing audio equalizer bars as music flows from the speaker!
             </div>
           </div>
         </div>
@@ -943,6 +1150,7 @@
             </p>
             <ul class="step-checklist">
               <li><strong>Speaker Hole:</strong> Use a hole saw or spade bit (usually 40mm to 50mm) to drill a circular hole in the front face.</li>
+              <li><strong>OLED Screen Window:</strong> Cut a small 28mm x 15mm rectangular window for the 0.96" OLED display.</li>
               <li><strong>Vintage Fabric Grille:</strong> Glue a small square of linen, tweed, or speaker cloth behind the hole before screwing or gluing the speaker in place.</li>
               <li><strong>Control Holes:</strong> Drill a 6mm hole for the toggle switch and a 7mm hole for the volume potentiometer.</li>
               <li><strong>USB-C Slot:</strong> In the back or side of the box, cut a small 12mm x 4mm slot so the TP4056's USB-C port sits flush with the outside. Secure the TP4056 board with high-strength hot-glue or epoxy.</li>
@@ -1025,12 +1233,14 @@
             </button>
           </div>
 
-          <pre class="code-block"><code id="code-display">// Kangaroo Radio — DIY Child-Safe Multi-Station Radio
-// Hardware: ESP32 + MAX98357A I2S DAC Amp + 3W Speaker + Station Button
-// Target: Curated Child-Safe Streams (ABC Kids, Fun Kids, Lullabies)
+          <pre class="code-block"><code id="code-display">// Kangaroo Radio — DIY Child-Safe Multi-Station Radio with OLED
+// Hardware: ESP32 + MAX98357A I2S DAC Amp + 0.96" Monochrome OLED + 3W Speaker
 
 #include &lt;Arduino.h&gt;
 #include &lt;WiFi.h&gt;
+#include &lt;Wire.h&gt;
+#include &lt;Adafruit_GFX.h&gt;
+#include &lt;Adafruit_SSD1306.h&gt;
 #include "Audio.h"
 
 // Wi-Fi Credentials
@@ -1038,11 +1248,19 @@ const char* ssid     = "<span class="hl-var" id="code-ssid">MyHomeWiFi</span>";
 const char* password = "<span class="hl-var" id="code-pass">SecretPassword123</span>";
 
 // Pinout Definitions
-#define I2S_DOUT      22    // DIN on MAX98357A
+#define I2S_DOUT      27    // DIN on MAX98357A (moved from 22 to free I2C SCL)
 #define I2S_BCLK      26    // BCLK on MAX98357A
 #define I2S_LRC       25    // LRC (WS) on MAX98357A
-#define BUTTON_PIN    33    // Station Cycle Button (Pin to GND, uses INPUT_PULLUP)
+#define I2C_SDA       21    // Hardware I2C SDA (OLED)
+#define I2C_SCL       22    // Hardware I2C SCL (OLED)
+#define BUTTON_PIN    33    // Station Cycle Push Button (to GND)
 #define POT_PIN       34    // Volume Potentiometer (ADC1, 3.3V reference)
+
+// 0.96" Monochrome SSD1306 OLED (128x64)
+#define SCREEN_WIDTH  128
+#define SCREEN_HEIGHT 64
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &amp;Wire, -1);
+Audio audio;
 
 struct Station {
   const char* name;
@@ -1051,26 +1269,69 @@ struct Station {
 };
 
 const Station stations[] = {
-  { "ABC Kids listen (Australia)", "Preschool Stories & Music", "https://streaming.abc-cdn.net.au/audio/hls/abcextra.m3u8?source=web" },
-  { "Fun Kids UK (Live)", "Children's Pop & Stories", "https://listen-funkids.sharp-stream.com/funkids.mp3" },
-  { "Fun Kids Junior (Toddlers)", "Nursery Rhymes (Ages 0-5)", "http://listen-funkids.sharp-stream.com/funkidsjunior.mp3" },
-  { "Rock the Cradle (MPR Kids)", "Commercial-Free Family Tunes", "http://rockthecradle.stream.publicradio.org/rockthecradle.mp3" },
-  { "Positively Sleep Kids", "Bedtime Lullabies & Ambient Calm", "https://streaming.positivity.radio/pr/sleepkids/icecast.audio" },
-  { "ABC Classic (Calm / Reading)", "Peaceful Classical Music", "https://streaming.abc-cdn.net.au/audio/hls/classicfmnsw.m3u8?source=web" }
+  { "ABC Kids listen", "Preschool & Aussie Stories", "https://streaming.abc-cdn.net.au/audio/hls/abcextra.m3u8?source=web" },
+  { "Fun Kids UK", "Pop, Stories & Quizzes", "https://listen-funkids.sharp-stream.com/funkids.mp3" },
+  { "Fun Kids Junior", "Gentle Nursery Rhymes (0-4)", "http://listen-funkids.sharp-stream.com/funkidsjunior.mp3" },
+  { "Rock the Cradle", "Indie Music for Families", "http://rockthecradle.stream.publicradio.org/rockthecradle.mp3" },
+  { "Positively Sleep", "Calm Lullabies & Ambient", "https://streaming.positivity.radio/pr/sleepkids/icecast.audio" },
+  { "ABC Classic", "Peaceful Classical for Play", "https://streaming.abc-cdn.net.au/audio/hls/classicfmnsw.m3u8?source=web" }
 };
 
 const int TOTAL_STATIONS = sizeof(stations) / sizeof(stations[0]);
 int currentStation = <span class="hl-var" id="code-startup-station">0</span>;
-
-Audio audio;
 int lastVolume = -1;
 unsigned long lastButtonPress = 0;
+
+void drawTopBar(const char* tag, int vol) {
+  display.fillRect(0, 0, SCREEN_WIDTH, 11, SSD1306_WHITE);
+  display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
+  display.setTextSize(1);
+  display.setCursor(2, 2); display.print(tag);
+  display.setCursor(82, 2); display.print("VOL:");
+  display.print(map(vol, 0, 21, 0, 100)); display.print("%");
+  display.setTextColor(SSD1306_WHITE);
+}
+
+void showConnectingScreen(const char* targetSsid, int progress) {
+  display.clearDisplay();
+  drawTopBar("KANGAROO RADIO", 14);
+  display.setCursor(0, 18); display.print("Connecting to Wi-Fi");
+  display.setCursor(0, 30); display.print("SSID: "); display.print(targetSsid);
+  display.drawRect(4, 45, 120, 10, SSD1306_WHITE);
+  display.fillRect(6, 47, map(progress, 0, 35, 10, 116), 6, SSD1306_WHITE);
+  display.display();
+}
+
+void showErrorScreen(const char* title, const char* line1, const char* line2) {
+  display.clearDisplay();
+  display.fillRect(0, 0, SCREEN_WIDTH, 13, SSD1306_WHITE);
+  display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
+  display.setCursor(14, 3); display.print("[ ! ] ERROR [ ! ]");
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(0, 20); display.print("Reason: "); display.println(title);
+  display.setCursor(0, 34); display.println(line1);
+  display.setCursor(0, 48); display.println(line2);
+  display.display();
+}
+
+void showStationScreen(int idx, int vol, int tick = 0) {
+  display.clearDisplay();
+  drawTopBar("WIFI OK", vol);
+  display.setCursor(0, 16); display.print("STATION ["); display.print(idx + 1); display.print("/6]");
+  display.setCursor(0, 28); display.print(stations[idx].name);
+  display.setCursor(0, 40); display.print(stations[idx].genre);
+  int bars[] = {4, 7, 11, 8, 13, 9, 6, 12, 10, 5, 8, 14, 7, 10, 6, 12};
+  for (int i = 0; i &lt; 16; i++) {
+    int h = bars[(i + tick) % 16];
+    display.fillRect(4 + (i * 7), 63 - h, 4, h, SSD1306_WHITE);
+  }
+  display.display();
+}
 
 void switchStation(int index) {
   if (index &lt; 0 || index &gt;= TOTAL_STATIONS) return;
   currentStation = index;
-  Serial.print(">>> Switching to: ");
-  Serial.println(stations[currentStation].name);
+  showStationScreen(currentStation, lastVolume &gt;= 0 ? lastVolume : 14);
   audio.connecttohost(stations[currentStation].url);
 }
 
@@ -1078,45 +1339,55 @@ void setup() {
   Serial.begin(115200);
   pinMode(BUTTON_PIN, INPUT_PULLUP);
 
-  // 1. Connect to Wi-Fi
+  // Initialize OLED Display (Hardware I2C SDA=21, SCL=22)
+  Wire.begin(I2C_SDA, I2C_SCL);
+  display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
+
+  // Connect to Wi-Fi with live OLED diagnostic feedback
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
-  Serial.print("Connecting to Wi-Fi");
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(400);
-    Serial.print(".");
+  int attempts = 0;
+  while (WiFi.status() != WL_CONNECTED &amp;&amp; attempts &lt; 35) {
+    delay(350);
+    showConnectingScreen(ssid, attempts);
+    attempts++;
   }
-  Serial.println("\nWi-Fi Connected!");
 
-  // 2. Configure Digital Audio Output
+  if (WiFi.status() != WL_CONNECTED) {
+    if (WiFi.status() == WL_NO_SSID_AVAIL) {
+      showErrorScreen("SSID NOT FOUND", "Wifi not found", "Check router 2.4GHz");
+    } else {
+      showErrorScreen("WRONG PASSWORD", "Auth failed on:", ssid);
+    }
+    while (WiFi.status() != WL_CONNECTED) { delay(1000); }
+  }
+
+  // Audio setup
   audio.setPinout(I2S_BCLK, I2S_LRC, I2S_DOUT);
   audio.setVolume(<span class="hl-var" id="code-vol">14</span>);
-
-  // 3. Connect to Startup Station
   switchStation(currentStation);
 }
 
 void loop() {
   audio.loop();
 
-  // 1. Handle Station Cycle Button (Debounced)
+  // Push button station cycling
   if (digitalRead(BUTTON_PIN) == LOW) {
     if (millis() - lastButtonPress &gt; 450) {
       lastButtonPress = millis();
-      int next = (currentStation + 1) % TOTAL_STATIONS;
-      switchStation(next);
+      switchStation((currentStation + 1) % TOTAL_STATIONS);
     }
   }
 
-  // 2. Handle Volume Potentiometer
-  static unsigned long lastCheck = 0;
-  if (millis() - lastCheck &gt; 250) {
-    lastCheck = millis();
-    int potVal = analogRead(POT_PIN);
-    int newVol = map(potVal, 0, 4095, 0, 21);
+  // Volume potentiometer check
+  static unsigned long lastPot = 0;
+  if (millis() - lastPot &gt; 200) {
+    lastPot = millis();
+    int newVol = map(analogRead(POT_PIN), 0, 4095, 0, 21);
     if (abs(newVol - lastVolume) &gt; 0) {
       lastVolume = newVol;
       audio.setVolume(newVol);
+      showStationScreen(currentStation, lastVolume);
     }
   }
 }</code></pre>

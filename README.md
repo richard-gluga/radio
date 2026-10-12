@@ -67,6 +67,7 @@ All components can be ordered from **[Core Electronics](https://core-electronics
 | **Battery** | 18650 3.7V ~2600mAh Cell + Single Slot Holder with Leads | ~$11.50 | [Jaycar: 18650 Cell (SB2423)](https://www.jaycar.com.au/18650-li-ion-rechargeable-battery-2600mah/p/SB2423) / [Jaycar: Holder (PH9201)](https://www.jaycar.com.au/1-x-18650-pcb-battery-holder/p/PH9201) / [Core: 2000mAh LiPo](https://core-electronics.com.au/polymer-lithium-ion-battery-2000mah.html) |
 | **Charger & Boost** | Makerverse USB-C LiPo Charger (CE08374) + 5V Step-Up (POLOLU-2115) | ~$6.50 – $10 | [Core: USB-C Charger (CE08374)](https://core-electronics.com.au/makerverse-usb-c-lipo-charger.html) / [Core: Pololu 5V Boost](https://core-electronics.com.au/pololu-5v-step-up-voltage-regulator-u3v12f5.html) / [Amazon AU: 18650 Shield V3](https://www.amazon.com.au/s?k=18650+battery+shield+v3+type+c) |
 | **Controls** | SPST Toggle Switch + 10kΩ Linear Potentiometer with Knob | ~$3.80 | [Core: Switch (COM-00102)](https://core-electronics.com.au/spdt-mini-power-switch.html) / [Core: 10k Pot (COM-09939)](https://core-electronics.com.au/rotary-potentiometer-10k-ohm-linear.html) / [Jaycar: Toggle (ST0570)](https://www.jaycar.com.au/spst-standard-toggle-switch/p/ST0570) |
+| **Monochrome Display** | 0.96" I2C Monochrome OLED Display (128×64 SSD1306) | ~$8.50 | [Core: DFR0650 OLED](https://core-electronics.com.au/gravity-i2c-oled-2864-display.html) / [Jaycar: OLED (XC4384)](https://www.jaycar.com.au/0-96-inch-oled-display-module/p/XC4384) |
 | **Wiring** | Dupont Jumper Wires (40-pack F-to-F, 150mm) | ~$4.00 | [Core: 40pk F-F Jumpers (PRT-12794)](https://core-electronics.com.au/premium-female-female-jumper-wires-40-x-6-150mm.html) / [Jaycar: Leads (WC6024)](https://www.jaycar.com.au/40-piece-female-to-female-jumper-leads/p/WC6024) |
 | **Enclosure** | Small Timber Craft Box | ~$5.00 | [Kmart Wooden Box](https://www.kmart.com.au/search/?searchTerm=wooden+box) / [Bunnings Craft Box](https://www.bunnings.com.au/search/products?q=craft+box) |
 
@@ -84,6 +85,8 @@ All components can be ordered from **[Core Electronics](https://core-electronics
 4. **Volume Potentiometer Voltage & Pin Selection:**  
    - Connect the potentiometer's power leg to **3.3V (NOT 5V!)**. The ESP32 analog pins are 3.3V max.
    - Use **GPIO 34**: On the ESP32, GPIO 34 belongs to **ADC1**. Channels on ADC2 are disabled when Wi-Fi is actively streaming; ADC1 pins work flawlessly during continuous Wi-Fi audio playback.
+5. **I2C Display & Audio Pin Shift:**  
+   The 0.96" SSD1306 OLED display connects to the ESP32 hardware I2C bus (`SDA = GPIO 21`, `SCL = GPIO 22`). To avoid pin collision on GPIO 22, the MAX98357A amplifier's digital audio line (`DIN`) is connected to **GPIO 27**.
 
 ---
 
@@ -96,10 +99,17 @@ Connect the components with standard push-on Dupont jumper wires:
    ────────────────     ─────────────
    LRC (Word Clock)  ──► GPIO 25
    BCLK (Bit Clock)  ──► GPIO 26
-   DIN (Data In)     ──► GPIO 22
+   DIN (Data In)     ──► GPIO 27 (freed GPIO 22 for I2C)
    GND               ──► GND
    VIN               ──► 5V (from Boost Converter or Shield)
    GAIN              ──► Leave Floating (defaults to 9dB)
+
+    0.96" OLED Pin        ESP32 Pin
+   ────────────────     ─────────────
+   VCC               ──► 3.3V (NEVER 5V!)
+   GND               ──► GND
+   SCL (I2C Clock)   ──► GPIO 22
+   SDA (I2C Data)    ──► GPIO 21
 
     Station Button        ESP32 Pin
    ────────────────     ─────────────
@@ -138,7 +148,9 @@ Never run a speaker cone bare on a table! The sound wave from the back cancels o
    ```
    https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
    ```
-3. In Library Manager, install **`ESP32-audioI2S`** (by *schreibfaul1*).
+3. In Library Manager, install:
+   - **`ESP32-audioI2S`** (by *schreibfaul1*)
+   - **`Adafruit SSD1306`** (by *Adafruit*, which includes *Adafruit GFX*)
 4. Open [`firmware/KangarooRadio_ABCKids.ino`](firmware/KangarooRadio_ABCKids.ino), enter your Wi-Fi credentials, and hit **Upload**!
 
 ---

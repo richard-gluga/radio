@@ -155,9 +155,134 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
 
+      // Also update the simulated OLED screen to match
+      const stationTitles = [
+        "ABC Kids listen",
+        "Fun Kids UK",
+        "Fun Kids Junior",
+        "Rock the Cradle",
+        "Positively Sleep",
+        "ABC Classic"
+      ];
+      const stationGenres = [
+        "Preschool & Aussie Stories",
+        "Pop, Stories & Quizzes",
+        "Gentle Nursery Rhymes (0-4)",
+        "Indie Music for Families",
+        "Calm Lullabies & Ambient",
+        "Peaceful Classical for Play"
+      ];
+      if (simTopBar && simLine1 && simLine2 && simLine3) {
+        simTopBar.classList.remove('error-top');
+        simTopTag.textContent = 'WIFI OK';
+        simTopVol.textContent = 'VOL: 67%';
+        simLine1.textContent = `STATION [${currentSimStation + 1}/6]`;
+        simLine2.textContent = stationTitles[currentSimStation];
+        simLine3.textContent = stationGenres[currentSimStation];
+        simBottom.innerHTML = `<div class="oled-equalizer animating"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>`;
+        oledButtons.forEach(b => b.classList.remove('active'));
+      }
+
       playChirp();
     });
   }
+
+  // ==========================================
+  // MONOCHROME OLED DISPLAY SIMULATOR
+  // ==========================================
+  const oledButtons = document.querySelectorAll('.btn-oled-state');
+  const simTopBar = document.getElementById('sim-oled-topbar');
+  const simTopTag = document.getElementById('sim-oled-top-tag');
+  const simTopVol = document.getElementById('sim-oled-top-vol');
+  const simLine1 = document.getElementById('sim-oled-line1');
+  const simLine2 = document.getElementById('sim-oled-line2');
+  const simLine3 = document.getElementById('sim-oled-line3');
+  const simBottom = document.getElementById('sim-oled-bottom');
+
+  function renderOledState(state) {
+    if (!simTopBar || !simLine1 || !simLine2 || !simLine3 || !simBottom) return;
+
+    simTopBar.classList.remove('error-top');
+    const currentSsid = (inputSsid && inputSsid.value.trim()) ? inputSsid.value.trim() : 'MyHomeWiFi';
+
+    switch (state) {
+      case 'playing-abc':
+        simTopTag.textContent = 'WIFI OK';
+        simTopVol.textContent = 'VOL: 67%';
+        simLine1.textContent = 'STATION [1/6]';
+        simLine2.textContent = 'ABC Kids listen';
+        simLine3.textContent = 'Preschool & Aussie Stories';
+        simBottom.innerHTML = `<div class="oled-equalizer animating"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>`;
+        break;
+
+      case 'playing-funkids':
+        simTopTag.textContent = 'WIFI OK';
+        simTopVol.textContent = 'VOL: 67%';
+        simLine1.textContent = 'STATION [2/6]';
+        simLine2.textContent = 'Fun Kids UK';
+        simLine3.textContent = 'Pop, Stories & Quizzes';
+        simBottom.innerHTML = `<div class="oled-equalizer animating"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>`;
+        break;
+
+      case 'connecting':
+        simTopTag.textContent = 'KANGAROO RADIO';
+        simTopVol.textContent = 'BOOT';
+        simLine1.textContent = 'Connecting to Wi-Fi...';
+        simLine2.textContent = `SSID: ${currentSsid}`;
+        simLine3.textContent = 'Negotiating DHCP IP...';
+        simBottom.innerHTML = `<div class="oled-progress-track"><div class="oled-progress-fill" style="width: 62%;"></div></div>`;
+        break;
+
+      case 'err-notfound':
+        simTopBar.classList.add('error-top');
+        simTopTag.textContent = '[ ! ] WI-FI ERROR';
+        simTopVol.textContent = 'ALERT';
+        simLine1.textContent = 'Reason: SSID NOT FOUND';
+        simLine2.textContent = `"${currentSsid}" not found`;
+        simLine3.textContent = 'Check router & 2.4GHz band';
+        simBottom.innerHTML = `<div style="font-size:0.65rem; color:#94a3b8; text-align:center; width:100%;">[ Check SSID / Router ]</div>`;
+        break;
+
+      case 'err-password':
+        simTopBar.classList.add('error-top');
+        simTopTag.textContent = '[ ! ] WI-FI ERROR';
+        simTopVol.textContent = 'ALERT';
+        simLine1.textContent = 'Reason: WRONG PASSWORD';
+        simLine2.textContent = `Auth failed for "${currentSsid}"`;
+        simLine3.textContent = 'Check Wi-Fi credentials';
+        simBottom.innerHTML = `<div style="font-size:0.65rem; color:#94a3b8; text-align:center; width:100%;">[ Re-enter Credentials ]</div>`;
+        break;
+
+      case 'err-internet':
+        simTopBar.classList.add('error-top');
+        simTopTag.textContent = '[ ! ] STREAM ERROR';
+        simTopVol.textContent = 'ALERT';
+        simLine1.textContent = 'Reason: NO INTERNET';
+        simLine2.textContent = 'Connected to Wi-Fi OK';
+        simLine3.textContent = 'Stream server unreachable';
+        simBottom.innerHTML = `<div style="font-size:0.65rem; color:#94a3b8; text-align:center; width:100%;">[ Retrying in 5s... ]</div>`;
+        break;
+
+      case 'volume-adjust':
+        simTopTag.textContent = 'MASTER VOLUME';
+        simTopVol.textContent = 'LEVEL: 14/21';
+        simLine1.textContent = 'Volume: 14 / 21 (67%)';
+        simLine2.innerHTML = `<div class="oled-progress-track" style="height:10px; margin: 3px 0;"><div class="oled-progress-fill" style="width: 67%; height:100%;"></div></div>`;
+        simLine3.textContent = 'ABC Kids listen';
+        simBottom.innerHTML = `<div style="font-size:0.65rem; color:#93c5fd; text-align:center; width:100%;">[ Rotary Dial Turned ]</div>`;
+        break;
+    }
+  }
+
+  oledButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      oledButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const state = btn.dataset.state;
+      renderOledState(state);
+      playChirp();
+    });
+  });
 
   if (btnCopy) {
     btnCopy.addEventListener('click', () => {
