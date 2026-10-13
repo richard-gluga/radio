@@ -1,0 +1,49 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Maintaining — Kangaroo Radio</title><link rel="stylesheet" href="styles.css"><body><main class="standalone guide"><a href="index.html">← Back to the build guide</a><h1>Maintaining Kangaroo Radio</h1>
+<p>The README is the complete tutorial. <code>site/template.html</code> is the website shell, and <code>scripts/build_site.py</code> renders the README into <code>docs/index.html</code>. Edit those sources, then regenerate; do not hand-edit generated HTML or the copies of firmware under <code>docs/downloads/</code>.</p>
+<h2>Source ownership</h2>
+<ul>
+<li><code>firmware/KangarooRadio_ABCKids/</code>: canonical sketch, configuration, pin definitions, station list and pure parsing/control helpers.</li>
+<li><code>scripts/versions.json</code>: pinned core, libraries and the exact FQBN used to compile.</li>
+<li><code>README.md</code>: build instructions, matching pin tables and primary references.</li>
+<li><code>docs/app.js</code>, <code>docs/lib.js</code>, <code>docs/styles.css</code>: browser tools and appearance.</li>
+<li><code>docs/assets/wiring.svg</code>: original connection overview. It is not a physical wiring photograph.</li>
+<li><code>docs/vendor/hls-1.6.13.min.js</code> and <code>hls-LICENSE.txt</code>: pinned third-party browser HLS playback.</li>
+<li><code>scripts/build_site.py</code>: generates HTML, identical firmware copies, SHA-256 manifest, deterministic ZIP, station JSON and the original five-second audio-check WAV.</li>
+<li><code>VALIDATION.md</code>: evidence and explicit physical acceptance checks. Do not replace pending measurements with guesses.</li>
+</ul>
+<p>Never commit real Wi-Fi credentials. Generate personalised ZIPs outside this checkout. The committed configuration intentionally stops normal operation until the home SSID is configured. This means a compiler can optimise away normal playback in that default build; <strong>compile the configured normal-radio variant as well as Hardware test</strong>.</p>
+<h2>Local checks</h2>
+<p>Python 3, Node.js and a C++17 compiler are needed for contributor checks, not for building the radio with Arduino IDE.</p>
+<pre><code class="language-sh">python3 -m venv .venv
+.venv/bin/python -m pip install -r requirements-dev.txt
+.venv/bin/python scripts/build_site.py
+.venv/bin/python scripts/build_site.py --check
+python3 tests/check_repository.py
+node --test tests/test_web.mjs
+g++ -std=c++17 -Wall -Wextra -Werror tests/test_radio.cpp -o build/test-radio
+./build/test-radio
+</code></pre>
+<p>On Windows, use the virtual environment's <code>Scripts/python.exe</code> instead of <code>.venv/bin/python</code>, and the C++ compiler installed on your computer. Create <code>build/</code> before compiling if it does not exist. Generated outputs are committed so readers need neither Python nor Node.js.</p>
+<h2>Clean ESP32 compile</h2>
+<p>Install Arduino CLI from the official Arduino site and run these commands, or use the identical versions/settings in tutorial section 4:</p>
+<pre><code class="language-sh">arduino-cli core update-index --additional-urls https://espressif.github.io/arduino-esp32/package_esp32_index.json
+arduino-cli core install esp32:esp32@3.3.12 --additional-urls https://espressif.github.io/arduino-esp32/package_esp32_index.json
+arduino-cli lib install 'ESP32-audioI2S-master@4.0.0' 'Adafruit SSD1306@2.5.17' 'Adafruit GFX Library@1.12.6' 'Adafruit BusIO@1.17.4' 'MFRC522@1.4.12'
+python3 scripts/compile_firmware.py
+</code></pre>
+<p><code>compile_firmware.py</code> first checks installed core/library versions, then copies the canonical sketch into ignored build folders, supplies fictional credentials, and compiles both operating modes using <code>scripts/versions.json</code>. It never changes the committed configuration or uploads to hardware. Use <code>--check-tools-only</code> to check versions without compiling. Set <code>ARDUINO_CLI</code> and optionally <code>ARDUINO_CLI_CONFIG</code> to use a separately installed toolchain. Allow several GB for ESP32 tools. A full package installs toolchains for other ESP32 families too.</p>
+<h2>Browser checks</h2>
+<p>Serve the repository, not a <code>file://</code> URL:</p>
+<pre><code class="language-sh">python3 -m http.server 8769 --bind 127.0.0.1
+</code></pre>
+<p>Open <code>http://127.0.0.1:8769/</code>. The redirect preserves query and fragment. The content also works when <code>docs/</code> alone is the hosting root, as on GitHub Pages. <code>tests/browser.cjs</code> uses Playwright Chromium for responsive layout, configured ZIP downloads, real WAV playback and cancellation checks. Install Playwright in a separate local environment and set <code>PLAYWRIGHT_MODULE</code> to its module path if it is not available through ordinary Node resolution. Set <code>CHROME_PATH</code> if using an existing Chrome binary. Run <code>node tests/browser.cjs</code> while the server is active.</p>
+<p>Unit tests use controlled media events for race conditions. Real WAV playback confirms the local media file/browser path. Neither proves live-stream decoding on an ESP32. Check the six real endpoints separately, and test actual hardware in Australia for ABC.</p>
+<h2>Publishing</h2>
+<p>For GitHub Pages, publish the <code>docs/</code> folder on the intended branch using the repository's existing Pages configuration. Generate and check the site before committing/publishing. All files under <code>docs/</code>, including <code>downloads/</code>, <code>vendor/</code> and <code>assets/</code>, must be included.</p>
+<p>After publication, open the real site, download a configured ZIP, verify its contents, and open <code>assets/audio-check.wav</code> from the phone that will write the tag. The old live site does not contain the new file until the revised site is published. The browser Copy demo URL action derives the public URL from its current hosting location.</p>
+<h2>External links and dependency updates</h2>
+<p>The local checker verifies files, anchors, sketch copies, archive content and documented version/pin consistency. It does not declare all external links healthy. Retail sites may reject automated requests; distinguish an anti-bot 403 from a real missing product. Verify SKUs against the actual product specification, not a descriptive URL slug.</p>
+<p>When updating the audio library, inspect its event API, PSRAM requirements and supported Arduino core. Recompile both modes and repeat the physical checks. Changing a board or power component requires checking its schematic, connector polarity, regulator/current ratings, charging arrangement, pins and mounting dimensions. A superficially similar part is not a tested drop-in replacement.</p>
+<p>For station URL changes, edit <code>Stations.h</code>, regenerate, test browser playback and verify decoding on hardware. Treat successful HTTP responses as availability evidence, not proof of a functioning radio. Record the date of price/source checks, not a permanent “verified” badge.</p>
+<h2>Licences</h2>
+<p>Original project files are MIT. The original test tone is generated from a mathematical waveform by <code>build_site.py</code>, and contains no third-party recordings. HLS.js is Apache-2.0; its licence is included next to the vendored script. The Arduino libraries keep their upstream licences and are installed by the reader. Station streams and linked product documentation remain their owners' material.</p></main></body></html>

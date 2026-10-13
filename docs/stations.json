@@ -1,0 +1,32 @@
+[
+  {
+    "name": "ABC Kids listen",
+    "url": "https://streaming.abc-cdn.net.au/audio/hls/abcextra.m3u8?source=web",
+    "page": "https://www.abc.net.au/listen/live/kidslisten"
+  },
+  {
+    "name": "Fun Kids UK",
+    "url": "https://listen-funkids.sharp-stream.com/funkids.mp3",
+    "page": "https://www.funkidslive.com/"
+  },
+  {
+    "name": "Fun Kids Junior",
+    "url": "https://listen-funkids.sharp-stream.com/funkidsjunior.mp3",
+    "page": "https://www.funkidslive.com/"
+  },
+  {
+    "name": "Rock the Cradle",
+    "url": "https://rockthecradle.stream.publicradio.org/rockthecradle.mp3",
+    "page": "https://www.thecurrent.org/playlist/rockthecradle"
+  },
+  {
+    "name": "Positively Sleep",
+    "url": "https://streaming.positivity.radio/pr/sleepkids/icecast.audio",
+    "page": "https://positivity.radio/"
+  },
+  {
+    "name": "ABC Classic",
+    "url": "https://streaming.abc-cdn.net.au/audio/hls/classicfmnsw.m3u8?source=web",
+    "page": "https://www.abc.net.au/listen/live/classic"
+  }
+]

@@ -1,2119 +1,701 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kangaroo Radio — DIY USB-C ABC Kids Radio Build Guide</title>
-  <meta name="description" content="A complete, beginner-friendly guide to building a one-button, USB-C rechargeable ABC Kids radio in Australia with rich audio and zero soldering required.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Build a rechargeable ESP32 radio with an OLED, volume knob and NFC story cards. Exact parts, complete firmware and step-by-step checks.">
+  <title>Kangaroo Radio — the complete build guide</title>
   <link rel="stylesheet" href="styles.css">
+  <script defer src="vendor/hls-1.6.13.min.js"></script>
+  <script type="module" src="app.js"></script>
 </head>
 <body>
-
-  <!-- Navigation Bar -->
-  <header class="navbar">
-    <div class="nav-container">
-      <a href="#" class="brand-logo" id="brand-logo-link">
-        <span class="logo-icon">📻</span>
-        <span class="logo-text">Kangaroo<strong>Radio</strong></span>
-        <span class="badge-tag">AU Beginner Guide</span>
-      </a>
-      <nav class="nav-links">
-        <a href="#the-truth">The FM Catch</a>
-        <a href="#threejs-radio">3D Model</a>
-        <a href="#photo-gallery">Lookbook</a>
-        <a href="#child-safe-stations">Child-Safe Stations</a>
-        <a href="#oled-display">OLED Screen</a>
-        <a href="#nfc-stories">🎴 NFC Stories</a>
-        <a href="#parts-guide">Parts & Australian Stores</a>
-        <a href="#sound-science">Sound Secret</a>
-        <a href="#wiring-guide">Wiring Diagram</a>
-        <a href="#step-by-step">Step-by-Step Guide</a>
-        <a href="#code-generator">Code Generator</a>
-        <a href="#troubleshooting">Gotchas & FAQ</a>
-      </nav>
-      <a href="#parts-guide" class="nav-cta-btn" id="nav-cta-shop">Get Parts List</a>
-    </div>
+  <a class="skip" href="#guide">Skip to instructions</a>
+  <header class="topbar"><a class="brand" href="#top">Kangaroo <strong>Radio</strong><span class="brand-dot" aria-hidden="true"></span></a>
+    <nav aria-label="Main navigation"><a href="#guide">Build guide</a><a href="#configure">Get firmware</a><a href="#listen">Try the audio</a><a href="validation.html">Verification</a></nav>
   </header>
-
-  <!-- Hero Section -->
-  <section class="hero-section" id="hero-section">
-    <div class="hero-container">
-      <div class="hero-text-content">
-        <div class="hero-pill-badge">
-          <span class="pill-dot"></span>
-          <span>Sydney, Australia &bull; ABC Kids & Multi-Station Project</span>
-        </div>
-        <h1 class="hero-title">Build a USB-C Rechargeable <span>ABC Kids & Family Radio</span></h1>
-        <p class="hero-lead">
-          Flick the toggle switch on to play <strong>ABC Kids Listen</strong>, or press the tactile button to <strong>cycle through 6 curated child-safe stations</strong> (including nursery rhymes, British children's radio, and calming bedtime lullabies). Designed for complete beginners with <strong>zero soldering required</strong>.
-        </p>
-
-        <div class="hero-stats-grid">
-          <div class="stat-card">
-            <span class="stat-number">~$35–$45</span>
-            <span class="stat-label">Total Cost (AUD)</span>
-          </div>
-          <div class="stat-card">
-            <span class="stat-number">1–2 hrs</span>
-            <span class="stat-label">Build Time</span>
-          </div>
-          <div class="stat-card">
-            <span class="stat-number">Zero</span>
-            <span class="stat-label">Soldering Required</span>
-          </div>
-          <div class="stat-card">
-            <span class="stat-number">12+ hrs</span>
-            <span class="stat-label">USB-C Battery Life</span>
-          </div>
-        </div>
-
-        <div class="hero-actions">
-          <a href="#parts-guide" class="btn btn-primary" id="btn-hero-start">View Australian Shopping List</a>
-          <a href="#threejs-radio" class="btn btn-secondary" id="btn-hero-guide">Explore 3D Radio Model</a>
-        </div>
+  <main id="top">
+    <section class="hero" aria-labelledby="hero-title">
+      <div><p class="eyebrow">A family maker project · revised October 2026</p><h1 id="hero-title">A little radio.<br>A project you can follow.</h1>
+      <p class="hero-copy">Internet radio, a real volume knob and stories that start with a tap. Build it one checked connection at a time.</p>
+      <div class="actions"><a class="button" href="#guide">Start with the parts</a><a class="button secondary" href="#configure">Configure the firmware</a></div>
+      <p class="hero-note">DFR1139 + OLED + NFC · soldering required · rechargeable via USB-C</p></div>
+      <div class="radio-illustration" role="img" aria-label="Concept illustration of a radio with speaker grille, OLED, volume knob and station button. Not a photograph or a dimensioned plan.">
+        <div class="radio-handle"></div><div class="radio-body"><div class="speaker-grille"></div><div class="radio-controls"><div class="oled-art">KANGAROO RADIO<br><br>ABC Kids listen<br>Playing</div><div class="knob-art"></div><div class="button-art"></div></div></div><small>Concept illustration · follow the wiring tables</small>
       </div>
-
-      <div class="hero-image-wrapper">
-        <div class="hero-image-card">
-          <img src="assets/final_hero.jpg" alt="Finished DIY handmade wooden ABC Kids Radio sitting on a sunny shelf with children's books and a wooden kangaroo" class="hero-img" id="hero-display-img">
-          <div class="image-caption-overlay">
-            <span class="caption-title">The Finished Radio</span>
-            <span class="caption-desc">Solid Tasmanian Oak case, 0.96" OLED screen, tweed speaker cloth, knurled brass volume knob, toggle switch & USB-C</span>
-          </div>
-        </div>
-      </div>
+    </section>
+    <div class="build-layout">
+      <aside class="contents"><details open><summary>On this page</summary><div class="toc">
+<ul>
+<li><a href="#kangaroo-radio">Kangaroo Radio</a><ul>
+<li><a href="#1-understand-the-build">1. Understand the build</a></li>
+<li><a href="#2-get-the-exact-parts">2. Get the exact parts</a></li>
+<li><a href="#3-identify-connections-before-applying-power">3. Identify connections before applying power</a></li>
+<li><a href="#4-install-the-exact-software">4. Install the exact software</a></li>
+<li><a href="#5-wire-the-display-knob-button-and-reader">5. Wire the display, knob, button and reader</a></li>
+<li><a href="#6-add-the-amplifier-and-speaker">6. Add the amplifier and speaker</a></li>
+<li><a href="#7-configure-and-play-internet-radio">7. Configure and play internet radio</a></li>
+<li><a href="#8-write-and-test-a-story-card">8. Write and test a story card</a></li>
+<li><a href="#9-set-a-listening-level-responsibly">9. Set a listening level responsibly</a></li>
+<li><a href="#10-add-rechargeable-battery-power">10. Add rechargeable battery power</a></li>
+<li><a href="#11-build-the-enclosure-after-the-bench-works">11. Build the enclosure after the bench works</a></li>
+<li><a href="#12-troubleshooting-by-symptom">12. Troubleshooting by symptom</a></li>
+<li><a href="#13-maintenance-sources-and-licensing">13. Maintenance, sources and licensing</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<a href="#configure">Configuration download</a><a href="#listen">Audio preview</a></details></aside>
+      <article id="guide" class="guide"><h1 id="kangaroo-radio">Kangaroo Radio</h1>
+<p>Build a rechargeable Wi-Fi radio with a volume knob, station button, monochrome display and tap-to-play NFC story cards. It plays six internet stations, including ABC Kids listen in Australia, and direct audio URLs that a parent writes to tags. No subscription or SD card is required; an internet connection is.</p>
+<p><strong>Read this before buying:</strong> this revision uses <strong>DFRobot DFR1139 (FireBeetle 2 ESP32-E N16R2)</strong>. The older DFR0654 and generic ESP32 boards are not substitutes. Some soldering, a multimeter and adult assembly are required. The old parts list, power diagram, generated sketch and concept pictures have been replaced.</p>
+<p>The source and instructions are checked together. Physical audio level, battery runtime, NFC range through the lid and a complete novice assembly still require measurement on an assembled unit. See <a href="validation.html">verification status</a>. This is a maker project, not a certified children's product. Do not infer an acoustic safety rating from a volume number.</p>
+<p><a href="https://richard-gluga.github.io/radio/">Open the illustrated guide and configuration form</a> · <a href="downloads/KangarooRadio_ABCKids.zip">Download the complete unconfigured sketch</a></p>
+<h2 id="1-understand-the-build">1. Understand the build</h2>
+<p>You will build and check the radio in this order: identify parts → install software → test the bare board → solder and wire the peripherals → run hardware diagnostics → play radio → write a story tag → add the battery switch → mount everything in the box. <strong>Finish the bench tests before cutting the box.</strong></p>
+<p>The ESP32 connects to your router's 2.4 GHz Wi-Fi. Its I2S digital audio output feeds a MAX98357A amplifier. The amplifier drives one enclosed 8 Ω speaker. The OLED shows actual connection/playback state, and the RC522 reads the URL from a tag; the audio itself remains on the internet. A short press changes station or leaves a story. Hold-and-repeat is disabled.</p>
+<p>The selected board already has a USB-C connector, a single-cell lithium charger and USB/battery power switching. Its <strong>VCC output</strong> powers the amplifier at approximately the USB supply minus a diode drop, or at battery voltage. The amplifier accepts 2.5–5.5 V. <strong>There is no external TP4056, boost converter or battery holder in this build.</strong> Its maximum output varies with supply voltage; a 5 W speaker rating is its power-handling capacity, not a claim that this radio delivers 5 W.</p>
+<p>The battery switch disconnects the battery's positive wire using a separate extension harness. <strong>USB power bypasses this switch.</strong> USB charging requires the battery switch ON. For silence while charging, turn the volume fully down. For complete power-off, unplug USB and turn the switch OFF. The operating table in section 10 repeats this deliberately.</p>
+<h2 id="2-get-the-exact-parts">2. Get the exact parts</h2>
+<p>Read the SKU, voltage and connector descriptions on the product page before ordering. Stock and prices change. The linked suppliers serve Australia where possible; the manufacturer link identifies the required part if local stock changes. Do not choose an alternative based only on its appearance.</p>
+<table class="parts-table">
+<thead>
+<tr>
+<th>Qty</th>
+<th>Part to buy</th>
+<th>Important details</th>
+<th>Purchase/reference</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Quantity">1</td>
+<td data-label="Part to buy"><strong>DFRobot DFR1139</strong>, FireBeetle 2 ESP32-E N16R2</td>
+<td data-label="Important details">16 MB flash, 2 MB PSRAM, USB-C. Headers may need soldering. Not DFR0654.</td>
+<td data-label="Purchase/reference"><a href="https://core-electronics.com.au/firebeetle-2-esp32-e-n16r2-iot-microcontroller-16m-flash-2m-psram-supports-wi-fi-bluetooth.html">Core Electronics</a>, <a href="https://www.dfrobot.com/product-2837.html">DFRobot</a></td>
+</tr>
+<tr>
+<td data-label="Quantity">1</td>
+<td data-label="Part to buy"><strong>Adafruit 3006</strong>, MAX98357A I2S mono amplifier</td>
+<td data-label="Important details">Original breakout with VIN, GND, SD, GAIN, DIN, BCLK and LRC. Fit its headers; fit the speaker terminal if supplied loose.</td>
+<td data-label="Purchase/reference"><a href="https://www.adafruit.com/product/3006">Adafruit</a>, <a href="https://core-electronics.com.au/adafruit-i2s-3w-class-d-amplifier-breakout-max.html">Core Electronics</a></td>
+</tr>
+<tr>
+<td data-label="Quantity">1</td>
+<td data-label="Part to buy"><strong>Core CE08483</strong>, enclosed <strong>8 Ω, 5 W</strong> speaker</td>
+<td data-label="Important details">100 × 45 × 21 mm; two pre-tinned leads; built-in passive radiator. Keep its enclosure intact.</td>
+<td data-label="Purchase/reference"><a href="https://core-electronics.com.au/makerverse-enclosed-speaker-8-ohm-5-watt.html">Core Electronics</a></td>
+</tr>
+<tr>
+<td data-label="Quantity">1</td>
+<td data-label="Part to buy"><strong>DFRobot DFR0650</strong>, 0.96-inch SSD1306 OLED</td>
+<td data-label="Important details">128 × 64, factory I2C mode, address 0x3C; 30 × 30 mm board. Not an SH1106 display.</td>
+<td data-label="Purchase/reference"><a href="https://littlebirdelectronics.com.au/products/monochrome-0-96-128x64-i2c-spi-oled-display">Little Bird</a>, <a href="https://wiki.dfrobot.com/dfr0650/">DFRobot documentation</a></td>
+</tr>
+<tr>
+<td data-label="Quantity">1</td>
+<td data-label="Part to buy"><strong>SunFounder CN0090</strong>, RC522 SPI reader module</td>
+<td data-label="Important details">13.56 MHz, 3.3 V, eight-pin header. The included S50 card/key fob are <strong>not</strong> the story tags used here.</td>
+<td data-label="Purchase/reference"><a href="https://www.digikey.com.au/en/products/detail/sunfounder/CN0090/18668629">DigiKey Australia</a></td>
+</tr>
+<tr>
+<td data-label="Quantity">2 or more</td>
+<td data-label="Part to buy"><strong>NTAG213 or NTAG215</strong>, blank writable NDEF tags</td>
+<td data-label="Important details">Standard non-metal tags. Prefer card-size tags for handling; embed stickers in large, securely closed tokens. Avoid MIFARE Classic, 125 kHz, locked or password-protected tags.</td>
+<td data-label="Purchase/reference"><a href="https://core-electronics.com.au/rfidnfc-tag-credit-card-sized-ntag213-chip-1356mhz.html">Core CE08498 NTAG213 card</a></td>
+</tr>
+<tr>
+<td data-label="Quantity">1</td>
+<td data-label="Part to buy"><strong>Adafruit 1781</strong>, protected 3.7 V 2200 mAh cylindrical Li-ion pack</td>
+<td data-label="Important details">Factory-fitted protection and JST-PH lead; 4.2 V charging. Manufacturer recommends ≤1 A charge and sustained discharge. About 69 × 18 mm, plus cable clearance. Buy the complete wired pack, not a loose 18650 cell.</td>
+<td data-label="Purchase/reference"><a href="https://littlebirdelectronics.com.au/products/lithium-ion-cylindrical-battery-3-7v-2200mah">Little Bird</a>, <a href="https://www.adafruit.com/product/1781">Adafruit specifications</a></td>
+</tr>
+<tr>
+<td data-label="Quantity">1</td>
+<td data-label="Part to buy"><strong>Jaycar ST0579</strong>, SPST toggle switch</td>
+<td data-label="Important details">Maintained ON/OFF, panel mount, two terminals; rated 20 A at 12 V DC. This is a contact rating, not the radio's current draw. For the battery harness only.</td>
+<td data-label="Purchase/reference"><a href="https://www.jaycar.com.au/spst-20a-12vdc-toggle-switch/p/ST0579">Jaycar</a></td>
+</tr>
+<tr>
+<td data-label="Quantity">1</td>
+<td data-label="Part to buy"><strong>Jaycar SP0710</strong>, normally-open momentary pushbutton</td>
+<td data-label="Important details">Two-terminal panel button; not a latching switch or bare four-leg tactile switch.</td>
+<td data-label="Purchase/reference"><a href="https://www.jaycar.com.au/red-miniature-pushbutton-spst-momentary-action-125v-1a-rating/p/SP0710">Jaycar</a></td>
+</tr>
+<tr>
+<td data-label="Quantity">1</td>
+<td data-label="Part to buy"><strong>SparkFun COM-09939</strong>, 10 kΩ linear potentiometer</td>
+<td data-label="Important details">Three terminals; 6 mm, 18-tooth shaft in the current drawing. M7 × 0.75 mounting bushing: obtain its matching nut/washer if not supplied. A ¼-inch shaft is not identical to 6 mm.</td>
+<td data-label="Purchase/reference"><a href="https://www.sparkfun.com/rotary-potentiometer-10k-ohm-linear.html">SparkFun</a></td>
+</tr>
+<tr>
+<td data-label="Quantity">1</td>
+<td data-label="Part to buy"><strong>Adafruit 2047</strong> white T18 potentiometer knob</td>
+<td data-label="Important details">6 mm, 18-tooth push-fit; matches the specified pot shaft. Check retention before use.</td>
+<td data-label="Purchase/reference"><a href="https://www.adafruit.com/product/2047">Adafruit</a></td>
+</tr>
+<tr>
+<td data-label="Quantity">1</td>
+<td data-label="Part to buy"><strong>Adafruit 1131</strong>, JST-PH battery extension</td>
+<td data-label="Important details">2.0 mm pitch, two pins, male-to-female, 500 mm, 26 AWG. Verify polarity as described in section 10; matching housings alone do not prove it.</td>
+<td data-label="Purchase/reference"><a href="https://www.adafruit.com/product/1131">Adafruit</a>, <a href="https://littlebirdelectronics.com.au/products/jst-ph-battery-extension-cable-500mm">Little Bird</a></td>
+</tr>
+<tr>
+<td data-label="Quantity">1 pack each</td>
+<td data-label="Part to buy">2.54 mm jumper leads: female-to-female and male-to-female</td>
+<td data-label="Important details">Short, preferably 10–15 cm. Used for signal wiring and the bench setup.</td>
+<td data-label="Purchase/reference">Buy the stated genders, not the old WC6024 suggestion.</td>
+</tr>
+<tr>
+<td data-label="Quantity">1 each</td>
+<td data-label="Part to buy">Solderless breadboard <strong>and</strong> solderable protoboard</td>
+<td data-label="Important details">Breadboard for bench distribution; insulated, soldered connections for the final enclosure. A 400-tie-point breadboard is sufficient if modules sit beside it.</td>
+<td data-label="Purchase/reference">Standard 2.54 mm spacing.</td>
+</tr>
+<tr>
+<td data-label="Quantity">As needed</td>
+<td data-label="Part to buy">Male pin header, 22 AWG stranded insulated wire, heat-shrink, electronics solder, cable ties, nylon spacers/screws/washers</td>
+<td data-label="Important details">Red for positive, black for ground; several colours for signals. Obtain M2 hardware for the OLED.</td>
+<td data-label="Purchase/reference">Match mounting holes on the received parts.</td>
+</tr>
+<tr>
+<td data-label="Quantity">1</td>
+<td data-label="Part to buy">USB-A-to-USB-C <strong>data</strong> cable and regulated <strong>5 V, 2 A</strong> USB supply</td>
+<td data-label="Important details">Use the computer USB port for programming; use the wall supply for final operation/charging. No external voltage connection to VCC.</td>
+<td data-label="Purchase/reference">Reputable Australian-compliant USB supply.</td>
+</tr>
+<tr>
+<td data-label="Quantity">1</td>
+<td data-label="Part to buy">Non-metal enclosure with removable, screw-secured lid</td>
+<td data-label="Important details">At least <strong>200 × 140 × 80 mm usable internal space</strong>, with a thin non-metal region over the NFC antenna. Larger is easier.</td>
+<td data-label="Purchase/reference">Buy by internal dimensions, not a generic craft-box photo.</td>
+</tr>
+<tr>
+<td data-label="Quantity">As needed</td>
+<td data-label="Part to buy">Speaker grille/cloth, foam gasket, insulating base sheet and battery retaining strap</td>
+<td data-label="Important details">Grille must protect both the cone and passive radiator; strap must not crush the battery.</td>
+<td data-label="Purchase/reference">No loose magnets or detachable small token parts.</td>
+</tr>
+</tbody>
+</table>
+<p>The board, speaker and battery alone were listed at about AUD $26.25, $5.80 and $20.00 respectively when checked on <strong>13 October 2026</strong>. They are only three items. Make a basket containing <strong>every row</strong>, then add delivery and any missing tools. There is no defensible $35–$45 complete-build price. Buy the enclosure after confirming that everything fits.</p>
+<h3 id="tools-and-skills">Tools and skills</h3>
+<p>Use a temperature-controlled soldering iron and stand, electronics solder/flux, side cutters, wire strippers, small screwdrivers, a multimeter with DC-voltage/resistance/continuity modes, ruler, eye protection, drill and a file or small saw. Practise on spare wire first using <a href="https://learn.adafruit.com/adafruit-guide-excellent-soldering">Adafruit's soldering guide</a>. Solder and drill in a ventilated work area away from children. Unplug USB and disconnect the battery before changing wiring. Never solder onto the battery or cut its factory leads.</p>
+<p>You need a Windows, macOS or Linux computer with Arduino IDE support, internet access, your Wi-Fi name/password, and an NFC-writing-capable phone for story tags. On Android enable NFC in settings. On iPhone verify that NFC Tools supports writing on your model; not every phone can write tags.</p>
+<h2 id="3-identify-connections-before-applying-power">3. Identify connections before applying power</h2>
+<p>Open the <a href="https://wiki.dfrobot.com/dfr1139/">DFR1139 pinout and schematic</a>. Confirm <strong>N16R2 / DFR1139</strong> on the product packaging and a module with 2 MB PSRAM. Some DFRobot page headings mistakenly say N16R8; the SKU and technical specifications identify N16R2. Use the exact purchased board, not a picture of another FireBeetle.</p>
+<p>“GPIO” means the chip's numbered input/output connection. The board also has labels such as <strong>D7</strong> or <strong>A3</strong>. The table below gives both. These are not physical pin positions. VCC and 3V3 are different supplies. GND is the common electrical reference, not either speaker output.</p>
+<p>GPIO16/NC is reserved; do not connect it. GPIO34/A2 is already wired to the battery-measurement divider; do not attach the volume pot there. GPIO27 and GPIO5 are used onboard. This revision avoids all four.</p>
+<p>On the amplifier, identify the <strong>two speaker output terminals</strong> separately from GND. Neither speaker lead connects to GND. On the RC522 the pin labelled <strong>SDA</strong> is the <strong>SPI chip-select</strong> pin in this build; it does not connect to the OLED's SDA.</p>
+<h3 id="solder-the-module-headers">Solder the module headers</h3>
+<p>Keep all power disconnected. Fit straight male headers to the board, amplifier, reader and display where they are supplied loose. Insert the short ends through the PCB; solder each pad separately, keeping the long ends available for jumper sockets. Follow <a href="https://learn.adafruit.com/adafruit-max98357-i2s-class-d-mono-amp/assembly">Adafruit's amplifier assembly guide</a>. Check for bridges between adjacent pins with a bright light and magnifier. Let joints cool and gently check mechanical security. Do not hold a connector in place by friction against an unsoldered pad.</p>
+<p>For the final build, solder wire to the switch/button/pot lugs, slide heat-shrink over each joint and shrink it. Do this while the wires are disconnected from the radio. Bench jumpers are useful for testing but need secure termination and strain relief before portable use.</p>
+<h2 id="4-install-the-exact-software">4. Install the exact software</h2>
+<p>A <strong>sketch</strong> is the folder of source files Arduino compiles and uploads to the board. A <strong>library</strong> provides code for one of the modules. Compilation checks the code; uploading transfers the compiled result over the USB data cable.</p>
+<ol>
+<li>Install <strong>Arduino IDE 2</strong> from <a href="https://www.arduino.cc/en/software">arduino.cc</a>. Allow installation to finish. Do not use the web editor for this recipe.</li>
+<li>Open <strong>File → Preferences</strong> on Windows/Linux, or <strong>Arduino IDE → Settings</strong> on macOS. In <strong>Additional boards manager URLs</strong>, add <code>https://espressif.github.io/arduino-esp32/package_esp32_index.json</code>. Preserve any URLs already there. Save.</li>
+<li>Open <strong>Tools → Board → Boards Manager</strong>. Search <code>esp32</code>. Select <strong>esp32 by Espressif Systems</strong>, choose version <strong>3.3.12</strong> in its version selector, and install. This is a large download; wait until installation completes. Do not install a different similarly named package.</li>
+<li>Open <strong>Tools → Manage Libraries</strong> (or the Library Manager sidebar). Install the five exact versions below. If offered dependencies, choose <strong>Install all</strong>, then check their versions. Use each entry's version selector; do not accept an automatic upgrade for this recipe.</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Library Manager name</th>
+<th>Author / identifying project</th>
+<th>Version</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ESP32-audioI2S-master (search <code>ESP32-audioI2S</code>)</td>
+<td>schreibfaul1</td>
+<td><strong>4.0.0</strong></td>
+</tr>
+<tr>
+<td>Adafruit SSD1306</td>
+<td>Adafruit</td>
+<td><strong>2.5.17</strong></td>
+</tr>
+<tr>
+<td>Adafruit GFX Library</td>
+<td>Adafruit</td>
+<td><strong>1.12.6</strong></td>
+</tr>
+<tr>
+<td>Adafruit BusIO</td>
+<td>Adafruit</td>
+<td><strong>1.17.4</strong></td>
+</tr>
+<tr>
+<td>MFRC522</td>
+<td>GithubCommunity / miguelbalboa</td>
+<td><strong>1.4.12</strong></td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li>Connect <strong>only the bare FireBeetle</strong> to the computer using the USB data cable. Leave the battery and all peripherals disconnected for this first test. An LED may flash because there is no battery; that alone is not a fault.</li>
+<li>Select <strong>Tools → Board → esp32 → ESP32 Dev Module</strong>. This generic entry is intentional; the sketch uses raw GPIO numbers. Do not select an ESP32-S3/C3 board or install DFRobot's older core instead.</li>
+<li>Set the following Tools menu options. Other settings can remain at their defaults.</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CPU Frequency</td>
+<td><strong>240MHz (WiFi/BT)</strong></td>
+</tr>
+<tr>
+<td>Flash Mode</td>
+<td><strong>DIO</strong></td>
+</tr>
+<tr>
+<td>Flash Frequency</td>
+<td><strong>80MHz</strong></td>
+</tr>
+<tr>
+<td>Flash Size</td>
+<td><strong>16MB (128Mb)</strong></td>
+</tr>
+<tr>
+<td>Partition Scheme</td>
+<td><strong>16M Flash (3MB APP/9.9MB FATFS)</strong></td>
+</tr>
+<tr>
+<td>PSRAM</td>
+<td><strong>Enabled</strong></td>
+</tr>
+<tr>
+<td>Upload Speed</td>
+<td><strong>115200</strong></td>
+</tr>
+<tr>
+<td>Core Debug Level</td>
+<td><strong>None</strong></td>
+</tr>
+<tr>
+<td>Port</td>
+<td>The port that appears when this board is connected</td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li>If the port is unclear, unplug the board, inspect <strong>Tools → Port</strong>, plug it in again and select the newly appearing entry. Windows names it <code>COM…</code>; macOS often <code>/dev/cu.wchusbserial…</code>; Linux often <code>/dev/ttyUSB…</code>. Do not choose Bluetooth ports. If none appears, first try a known data cable and another USB port. Then use the <strong>CH340 driver linked by <a href="https://wiki.dfrobot.com/dfr1139/">DFRobot</a></strong> for your operating system. Linux may require permission to access the serial port; follow <a href="https://support.arduino.cc/hc/en-us/articles/360016495679-Fix-port-access-on-Linux">Arduino's Linux port-permission instructions</a>.</li>
+<li>Download the <strong>complete sketch ZIP</strong> using the website configuration form, choosing <strong>Hardware test</strong> for now. If the form is unavailable, download <a href="downloads/KangarooRadio_ABCKids.zip">the unconfigured ZIP</a>, extract it, and change <code>HARDWARE_TEST</code> to <code>true</code> in <code>RadioConfig.h</code>. Wi-Fi values are not used in hardware-test mode.</li>
+<li>Extract the ZIP using <strong>Extract All</strong> on Windows or by opening it on macOS/Linux. Inside is a folder named <code>KangarooRadio_ABCKids</code>. Keep its <code>.ino</code> and all <code>.h</code> files together. Open <strong><code>KangarooRadio_ABCKids.ino</code> inside that folder</strong>. Do not open it inside a ZIP viewer or paste only the <code>.ino</code> into a new sketch.</li>
+<li>Click the checkmark <strong>Verify</strong>. The first compile may take several minutes. If it reports a missing header, return to the library table. <code>Sketch too big</code> means the partition setting is wrong. Do not proceed until verification finishes without an error.</li>
+<li>Click <strong>Upload</strong> and wait for it to finish. The board may reset automatically. If upload stays at <code>Connecting…</code>, verify the port and cable, close any other serial program, and retry. On this board the onboard <strong>user button is GPIO27, not BOOT</strong>. If automatic entry still fails, unplug power, temporarily connect <strong>GPIO0/D5 to GND</strong>, reconnect USB and upload; then unplug USB, remove that jumper and reconnect. Never leave GPIO0 grounded for normal use.</li>
+<li>Open <strong>Tools → Serial Monitor</strong>, set <strong>115200 baud</strong>, and press the board's RST button. Expect a startup banner and <strong><code>PSRAM: OK (2097152 bytes)</code></strong>. OLED/RC522 “NOT FOUND” messages are expected while those modules are disconnected. If PSRAM is missing, stop: verify DFR1139, PSRAM Enabled and the board selection. More flash storage is not a substitute for PSRAM.</li>
+</ol>
+<p><strong>Checkpoint:</strong> the bare board uploads and reports PSRAM before you connect anything else. Unplug USB again.</p>
+<h2 id="5-wire-the-display-knob-button-and-reader">5. Wire the display, knob, button and reader</h2>
+<p>Use the breadboard only to distribute <strong>3V3 and GND</strong> during the bench test. With the board and battery disconnected, identify which holes are joined using continuity mode: rows of five holes are usually joined, the centre gap separates them, and long power rails may be split in the middle. Join a split rail only if continuity shows it is split. Mark the chosen rails <strong>3V3</strong> and <strong>GND</strong>. Connect one board 3V3 pin to the 3V3 rail and one GND pin to GND. A plus sign on a breadboard does not make it 5 V; the supplied voltage determines it.</p>
+<p>Never place two wires in one jumper socket. Each module gets its own lead to the appropriate rail. Keep SPI and I2S leads short, preferably under 15 cm. When reading the tables, <strong>unconnected means leave that pin without a wire</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Component pin</th>
+<th>Connect to DFR1139 / distribution rail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OLED VCC</td>
+<td><strong>3V3</strong> rail</td>
+</tr>
+<tr>
+<td>OLED GND</td>
+<td>GND rail</td>
+</tr>
+<tr>
+<td>OLED SCL</td>
+<td><strong>GPIO22 / SCL</strong></td>
+</tr>
+<tr>
+<td>OLED SDA</td>
+<td><strong>GPIO21 / SDA</strong></td>
+</tr>
+<tr>
+<td>OLED D/C and CS</td>
+<td>Unconnected; leave factory I2C solder configuration unchanged</td>
+</tr>
+<tr>
+<td>RC522 3.3V</td>
+<td><strong>3V3</strong> rail; never VCC/USB 5 V</td>
+</tr>
+<tr>
+<td>RC522 GND</td>
+<td>GND rail</td>
+</tr>
+<tr>
+<td>RC522 SDA / SS</td>
+<td><strong>GPIO4 / D12</strong></td>
+</tr>
+<tr>
+<td>RC522 SCK</td>
+<td><strong>GPIO18 / SCK</strong></td>
+</tr>
+<tr>
+<td>RC522 MOSI</td>
+<td><strong>GPIO23 / MOSI</strong></td>
+</tr>
+<tr>
+<td>RC522 MISO</td>
+<td><strong>GPIO19 / MISO</strong></td>
+</tr>
+<tr>
+<td>RC522 RST</td>
+<td><strong>GPIO17 / D10</strong></td>
+</tr>
+<tr>
+<td>RC522 IRQ</td>
+<td>Unconnected</td>
+</tr>
+<tr>
+<td>Station button terminal 1</td>
+<td><strong>GPIO14 / D6</strong></td>
+</tr>
+<tr>
+<td>Station button terminal 2</td>
+<td>GND rail; no external resistor required</td>
+</tr>
+<tr>
+<td>Potentiometer middle lug (wiper)</td>
+<td><strong>GPIO35 / A3</strong></td>
+</tr>
+<tr>
+<td>Potentiometer outer lugs</td>
+<td>One to <strong>3V3</strong>, the other to GND</td>
+</tr>
+</tbody>
+</table>
+<p>The two-terminal button has no polarity. Use the multimeter before wiring: it should be open when released and nearly zero ohms while pressed. The pot should measure approximately 10 kΩ between its outer lugs, and a changing resistance from middle to either outer lug. If turning the knob clockwise later makes the number decrease, disconnect power and swap <strong>only its two outer wires</strong>. Do not change the centre wire.</p>
+<p>Connect the OLED first, reconnect USB and confirm <strong><code>OLED: OK (0x3C)</code></strong> and a visible hardware-test screen. Unplug USB before adding the pot/button, and test them next. Then unplug USB, connect the RC522 and test again. Missing OLED or reader hardware does not deliberately crash the firmware; use its Serial messages to find the fault.</p>
+<p><strong>Checkpoint:</strong> in Hardware test mode, the knob reading moves from near 0 towards 4095, the volume reaches 0 and the selected cap, and the button count increases exactly once per press/release. The ESP32 ADC may reach its maximum before the last few degrees of knob travel; that is normal. The reader reports a version other than <code>0x00</code>/<code>0xFF</code>. Leave the battery disconnected.</p>
+<h2 id="6-add-the-amplifier-and-speaker">6. Add the amplifier and speaker</h2>
+<p>Unplug USB. Place the amplifier beside the breadboard. Fit the speaker's two leads into the amplifier's two output screw terminals, tighten them and gently tug each lead. No bare conductor should protrude far enough to touch the other terminal. The enclosed speaker has two moving areas; one is a passive radiator, not a second electrical speaker.</p>
+<table>
+<thead>
+<tr>
+<th>Amplifier pin</th>
+<th>Connect to</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VIN</td>
+<td><strong>DFR1139 VCC</strong>, using a short 22 AWG power lead</td>
+</tr>
+<tr>
+<td>GND</td>
+<td>Common GND, using a short 22 AWG lead</td>
+</tr>
+<tr>
+<td>BCLK</td>
+<td><strong>GPIO26 / D3</strong></td>
+</tr>
+<tr>
+<td>LRC / LRCLK / WS</td>
+<td><strong>GPIO25 / D2</strong></td>
+</tr>
+<tr>
+<td>DIN</td>
+<td><strong>GPIO13 / D7</strong></td>
+</tr>
+<tr>
+<td>GAIN</td>
+<td><strong>Amplifier VIN</strong> (6 dB gain on Adafruit 3006)</td>
+</tr>
+<tr>
+<td>SD</td>
+<td>Unconnected; the board's default enables audio</td>
+</tr>
+<tr>
+<td>Speaker + and − terminals</td>
+<td>The two speaker leads only; <strong>neither goes to GND</strong></td>
+</tr>
+</tbody>
+</table>
+<p>For the two 22 AWG power leads, solder to the underside of the labelled VCC/GND pads on the FireBeetle and VIN/GND pads on the amplifier, where the header pins pass through. Leave no loose strands; inspect for bridges to adjacent pads. Keep the leads under 15 cm, support them so they cannot pull on a pad, and insulate the board undersides. Do not try to push stranded wire into a female jumper socket. The board GND header still connects to the signal-ground rail. Solder a short insulated GAIN-to-VIN link on the amplifier while it is unpowered; check that it touches only those two pads. The firmware mixes stereo audio to mono. Do not attach headphones or another amplifier to the speaker terminals. The amplifier already contains its necessary circuitry; a speculative capacitor is not a substitute for correct power wiring.</p>
+<p><strong>Power check:</strong> use the multimeter in <strong>DC volts</strong>, with black lead in COM and red in V/Ω, not the current socket. Before connecting amplifier VIN, power the board from USB and measure between VCC and GND: expect roughly 4.5–5.0 V. Measure 3V3 to GND: approximately 3.3 V. Avoid bridging adjacent pins with a probe. Unplug USB, complete the amplifier power connection and inspect again. Never connect a battery directly to the board's 3V3 pin.</p>
+<p><img alt="Connection overview; use the complete tables for each signal" src="assets/wiring.svg" /></p>
+<h2 id="7-configure-and-play-internet-radio">7. Configure and play internet radio</h2>
+<ol>
+<li>On the website configuration form, enter the exact <strong>2.4 GHz Wi-Fi name and password</strong>. Names and passwords are case-sensitive; spaces count. A combined 2.4/5 GHz router name can work if its 2.4 GHz service is enabled. Guest networks with a browser login page, enterprise authentication and WPA3-only networks are outside this recipe. Use WPA2-Personal or compatible mixed mode.</li>
+<li>Optionally enter a second network, such as a phone hotspot. Enable the hotspot's 2.4 GHz/compatibility mode and keep it awake during testing. Leave both backup fields empty if unused. The radio tries home for 12 seconds, backup for 12 seconds if supplied, then retries after a pause. It needs internet access, not just a Wi-Fi signal.</li>
+<li>Choose a startup station and a maximum volume step. Start with <strong>10 of 21 or less</strong>, with the physical knob fully down. This setting is a limit on the software control; it is <strong>not</strong> a measured sound level. Choose <strong>Normal radio</strong> mode and download a new complete ZIP. The form escapes quotation marks/backslashes and allows an intentionally empty Wi-Fi password. It processes credentials locally without saving them in browser storage.</li>
+<li>Extract to a fresh folder, close the earlier sketch window and open the new <code>.ino</code>. Confirm that <code>RadioConfig.h</code> contains your intended settings and <code>HARDWARE_TEST = false</code>. Treat this folder as private because it contains the Wi-Fi password. Do not upload it to GitHub.</li>
+<li>Recheck the Tools settings from section 4, keep the battery disconnected, plug in USB and upload. Open Serial Monitor at 115200. Look for <strong>OLED OK</strong>, <strong>RC522 OK</strong>, <strong>PSRAM OK</strong>, <strong>WIFI: connected</strong> and audio messages. Initial connection can take several seconds; a slow network takes longer.</li>
+<li>Raise the knob a little. You should hear the selected station and see <strong>Playing</strong>. If the computer's USB port resets under audio load, unplug it and use the specified 5 V/2 A wall supply for playback. Do not connect two power supplies to board pins.</li>
+<li>Press and release the station button: it selects the next station. Holding it does not keep cycling. The user interface remains active while audio connects, but an in-progress DNS/TLS operation can take several seconds to finish before a newer audio selection starts. No “instant switch” guarantee is made.</li>
+</ol>
+<p>If the form is unavailable, open <code>RadioConfig.h</code> in the extracted sketch using its Arduino IDE tab. Replace <code>YOUR_WIFI_SSID</code> and <code>YOUR_WIFI_PASSWORD</code> between the double quotes; preserve the quotes and semicolons. Leave both backup strings <code>""</code> if unused. <code>START_STATION</code> is numbered 0–5 in the table order below, <code>MAX_VOLUME</code> is 0–21, and <code>HARDWARE_TEST</code> must be <code>false</code> for playback. Save, Verify and Upload. Inside these C++ strings, write a literal double quote as <code>\"</code> and a literal backslash as <code>\\</code>; do not replace characters with typographic “smart quotes”. The form performs this escaping automatically.</p>
+<p>The OLED reports Connecting, Waiting for decoder, Playing, or an error. It has no fake sound-level meter. Internet-radio failures retry with delays up to 30 seconds. A bad story URL stays in an error state until you tap another tag or press the station button. Display strings are limited to the screen width; full diagnostic messages appear in Serial Monitor.</p>
+<table>
+<thead>
+<tr>
+<th>Station</th>
+<th>Official page / availability</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ABC Kids listen</td>
+<td><a href="https://www.abc.net.au/listen/live/kidslisten">ABC</a>; online/DAB+, not an AM/FM frequency. Australian IP address required for its stream.</td>
+</tr>
+<tr>
+<td>Fun Kids UK</td>
+<td><a href="https://www.funkidslive.com/">Fun Kids</a>; external live programming and advertising may change.</td>
+</tr>
+<tr>
+<td>Fun Kids Junior</td>
+<td><a href="https://www.funkidslive.com/">Fun Kids</a>; separate stream aimed at younger listeners.</td>
+</tr>
+<tr>
+<td>Rock the Cradle</td>
+<td><a href="https://www.thecurrent.org/playlist/rockthecradle">The Current / MPR</a></td>
+</tr>
+<tr>
+<td>Positively Sleep</td>
+<td><a href="https://positivity.radio/">Positivity Radio</a>; select Sleep Kids in its current player.</td>
+</tr>
+<tr>
+<td>ABC Classic</td>
+<td><a href="https://www.abc.net.au/listen/live/classic">ABC Classic</a>; general classical programming, not a children's-only service.</td>
+</tr>
+</tbody>
+</table>
+<p>Parents should listen and choose appropriate stations themselves. A fixed station list cannot guarantee the content of somebody else's live broadcast. ABC's geographic limitation is documented in <a href="https://help.abc.net.au/hc/en-us/articles/360001184395-How-can-I-access-ABC-Kids-listen">its access guidance</a>. Stream addresses can change; maintainers update the single <code>Stations.h</code> list and regenerate the website.</p>
+<p><strong>Checkpoint:</strong> every chosen station plays, the knob mutes at minimum, one button press selects one station, and switching off the router produces an understandable state followed by recovery when it returns. Test a deliberately incorrect password once if you want to practise recovery: generate correct settings and upload again; there is no web setup portal.</p>
+<h2 id="8-write-and-test-a-story-card">8. Write and test a story card</h2>
+<p>Start with the project's original <strong>five-second audio-check WAV</strong>, a quiet synthetic sequence created by the included script. It is not a book narration, an ABC programme or an acoustic calibration signal. Turn volume down before testing any new file.</p>
+<p>Test URL to write to the tag:</p>
+<pre><code class="language-text">https://richard-gluga.github.io/radio/assets/audio-check.wav
+</code></pre>
+<p><strong>Publication matters:</strong> this URL works only after this revised <code>docs/</code> site has been published. Open it on your phone first. If it returns 404, use a direct URL from the published version you are viewing, or a file you control. The website's “Copy demo URL” button uses its actual hosting address. A file path such as <code>assets/audio-check.wav</code> or a <code>localhost</code> URL is not a usable internet URL for the radio.</p>
+<ol>
+<li>Install <strong>NFC Tools by wakdev</strong> from the phone's app store, using the links on <a href="https://www.wakdev.com/en/apps/nfc-tools.html">the developer's site</a>. Check that your phone supports NFC writing.</li>
+<li>Use <strong>Read</strong> to identify the tag. It must be a writable NTAG213 or NTAG215. A reader kit's MIFARE Classic/S50 card is not interchangeable with these tags.</li>
+<li>In <strong>Write</strong>, remove any previously queued records. Choose <strong>Add a record → URL/URI</strong>, paste the complete <code>https://…</code> URL, confirm, then choose <strong>Write</strong>. Hold the tag at the phone's NFC antenna until success. Labels differ slightly between app versions. Write a URL record, not a text record containing a URL. Do not choose permanent locking or password protection.</li>
+<li>Read the tag back and compare the complete URL, including filename and extension. Keep the original URL somewhere you can edit later. Remove the phone from the tag.</li>
+<li>With radio Wi-Fi connected, place the tag near the RC522 antenna for about a second. Keep it still. Remove it after the radio responds. To play the same tag again, remove and present it again; leaving it resting on the reader does not restart it continuously.</li>
+<li>Hear the five-second check, then observe <strong>End of audio</strong> and return to the previous radio station after four seconds. Times come from the audio library and are approximate (<code>left~</code>); sources without a duration show <strong>unknown</strong>. End means the source stopped, not proof that every byte arrived. A connection that never starts or ends substantially before its reported duration remains in an error state for you to retry.</li>
+<li>During playback, press the station button to return to the previous radio station. A subsequent press advances to the next station. A bad or incomplete tag should display an error and leave existing playback alone.</li>
+</ol>
+<p>For your own stories, host an MP3 file with permission to distribute it. A conservative starting format is mono or stereo MP3 at 44.1 kHz, 128 kbps constant bitrate. A direct HTTPS file link should return audio without a login, expiring access token, HTML download page or DRM. YouTube/Spotify/share-page URLs are not direct audio URLs. Browser playback does not prove ESP32 decoder/TLS compatibility: test the actual radio. HTTP is accepted but is unencrypted; prefer HTTPS. The firmware does not provide a content filter or guarantee authenticated TLS; do not use private or sensitive recordings/URLs with this tutorial's audio transport.</p>
+<p>An NTAG213 has less storage than an NTAG215. The URL must fit both the tag's NDEF capacity and this firmware's <strong>255-byte URL limit</strong> after expanding the URI prefix. If the phone says it is too large, shorten the URL or use NTAG215; do not expect truncation to work. Percent-encode spaces/non-ASCII characters in the URL. The parser rejects chunked records, incomplete reads, unsupported reserved-memory layouts and multiple URI records; one URL record per tag is the supported recipe.</p>
+<p>The optional browser preview is a convenience, not a phone NFC writer or a simulation of measured hardware performance. Its custom URL requires appropriate server support; browser CORS restrictions can differ from the ESP32's networking behavior.</p>
+<h2 id="9-set-a-listening-level-responsibly">9. Set a listening level responsibly</h2>
+<p>Start with the knob at minimum and increase it only enough for clear listening. Keep the radio away from ears. Check the loudest programme/file you intend to use, with both USB power and a fully charged battery; the supply voltage can change the available output. Lower the configured maximum and re-upload if needed.</p>
+<p>A value such as <code>MAX_VOLUME = 10</code> describes the audio library's volume scale. It cannot establish dBA at a listener's ear. Measuring a limit requires a sound-level meter, a specified distance, representative loud material and the completed enclosure. Record those conditions rather than labelling a percentage “safe”. See <a href="https://www.who.int/publications-detail-redirect/9789241515276">WHO safe-listening guidance</a>. This project does not certify hearing protection.</p>
+<h2 id="10-add-rechargeable-battery-power">10. Add rechargeable battery power</h2>
+<p>Finish the USB tests first. Use <strong>only the protected single-cell Adafruit 1781 battery specified above</strong> for this recipe. Do not substitute a 9 V alkaline, a two-cell/7.4 V pack, LiFePO4, a bare unprotected cell or the old SB2423 listing. Keep the battery disconnected and away from the soldering area while making the harness.</p>
+<h3 id="make-and-inspect-the-switch-harness">Make and inspect the switch harness</h3>
+<ol>
+<li>Take the <strong>separate JST-PH extension cable</strong>, with nothing plugged into either end. Confirm it is a two-pin PH extension, not an adapter to another series. Dry-fit the empty board end gently, then remove it. Do not force the connector.</li>
+<li>Use continuity mode to identify which contact at one end connects to which at the other. The cable must preserve positive and negative to the board's marked <strong>+ and −</strong> contacts. Connector colour and the fact that it fits do not establish polarity. Check the board's battery symbol/pinout with a magnifier if necessary.</li>
+<li>Cut <strong>only the extension's positive conductor</strong>, not the battery's factory lead. Strip about 4 mm from the two cut ends. Put a piece of heat-shrink onto each wire before soldering.</li>
+<li>Solder one cut end to each ST0579 terminal. Cover both solder joints completely with heat-shrink. Leave the extension's negative conductor uninterrupted. Secure the harness so movement does not pull on solder joints.</li>
+<li>With the harness alone, test continuity: positive goes end-to-end only when the switch is ON; negative goes end-to-end in both positions; positive must never be connected to negative. Mark the ON position on the switch or panel. Do not use resistance/continuity mode on a powered battery.</li>
+<li>Set the meter to DC volts, black lead in COM and red in V/Ω. With USB unplugged and the harness <strong>not connected to the board</strong>, plug the battery into the harness, turn the switch ON, and carefully measure the two board-end contacts. The red probe on the contact that will meet board <strong>+</strong> must show a <strong>positive voltage</strong>, typically 3.5–4.2 V. Keep probes apart; do not bridge the contacts. If the reading is negative, zero, over 4.2 V, or you cannot identify polarity confidently, disconnect and correct/replace the extension before proceeding. Do not alter the battery connector while it is live.</li>
+<li>Turn the switch OFF. Insert the harness into the board's PH battery socket, matching polarity. Turn volume fully down and switch ON. The radio should boot from battery. If it resets or the battery is below the board's supported operating range, switch OFF and proceed to supervised charging. Never repeatedly run the battery into its protection cutoff.</li>
+</ol>
+<p>The DFR1139 has onboard charging and source switching; no second charger is connected in parallel. Its <a href="https://dfimg.dfrobot.com/wiki/20495/DFR1139_firebeetle-2-esp32-e-n16r8_schematics_v1.0.pdf">published schematic</a> uses a TP4056X with a 2 kΩ programming resistor (approximately 0.6 A nominal charge current; actual current can be lower due to thermal regulation). That is below Adafruit's recommended <strong>1 A maximum charging rate for pack 1781</strong>. The 8 Ω speaker also reduces amplifier current compared with the old 4 Ω selection. Keep sustained battery-path current below 1 A; the software volume cap alone is not a current limiter. A different battery needs its own charge-current specification check. The pack's own protection is a last-resort backup, not a fuel gauge.</p>
+<h3 id="charge-and-operate">Charge and operate</h3>
+<p>Use the board's USB-C port and the regulated 5 V/2 A wall supply. Turn the battery switch <strong>ON</strong> to connect the pack for charging. Charge with an adult present on a non-flammable surface, with access to inspect the battery and electronics. The board's red charge indicator is on while charging and off when full or not charging; it may flash when no battery is attached. Off alone does not prove a battery is full. There is no promised charge time or calibrated battery-percentage display.</p>
+<table>
+<thead>
+<tr>
+<th>USB cable</th>
+<th>Battery switch</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Unplugged</td>
+<td>OFF</td>
+<td>Radio off; battery isolated</td>
+</tr>
+<tr>
+<td>Unplugged</td>
+<td>ON</td>
+<td>Radio runs from battery</td>
+</tr>
+<tr>
+<td>Plugged in</td>
+<td>OFF</td>
+<td>Radio runs from USB; <strong>battery does not charge</strong></td>
+</tr>
+<tr>
+<td>Plugged in</td>
+<td>ON</td>
+<td>Radio runs from USB and the onboard circuit charges the battery</td>
+</tr>
+</tbody>
+</table>
+<p>Turn the volume to zero for silent charging. Disconnect USB and turn the battery switch OFF for complete power-off. Both USB and the battery may be connected <strong>to this board's intended ports</strong>; do not generalize that to other boards or add power to VCC/3V3.</p>
+<p>Stop use if the battery swells, is damaged, smells unusual or becomes hot. Do not charge a damaged pack. Do not enclose it against a sharp edge, screw tip, hot amplifier or solder joint. A removable, tool-secured lid permits adult inspection. Keep the battery, reader, wires and token components inaccessible to young children. There is no measured runtime claim; determine yours with the completed radio at your normal level.</p>
+<p><strong>Checkpoint:</strong> test all four rows of the table, playback on battery, charging behavior and reconnection after switching off. Confirm the pack and wiring stay within their ratings and do not become hot before enclosing them.</p>
+<h2 id="11-build-the-enclosure-after-the-bench-works">11. Build the enclosure after the bench works</h2>
+<p>Use a box with at least 200 × 140 × 80 mm <strong>clear internal</strong> space. Make a cardboard layout first: the speaker needs 100 × 45 × 21 mm, the battery is about 69 mm long and 18 mm in diameter, the OLED PCB is 30 × 30 mm, and the FireBeetle is about 60 × 25.4 mm. Allow additional space for connectors, bent wires, switch bodies and service access. Do not stack boards on the battery.</p>
+<ol>
+<li>Remove all electronics and the battery before drilling. Mark front positions for the speaker grille, OLED, knob and station button, and a side/rear position for the power switch and USB-C access. Place the RC522 behind the top/lid with its antenna facing the tapping surface. Keep metal fasteners, speaker magnets and the battery away from the reader antenna; test the actual layout for reliable reads.</li>
+<li>The CE08483 speaker is already enclosed. Keep its case intact and provide openings for <strong>both</strong> its 35 mm moving areas (speaker and passive radiator), with a grille spanning them. Its mounting pattern is 91.2 × 36.2 mm with 6 mm holes; use the received part to transfer centres, and check clearances before cutting. Do not block the radiator, glue onto a cone or assume a round 3-inch speaker template fits it. A foam gasket can reduce rattles. The outer wooden box does not guarantee more bass.</li>
+<li>Mark the OLED window from the actual display. The lit area is about 21.7 × 10.9 mm; keep all of it visible while leaving material to support the 30 mm PCB. Mount with M2 hardware/spacers without pressing on its glass. Add a clear protective window if needed. Do not cut a hole solely from the nominal “0.96-inch” diagonal.</li>
+<li>Transfer the threaded-shaft diameters of the actual pot/button/switch to the panel. The current COM-09939 drawing specifies an M7 bushing and a 6 mm shaft; the bushing, not the shaft, goes through the mounting hole. Its threaded section is short: use a thin inset mounting panel or recess a thick wooden wall so a washer and nut can engage fully. Fit the knob only after tightening the pot nut; align its mark to minimum with the pot fully anticlockwise. Drill a small pilot hole, enlarge gradually and dry-fit with washers and nuts. A generic 6/7/12 mm hole is not correct for every part. Keep enough thread exposed to secure each nut without overtightening.</li>
+<li>Provide an accessible opening for the USB-C plug <strong>including its moulded body</strong>, not just the metal socket. Secure the FireBeetle on spacers so plugging in a cable cannot bend the board. Do not rely on hot glue around a connector to take insertion forces.</li>
+<li>Mount the reader under a thin non-metal lid section. Start with about 2–3 mm wood/plastic over the antenna and test your tags through it before permanent fixing; no universal reading distance is promised. Do not use a metal lid or metal-backed tags in this recipe.</li>
+<li>Transfer the bench wiring to secure, soldered connections on an insulated protoboard/distribution strip. Mark separate GND and 3V3 buses and check them with continuity while unpowered. Run VCC-to-amplifier power separately with short 22 AWG leads. Follow the tables again, connection by connection. Do not put VCC on the 3V3 bus. Keep the underside of every PCB insulated from other components.</li>
+<li>Secure the battery using a broad nonconductive strap or supported pocket with no pressure on its protective wrapping or lead exit; prevent the cylindrical pack from rolling. Leave room for inspection; do not glue, screw through or tightly clamp it. Restrain the harness and signal wires separately. Ensure no screw can reach the battery even if the enclosure is squeezed.</li>
+<li>Re-run every bench checkpoint with the lid open, then with it closed. Check NFC reliability, Wi-Fi reception, sound, button/knob travel, charging access and absence of rattles. Reopen and inspect for pinched wires before tightening the lid screws. Only then make decorative tokens or labels.</li>
+</ol>
+<p>The connection overview is a logical diagram, not a photograph or a manufacturing drawing. There are no claimed photographs of a completed version of this revised build. Keep a record of your actual layout and measurements if you publish a build report.</p>
+<h2 id="12-troubleshooting-by-symptom">12. Troubleshooting by symptom</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Check in this order</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>No USB port</td>
+<td>Known data cable → another port → CH340 driver → Linux port permission. Disconnect external wiring while diagnosing.</td>
+</tr>
+<tr>
+<td>Upload cannot connect</td>
+<td>Correct board/port → close other serial tools → reset → GPIO0-to-GND upload procedure in section 4. Remove the jumper afterward.</td>
+</tr>
+<tr>
+<td>Missing <code>Audio.h</code>, <code>MFRC522.h</code> or another header</td>
+<td>Install the exact library and version from section 4. Keep every sketch header in the same folder.</td>
+</tr>
+<tr>
+<td>Compile errors after a library/core update</td>
+<td>Restore pinned versions. Do not mix this code with the old HTML-generated sketch.</td>
+</tr>
+<tr>
+<td>“Sketch too big”</td>
+<td>Select the specified 3 MB application partition, then Verify again.</td>
+</tr>
+<tr>
+<td><code>PSRAM: MISSING</code></td>
+<td>DFR1139 hardware → ESP32 Dev Module → PSRAM Enabled → re-upload. DFR0654 cannot be fixed by a setting.</td>
+</tr>
+<tr>
+<td>OLED blank</td>
+<td>3V3/GND → pin labels → GPIO21/22 → I2C mode and 0x3C. Run Hardware test; inspect solder joints. Never swap wires while powered.</td>
+</tr>
+<tr>
+<td>RC522 version 00/FF</td>
+<td>3.3 V, shared GND, SDA-to-GPIO4, RST-to-GPIO17, SPI wires and soldered header. Keep wires short.</td>
+</tr>
+<tr>
+<td>Knob does nothing/reversed</td>
+<td>Middle lug to GPIO35/A3; outer lugs 3V3/GND. Swap outer wires with power off if reversed. Use Hardware test.</td>
+</tr>
+<tr>
+<td>Button count never changes</td>
+<td>Normally-open two-terminal button, GPIO14/D6 and GND. Test switch continuity unpowered.</td>
+</tr>
+<tr>
+<td>Wi-Fi never connects</td>
+<td>Exact SSID/password, 2.4 GHz, WPA2-compatible network, no captive portal; verify optional hotspot settings. Generate new configuration and upload.</td>
+</tr>
+<tr>
+<td>Wi-Fi connected, no audio</td>
+<td>Knob above zero → amp VIN/GND → I2S wires → speaker terminals → another station. Read Serial logs for HTTP/TLS/decoder errors.</td>
+</tr>
+<tr>
+<td>ABC fails but another station plays</td>
+<td>Confirm Australian public IP and no overseas VPN route. Check ABC's official player; stream addresses can change.</td>
+</tr>
+<tr>
+<td>Connecting/Buffering or repeated retries</td>
+<td>Test the source URL; check internet/DNS and supply stability. Firmware uses timeouts and retries live radio. It does not fake Playing on a failed connection.</td>
+</tr>
+<tr>
+<td>Brownout/reboot at louder volume</td>
+<td>Turn down; check power wiring, supply/cable and battery charge. Use USB wall power for comparison. Do not feed battery voltage into another board's 5 V VIN.</td>
+</tr>
+<tr>
+<td>Tag says no URI/unsupported</td>
+<td>Use NTAG213/215, write one URL/URI record, read it back with the phone; do not use the kit's S50 key fob.</td>
+</tr>
+<tr>
+<td>Tag works bare but not through the lid</td>
+<td>Remove nearby metal/magnets, shorten reader wiring, try a thinner tapping area and test different tag orientation.</td>
+</tr>
+<tr>
+<td>Story URL fails</td>
+<td>Confirm a public direct audio response, supported format, full unexpired URL and length. A webpage preview is not a device compatibility test.</td>
+</tr>
+<tr>
+<td>End / remaining time unknown</td>
+<td>End does not certify complete delivery. Times are approximate; try a constant-bitrate MP3 with a known length. An early-end error stays on screen until you retry or return to radio.</td>
+</tr>
+<tr>
+<td>Power switch “doesn't turn off”</td>
+<td>USB bypasses the battery switch. Unplug USB as well; see the four-row power table.</td>
+</tr>
+<tr>
+<td>Battery does not charge</td>
+<td>Switch ON, correct pack polarity, correct USB supply/cable, connector fully seated. Charge LED off can mean disconnected, not only full.</td>
+</tr>
+<tr>
+<td>Browser preview fails but radio works</td>
+<td>Browser media/CORS restrictions differ. Use the official station player; the browser is not required for radio operation.</td>
+</tr>
+<tr>
+<td>Configuration download fails</td>
+<td>Use the published HTTPS guide. A double-clicked local HTML file cannot fetch the sketch files. The static ZIP and manual <code>RadioConfig.h</code> editing remain available.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="13-maintenance-sources-and-licensing">13. Maintenance, sources and licensing</h2>
+<p>The firmware in <a href="downloads/KangarooRadio_ABCKids.zip">firmware/KangarooRadio_ABCKids</a> is the canonical source. The website's ZIP includes those files, with only <code>RadioConfig.h</code> changed by the configuration form. <a href="maintaining.html">MAINTAINING.md</a> explains generation, tests, exact compile commands and link checks. <a href="validation.html">VALIDATION.md</a> records evidence and remaining physical checks.</p>
+<p>Primary technical references: <a href="https://wiki.dfrobot.com/dfr1139/">DFR1139 board and schematic</a>, <a href="https://learn.adafruit.com/adafruit-max98357-i2s-class-d-mono-amp/pinouts">MAX98357A pinouts</a>, <a href="https://wiki.dfrobot.com/dfr0650/">DFR0650 OLED</a>, <a href="https://github.com/schreibfaul1/ESP32-audioI2S">ESP32-audioI2S</a>, <a href="https://github.com/miguelbalboa/rfid">MFRC522</a>, <a href="https://www.nxp.com/docs/en/data-sheet/NTAG213_215_216.pdf">NXP NTAG213/215/216 datasheet</a>, and the exact supplier pages in the parts table.</p>
+<p>The project code, tutorial, original wiring SVG and generated audio-check signal are provided under <a href="LICENSE.txt">MIT</a>. Third-party libraries retain their own licences. External station audio, book recordings, retailer photographs and trademarks are not licensed by this repository. The old unattributed story samples and misleading build images are not used in this revision. The incomplete FM alternative has been removed: an FM receiver needs its own complete hardware and firmware tutorial and cannot receive ABC Kids listen's internet-only stream by changing a frequency.</p></article>
     </div>
-  </section>
-
-  <!-- The Big Catch / Why FM Radio Doesn't Work Section -->
-  <section class="section alert-section" id="the-truth">
-    <div class="container">
-      <div class="truth-card">
-        <div class="truth-icon">⚠️</div>
-        <div class="truth-content">
-          <div class="truth-header">
-            <span class="badge badge-warning">Crucial Warning Before Buying Parts</span>
-            <h2>Why Standard FM Radio Kits Cannot Play ABC Kids</h2>
-          </div>
-          <p>
-            If you bought a traditional analog DIY FM radio kit from Jaycar, Amazon, or eBay, <strong>it would be completely silent on ABC Kids</strong>. Here is why:
-          </p>
-          <div class="truth-grid">
-            <div class="truth-box">
-              <div class="box-icon">📡</div>
-              <h3>ABC Kids is Digital-Only</h3>
-              <p>In Sydney (and all of Australia), <em>ABC Kids Listen</em> does <strong>not</strong> broadcast on analog FM (like 104.1 or 105.7 MHz) or AM. It only broadcasts digitally via <strong>DAB+ (Block 9C)</strong> and online streaming.</p>
-            </div>
-            <div class="truth-box">
-              <div class="box-icon">⚡</div>
-              <h3>The Smart DIY Solution</h3>
-              <p>We use an <strong>ESP32 microcontroller</strong>. When powered on, it connects directly to your home Wi-Fi in ~2 seconds and streams the official ABC Kids digital stream directly into a high-fidelity 3.2W amplifier. It operates identically to a radio!</p>
-            </div>
-            <div class="truth-box">
-              <div class="box-icon">🎵</div>
-              <h3>Far Superior Sound Quality</h3>
-              <p>Analog FM radios suffer from indoor static, multipath hiss, and antenna alignment woes. This digital stream sounds as clean and crisp as Spotify, with <strong>zero background hiss</strong>.</p>
-            </div>
-          </div>
-          <div class="truth-footer">
-            <span>✨ <em>Still want analog FM for other stations (like Triple J or ABC Classic)? We include an optional FM module guide at the bottom!</em></span>
-          </div>
+    <section id="configure" class="tool-section" aria-labelledby="configure-title">
+      <div class="section-intro"><p class="eyebrow">Complete sketch, one source</p><h2 id="configure-title">Make your firmware download</h2><p>Read section 4 first. Start with Hardware test, then download Normal radio when the wiring passes. All sketch files are included.</p></div>
+      <form id="config-form" class="panel" autocomplete="off">
+        <div class="form-grid">
+          <label>Build mode<select id="mode" name="mode"><option value="test">Hardware test — no Wi-Fi/audio</option><option value="radio">Normal radio</option></select></label>
+          <label>Startup station<select id="startup" name="startup"><option value="0">ABC Kids listen</option></select></label>
+          <label>Home Wi-Fi name<input id="ssid" name="ssid" type="text" spellcheck="false" autocomplete="off" aria-describedby="wifi-help"></label>
+          <label>Home Wi-Fi password<input id="password" name="password" type="password" autocomplete="new-password" aria-describedby="wifi-help"></label>
+          <label>Backup Wi-Fi name (optional)<input id="backup-ssid" name="backupSsid" type="text" spellcheck="false" autocomplete="off"></label>
+          <label>Backup password<input id="backup-password" name="backupPassword" type="password" autocomplete="new-password"></label>
+          <label>Maximum volume step (0–21)<input id="volume-cap" name="cap" type="number" min="0" max="21" value="10" required></label>
         </div>
+        <p id="wifi-help" class="help">Spaces and letter case are preserved. An empty password means an open network. Wi-Fi names must be 1–32 UTF-8 bytes in Normal radio mode. This form does not save or upload your credentials.</p>
+        <p class="help">A volume step is not a dBA measurement. Start quietly; check the finished radio's listening level.</p>
+        <button type="submit">Download complete sketch ZIP</button>
+        <p id="config-status" role="status" aria-live="polite"></p>
+        <p class="help"><a href="downloads/KangarooRadio_ABCKids.zip" download>Unconfigured ZIP</a> · Extract before opening in Arduino IDE. Your configured download contains your Wi-Fi password; keep it private.</p>
+      </form>
+    </section>
+    <section id="listen" class="tool-section" aria-labelledby="listen-title">
+      <div class="section-intro"><p class="eyebrow">Optional browser preview</p><h2 id="listen-title">Listen before you build</h2><p>This uses your computer or phone's audio. It does not write NFC tags or prove ESP32 playback compatibility. Begin at low device volume.</p></div>
+      <div class="panel"><div id="stations" class="station-grid"></div>
+        <div class="demo-row"><button id="play-demo" type="button">Play five-second audio check</button><button id="copy-demo" type="button" class="secondary">Copy demo URL for a tag</button></div>
+        <p class="help">Original synthetic WAV · 5 seconds · mono, 22.05 kHz, 16-bit PCM. Not a story narration or a calibration signal.</p>
+        <form id="custom-form"><label for="custom-url">Your public direct audio URL</label><div class="inline-form"><input id="custom-url" type="url" placeholder="https://your-host.example/story.mp3" required><button type="submit">Preview URL</button></div></form>
+        <div id="player" class="player" hidden><p id="player-title"></p><audio id="audio" controls preload="none"></audio><button id="stop-audio" type="button" class="secondary">Stop and close</button></div>
+        <p id="player-status" role="status" aria-live="polite">Choose a station or the short audio check.</p>
+        <label id="demo-url-label" hidden>Demo URL<input id="demo-url" type="text" readonly></label>
       </div>
-    </div>
-  </section>
-
-  <!-- Interactive 3D Radio Explorer (Three.js) -->
-  <section class="section threejs-section" id="threejs-radio">
-    <div class="container">
-      <div class="section-header">
-        <span class="section-kicker">Real-time 3D CAD</span>
-        <h2 class="section-title">Interactive 3D Radio Explorer</h2>
-        <p class="section-subtitle">
-          Click and drag with your mouse (or swipe on touchscreens) to rotate the radio 360°, scroll to zoom in, and inspect the real components before building!
-        </p>
-      </div>
-
-      <div class="threejs-viewer-card">
-        <div class="threejs-canvas-wrapper" id="threejs-canvas-container">
-          <!-- Three.js Canvas will be mounted here -->
-          <div class="threejs-overlay-controls">
-            <div class="threejs-hint">
-              <span>🖱️ <strong>Click & Drag</strong> to rotate • <strong>Scroll</strong> to zoom</span>
-            </div>
-            <div class="threejs-btn-group">
-              <button class="btn-3d-action" id="btn-3d-rotate" title="Toggle Auto-Rotation">
-                <span>🔄 Auto-Rotate: <span id="rotate-status-text">ON</span></span>
-              </button>
-              <button class="btn-3d-action" id="btn-3d-reset" title="Reset View">
-                <span>🎯 Reset View</span>
-              </button>
-            </div>
-          </div>
-          <!-- 3D Callout Hotspots -->
-          <div class="threejs-callout-panel">
-            <button class="callout-pill" data-part="oled" title="Zoom in to view glowing monochrome screen">
-              <span class="dot cyan"></span> 0.96" OLED Display (Monochrome)
-            </button>
-            <button class="callout-pill" data-part="nfc" title="Tap RFID/NFC Story Tokens on top lid">
-              <span class="dot purple"></span> 🎴 NFC Tap Zone (Top Lid)
-            </button>
-            <button class="callout-pill" data-part="speaker" title="Inspect acoustic speaker cone">
-              <span class="dot orange"></span> 3W Speaker & Grille
-            </button>
-            <button class="callout-pill" data-part="pot" title="Volume knob with software kid-safe ear guard">
-              <span class="dot yellow"></span> Volume Knob (🛡️ Safe Capped)
-            </button>
-            <button class="callout-pill" data-part="button" title="Push button to cycle stations">
-              <span class="dot amber"></span> Station Cycle Button
-            </button>
-            <button class="callout-pill" data-part="switch" title="Hardware power switch">
-              <span class="dot red"></span> Toggle Power Switch
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Finished Product Lookbook & Photo Gallery -->
-  <section class="section gallery-section" id="photo-gallery">
-    <div class="container">
-      <div class="section-header">
-        <span class="section-kicker">Photorealistic Lookbook</span>
-        <h2 class="section-title">What Your Finished Radio Looks Like</h2>
-        <p class="section-subtitle">
-          Built with Tasmanian oak, warm brass hardware, vintage woven speaker cloth, and a crisp monochrome OLED screen. Here is what your finished build looks like in real life.
-        </p>
-      </div>
-
-      <div class="gallery-grid">
-        <!-- Photo 1: Nursery Shelf Hero -->
-        <div class="gallery-card featured" id="gallery-card-1">
-          <div class="gallery-img-wrapper">
-            <img src="assets/final_hero.jpg" alt="Finished DIY Kangaroo Radio on a sunny timber shelf next to Australian children's picture books and a wooden kangaroo" class="gallery-img" loading="lazy">
-            <div class="gallery-badge">Shelf Display</div>
-          </div>
-          <div class="gallery-info">
-            <h4>Handcrafted Nursery Shelf Display</h4>
-            <p>Compact, warm, and natural. Sitting alongside Australian classics like <em>Wombat Stew</em> and <em>Snugglepot & Cuddlepie</em>, the radio feels like a cherished family heirloom.</p>
-            <div class="gallery-tags">
-              <span>Tasmanian Oak</span>
-              <span>Tweed Speaker Cloth</span>
-              <span>Monochrome OLED</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Photo 2: Control Panel Details -->
-        <div class="gallery-card" id="gallery-card-2">
-          <div class="gallery-img-wrapper">
-            <img src="assets/final_details.jpg" alt="Close-up macro photography of the radio control panel showing the glowing 0.96 inch monochrome OLED screen, brass knurled volume knob, and toggle switch" class="gallery-img" loading="lazy">
-            <div class="gallery-badge">Artisanal Details</div>
-          </div>
-          <div class="gallery-info">
-            <h4>Tactile Vintage Hardware</h4>
-            <p>Every knob and switch gives rich mechanical feedback. The 0.96" OLED screen sits recessed inside the timber faceplate, displaying crisp retro pixel typography.</p>
-            <div class="gallery-tags">
-              <span>Knurled Brass Knob</span>
-              <span>Metal Toggle Switch</span>
-              <span>128×64 OLED</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Photo 3: Bedtime Lullaby Routine -->
-        <div class="gallery-card" id="gallery-card-3">
-          <div class="gallery-img-wrapper">
-            <img src="assets/final_bedtime.jpg" alt="Cozy bedtime nursery scene with the radio gently glowing on a bedside table playing Positively Sleep lullabies" class="gallery-img" loading="lazy">
-            <div class="gallery-badge">Bedtime Routine</div>
-          </div>
-          <div class="gallery-info">
-            <h4>Warm Bedtime Lullaby Routine</h4>
-            <p>Soft night light ambiance. Tune into <em>Positively Sleep</em> for 24/7 soothing music box lullabies that lull toddlers to sleep without phone screens or ads.</p>
-            <div class="gallery-tags">
-              <span>Calm Lullabies</span>
-              <span>Subtle 15mA Glow</span>
-              <span>18-Hour Battery</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Curated Child-Safe Stations Directory & Cycling Feature -->
-  <section class="section stations-section" id="child-safe-stations">
-    <div class="container">
-      <div class="section-header">
-        <span class="section-kicker">Parent-Approved Audio</span>
-        <h2 class="section-title">Curated Child-Safe Stations (Allow-List)</h2>
-        <p class="section-subtitle">
-          Every stream below is <strong>100% child-safe, commercial-free or family-friendly</strong>, and verified to work seamlessly on this ESP32 radio. Pressing the tactile button cycles through them in order.
-        </p>
-      </div>
-
-      <!-- Interactive Station Cycle Simulator Widget -->
-      <div class="stations-hero-intro">
-        <div class="stations-intro-text">
-          <h3>🔘 Push Button Station Cycling</h3>
-          <p>
-            When turned on, the radio immediately tunes into <strong>ABC Kids Listen</strong>. Tapping the momentary brass button triggers an instant switch to the next allow-listed station, so kids can find morning energy, afternoon stories, or bedtime lullabies all on their own!
-          </p>
-        </div>
-        <div class="cycle-demo-box">
-          <button class="btn-cycle-demo" id="btn-simulate-station-cycle">
-            <span>🔘</span>
-            <span>Tap to Cycle Station</span>
-          </button>
-          <div class="cycle-display-badge">
-            <span class="cycle-label">Current Station:</span>
-            <span class="cycle-current-station" id="cycle-station-name">1. ABC Kids listen</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- The 6 Curated Station Cards -->
-      <div class="stations-grid" id="stations-cards-grid">
-        <!-- Station 1 -->
-        <div class="station-card active-station" data-station-index="0">
-          <div class="station-card-top">
-            <span class="station-flag">🇦🇺</span>
-            <div class="station-badges-group">
-              <span class="station-age-badge">Ages 0–6</span>
-              <span class="station-type-badge">Default</span>
-            </div>
-          </div>
-          <h4>ABC Kids listen</h4>
-          <div class="station-genre">Stories, Play School & Aussie Music</div>
-          <p class="station-desc">
-            Australia's premier preschool station. Ad-free music, stories with Bluey and Kangaroo Beach characters, and Australian childhood classics.
-          </p>
-          <div class="station-actions-row">
-            <button class="btn-sample-stream" data-station-index="0" data-stream="https://streaming.abc-cdn.net.au/audio/hls/abcextra.m3u8?source=web" data-title="ABC Kids listen" data-type="hls">
-              <span class="sample-icon">▶</span>
-              <span class="sample-text">Listen Live Sample</span>
-            </button>
-            <a href="https://www.abc.net.au/listen/live/kids" target="_blank" rel="noopener" class="btn-external-station" title="Open official ABC Listen player">
-              <span>🔗 Web Player</span>
-            </a>
-          </div>
-          <div class="station-stream-meta">
-            <span>Codec: HLS / AAC</span>
-            <span>CDN: ABC Australia</span>
-          </div>
-        </div>
-
-        <!-- Station 2 -->
-        <div class="station-card" data-station-index="1">
-          <div class="station-card-top">
-            <span class="station-flag">🇬🇧</span>
-            <div class="station-badges-group">
-              <span class="station-age-badge">Ages 4–12</span>
-              <span class="station-type-badge">Family Pop</span>
-            </div>
-          </div>
-          <h4>Fun Kids UK (Live)</h4>
-          <div class="station-genre">Upbeat Kids Hits, Science & Fun</div>
-          <p class="station-desc">
-            The world's leading children's digital station from London. High-energy family-safe pop music, educational science quizzes, and children's book readings.
-          </p>
-          <div class="station-actions-row">
-            <button class="btn-sample-stream" data-station-index="1" data-stream="https://listen-funkids.sharp-stream.com/funkids.mp3" data-title="Fun Kids UK" data-type="audio">
-              <span class="sample-icon">▶</span>
-              <span class="sample-text">Listen Live Sample</span>
-            </button>
-            <a href="https://www.funkidslive.com/player/" target="_blank" rel="noopener" class="btn-external-station" title="Open official Fun Kids player">
-              <span>🔗 Web Player</span>
-            </a>
-          </div>
-          <div class="station-stream-meta">
-            <span>Codec: MP3 128kbps</span>
-            <span>Origin: UK</span>
-          </div>
-        </div>
-
-        <!-- Station 3 -->
-        <div class="station-card" data-station-index="2">
-          <div class="station-card-top">
-            <span class="station-flag">🇬🇧</span>
-            <div class="station-badges-group">
-              <span class="station-age-badge">Ages 0–4</span>
-              <span class="station-type-badge">Toddlers</span>
-            </div>
-          </div>
-          <h4>Fun Kids Junior</h4>
-          <div class="station-genre">Nursery Rhymes & Gentle Stories</div>
-          <p class="station-desc">
-            Specially tailored for babies, toddlers, and preschool mornings. Classic nursery rhymes, gentle animal songs, and slow-paced stories.
-          </p>
-          <div class="station-actions-row">
-            <button class="btn-sample-stream" data-station-index="2" data-stream="https://listen-funkids.sharp-stream.com/funkidsjunior.mp3" data-title="Fun Kids Junior" data-type="audio">
-              <span class="sample-icon">▶</span>
-              <span class="sample-text">Listen Live Sample</span>
-            </button>
-            <a href="https://www.funkidslive.com/" target="_blank" rel="noopener" class="btn-external-station" title="Open official Fun Kids website">
-              <span>🔗 Web Player</span>
-            </a>
-          </div>
-          <div class="station-stream-meta">
-            <span>Codec: MP3 128kbps</span>
-            <span>Origin: UK</span>
-          </div>
-        </div>
-
-        <!-- Station 4 -->
-        <div class="station-card" data-station-index="3">
-          <div class="station-card-top">
-            <span class="station-flag">🇺🇸</span>
-            <div class="station-badges-group">
-              <span class="station-age-badge">All Ages</span>
-              <span class="station-type-badge">Public Radio</span>
-            </div>
-          </div>
-          <h4>Rock the Cradle (MPR)</h4>
-          <div class="station-genre">Indie Music for Kids & Parents</div>
-          <p class="station-desc">
-            Produced by Minnesota Public Radio. Completely commercial-free music that parents and kids love together: indie folk, soulful acoustic, and clever children's songwriters.
-          </p>
-          <div class="station-actions-row">
-            <button class="btn-sample-stream" data-station-index="3" data-stream="https://rockthecradle.stream.publicradio.org/rockthecradle.mp3" data-title="Rock the Cradle (MPR)" data-type="audio">
-              <span class="sample-icon">▶</span>
-              <span class="sample-text">Listen Live Sample</span>
-            </button>
-            <a href="https://www.yourclassical.org/listen/rock-the-cradle" target="_blank" rel="noopener" class="btn-external-station" title="Open official MPR player">
-              <span>🔗 Web Player</span>
-            </a>
-          </div>
-          <div class="station-stream-meta">
-            <span>Codec: MP3 128kbps</span>
-            <span>Origin: USA (MPR)</span>
-          </div>
-        </div>
-
-        <!-- Station 5 -->
-        <div class="station-card" data-station-index="4">
-          <div class="station-card-top">
-            <span class="station-flag">🌙</span>
-            <div class="station-badges-group">
-              <span class="station-age-badge">Bedtime</span>
-              <span class="station-type-badge">Sleep & Calm</span>
-            </div>
-          </div>
-          <h4>Positively Sleep Kids</h4>
-          <div class="station-genre">Lullabies & Ambient Sleep Music</div>
-          <p class="station-desc">
-            A 24/7 dedicated lullaby and sleep stream. Zero talking, zero jarring sounds—just soothing acoustic guitar, music box chimes, and calming sleep soundscapes.
-          </p>
-          <div class="station-actions-row">
-            <button class="btn-sample-stream" data-station-index="4" data-stream="https://streaming.positivity.radio/pr/sleepkids/icecast.audio" data-title="Positively Sleep Kids" data-type="audio">
-              <span class="sample-icon">▶</span>
-              <span class="sample-text">Listen Live Sample</span>
-            </button>
-            <a href="https://positivity.radio/stations/sleepkids" target="_blank" rel="noopener" class="btn-external-station" title="Open Positivity Radio website">
-              <span>🔗 Web Player</span>
-            </a>
-          </div>
-          <div class="station-stream-meta">
-            <span>Codec: MP3 128kbps</span>
-            <span>Origin: Global</span>
-          </div>
-        </div>
-
-        <!-- Station 6 -->
-        <div class="station-card" data-station-index="5">
-          <div class="station-card-top">
-            <span class="station-flag">🇦🇺</span>
-            <div class="station-badges-group">
-              <span class="station-age-badge">Quiet Time</span>
-              <span class="station-type-badge">Classical</span>
-            </div>
-          </div>
-          <h4>ABC Classic (NSW)</h4>
-          <div class="station-genre">Peaceful Classical for Craft & Study</div>
-          <p class="station-desc">
-            Commercial-free classical masterpieces from the ABC. Proven to encourage focus during Lego building, colouring-in, craft afternoons, and quiet resting.
-          </p>
-          <div class="station-actions-row">
-            <button class="btn-sample-stream" data-station-index="5" data-stream="https://streaming.abc-cdn.net.au/audio/hls/classicfmnsw.m3u8?source=web" data-title="ABC Classic" data-type="hls">
-              <span class="sample-icon">▶</span>
-              <span class="sample-text">Listen Live Sample</span>
-            </button>
-            <a href="https://www.abc.net.au/listen/live/classic" target="_blank" rel="noopener" class="btn-external-station" title="Open official ABC Classic player">
-              <span>🔗 Web Player</span>
-            </a>
-          </div>
-          <div class="station-stream-meta">
-            <span>Codec: HLS / AAC</span>
-            <span>CDN: ABC Australia</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Monochrome OLED Status Display & Interactive Simulator -->
-  <section class="section oled-section" id="oled-display">
-    <div class="container">
-      <div class="section-header">
-        <span class="section-kicker">Live Visual Feedback</span>
-        <h2 class="section-title">0.96" Monochrome Status & Error Display</h2>
-        <p class="section-subtitle">
-          Add an ultra-crisp, low-power monochrome OLED panel (SSD1306). It takes only 4 push-on wires and tells you exactly what the radio is doing—from Wi-Fi connection steps to specific diagnostic errors and live station titles.
-        </p>
-      </div>
-
-      <div class="oled-showcase-grid">
-        <!-- Interactive OLED Hardware Mockup -->
-        <div class="oled-simulator-card">
-          <div class="oled-card-header">
-            <span>📺 Live Monochrome OLED Simulator (128×64)</span>
-            <span class="oled-badge-live">Interactive Preview</span>
-          </div>
-
-          <div class="oled-device-wrapper">
-            <!-- Physical PCB breakout representation -->
-            <div class="oled-pcb">
-              <div class="oled-pin-header">
-                <span class="pcb-pin" title="3.3V Power"><span class="pin-dot red"></span>VCC</span>
-                <span class="pcb-pin" title="Ground"><span class="pin-dot blue"></span>GND</span>
-                <span class="pcb-pin" title="I2C Clock (GPIO 22)"><span class="pin-dot yellow"></span>SCL</span>
-                <span class="pcb-pin" title="I2C Data (GPIO 21)"><span class="pin-dot cyan"></span>SDA</span>
-              </div>
-              <div class="oled-screen-bezel">
-                <div class="oled-screen-glare"></div>
-                <div class="oled-screen" id="sim-oled-screen">
-                  <!-- Top Bar -->
-                  <div class="oled-top-bar" id="sim-oled-topbar">
-                    <span class="oled-top-tag" id="sim-oled-top-tag">WIFI OK</span>
-                    <span class="oled-top-vol" id="sim-oled-top-vol">VOL: 67%</span>
-                  </div>
-                  <!-- Main Body -->
-                  <div class="oled-content" id="sim-oled-content">
-                    <div class="oled-line-small" id="sim-oled-line1">STATION [1/6]</div>
-                    <div class="oled-line-title" id="sim-oled-line2">ABC Kids listen</div>
-                    <div class="oled-line-sub" id="sim-oled-line3">Preschool & Aussie Stories</div>
-                  </div>
-                  <!-- Bottom Area: Equalizer or Progress bar -->
-                  <div class="oled-bottom-bar" id="sim-oled-bottom">
-                    <div class="oled-equalizer animating" id="sim-oled-eq">
-                      <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="oled-pcb-label">SSD1306 0.96" I2C 128×64 OLED</div>
-            </div>
-          </div>
-
-          <!-- Controls to switch modes -->
-          <div class="oled-controls-panel">
-            <span class="oled-controls-title">Click a state to test the display:</span>
-            <div class="oled-btn-grid">
-              <button class="btn-oled-state active" data-state="playing-abc" id="btn-state-abc">
-                <span class="state-icon">📻</span>
-                <span class="state-name">Playing: ABC Kids</span>
-                <span class="state-desc">Station title & live EQ</span>
-              </button>
-              <button class="btn-oled-state" data-state="playing-funkids" id="btn-state-funkids">
-                <span class="state-icon">🎶</span>
-                <span class="state-name">Playing: Fun Kids</span>
-                <span class="state-desc">Station #2 display</span>
-              </button>
-              <button class="btn-oled-state" data-state="connecting" id="btn-state-connecting">
-                <span class="state-icon">📶</span>
-                <span class="state-name">Connecting to Wi-Fi</span>
-                <span class="state-desc">Startup progress bar</span>
-              </button>
-              <button class="btn-oled-state" data-state="err-notfound" id="btn-state-notfound">
-                <span class="state-icon">🔍</span>
-                <span class="state-name">Wi-Fi Not Found</span>
-                <span class="state-desc">"Wifi FooBar not found"</span>
-              </button>
-              <button class="btn-oled-state" data-state="err-password" id="btn-state-password">
-                <span class="state-icon">🔑</span>
-                <span class="state-name">Wrong Password</span>
-                <span class="state-desc">Auth rejected error</span>
-              </button>
-              <button class="btn-oled-state" data-state="err-internet" id="btn-state-internet">
-                <span class="state-icon">🌐</span>
-                <span class="state-name">No Internet</span>
-                <span class="state-desc">Stream unreachable</span>
-              </button>
-              <button class="btn-oled-state" data-state="volume-adjust" id="btn-state-vol">
-                <span class="state-icon">🔊</span>
-                <span class="state-name">Volume Adjusted</span>
-                <span class="state-desc">Master volume popup</span>
-              </button>
-              <button class="btn-oled-state" data-state="nfc-reading" id="btn-state-nfc-reading">
-                <span class="state-icon">🎴</span>
-                <span class="state-name">NFC: Reading Tag</span>
-                <span class="state-desc">Extracting MP3 URL</span>
-              </button>
-              <button class="btn-oled-state" data-state="nfc-buffering" id="btn-state-nfc-buf">
-                <span class="state-icon">⏳</span>
-                <span class="state-name">NFC: Downloading</span>
-                <span class="state-desc">Buffering MP3 audio</span>
-              </button>
-              <button class="btn-oled-state" data-state="nfc-playing" id="btn-state-nfc-play">
-                <span class="state-icon">▶️</span>
-                <span class="state-name">NFC: Story Progress</span>
-                <span class="state-desc">Timebar & elapsed time</span>
-              </button>
-              <button class="btn-oled-state" data-state="nfc-done" id="btn-state-nfc-done">
-                <span class="state-icon">✨</span>
-                <span class="state-name">NFC: Story DONE</span>
-                <span class="state-desc">Playback complete screen</span>
-              </button>
-              <button class="btn-oled-state" data-state="nfc-error" id="btn-state-nfc-err">
-                <span class="state-icon">⚠️</span>
-                <span class="state-name">NFC: Error Code</span>
-                <span class="state-desc">"NO URL / Write tag"</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Explanatory Feature Cards -->
-        <div class="oled-features-column">
-          <div class="oled-feature-card">
-            <div class="feature-icon-badge">⚡</div>
-            <h4>Why 0.96" Monochrome OLED?</h4>
-            <p>
-              Unlike bulky LCD screens with backlights that leak light, monochrome OLED pixels emit their own light. When a pixel is black, it consumes <strong>0 mA</strong>. The entire display draws barely 15mA—saving battery while providing infinite contrast and wide viewing angles.
-            </p>
-          </div>
-
-          <div class="oled-feature-card">
-            <div class="feature-icon-badge">🔌</div>
-            <h4>Only 4 Jumper Wires (I2C)</h4>
-            <p>
-              It communicates over the ESP32's hardware I2C bus: <code>VCC</code> to 3.3V, <code>GND</code> to Ground, <code>SCL</code> to GPIO 22, and <code>SDA</code> to GPIO 21. No soldering—simply push female Dupont wires onto the header pins!
-            </p>
-          </div>
-
-          <div class="oled-feature-card">
-            <div class="feature-icon-badge">🛠️</div>
-            <h4>No More Guessing Blind</h4>
-            <p>
-              Without a screen, if Wi-Fi fails or someone typos the password, an audio device sits in complete silence. This display gives crystal-clear feedback in plain English so you know immediately whether to check your router, password, or internet connection.
-            </p>
-          </div>
-
-          <div class="oled-feature-card warning">
-            <div class="feature-icon-badge">⚠️</div>
-            <h4>Hardware Pin Allocation Rule</h4>
-            <p>
-              The ESP32 uses <strong>GPIO 22</strong> for I2C Clock (<code>SCL</code>). We moved the MAX98357A amplifier's <code>DIN</code> audio line to <strong>GPIO 27</strong> so audio and display never collide or glitch!
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- NFC Story Tokens & Tap-to-Play Feature Section -->
-  <section class="section nfc-section" id="nfc-stories">
-    <div class="container">
-      <div class="section-header">
-        <span class="section-kicker">Screenless Magic</span>
-        <h2 class="section-title">🎴 NFC Story Tokens & Direct MP3 Streaming</h2>
-        <p class="section-subtitle">
-          Turn your radio into an interactive Australian storybook jukebox! Tap any physical wooden token or card to instantly download, stream, and play MP3 stories and lullabies. The 0.96" OLED screen displays live progress and countdown timers, while the <strong>Station Cycle Button</strong> immediately returns to your allow-listed radio stations.
-        </p>
-      </div>
-
-      <!-- Feature Highlight Row: Visual Photo & Interactive Deck -->
-      <div class="nfc-hero-grid">
-        <div class="nfc-photo-card">
-          <div class="nfc-photo-frame">
-            <img src="assets/nfc_tokens.jpg" alt="Child tapping wooden NFC Wombat Stew story token on top lid of Kangaroo Radio" class="nfc-hero-img" loading="lazy">
-            <div class="nfc-photo-overlay">
-              <span class="nfc-badge-pill">✨ Handcrafted Story Tokens</span>
-              <p>50mm laser-engraved Australian timber tokens with embedded $0.40 NTAG213 NFC stickers.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="nfc-summary-card">
-          <div class="nfc-status-pill">
-            <span class="pulse-dot"></span>
-            <span>Firmware Status: <strong>NFC SPI Engine Active (RC522)</strong></span>
-          </div>
-          <h3>How the Magic Works</h3>
-          <p class="nfc-lead">
-            Traditional kids audio players require proprietary memory cards or expensive subscription figurines. The Kangaroo Radio uses open, rewritable <strong>NTAG213 / NTAG215</strong> chips (under $0.40 each).
-          </p>
-          <ul class="nfc-key-points">
-            <li>
-              <span class="point-icon">🔗</span>
-              <div>
-                <strong>Stores Direct MP3 URL:</strong> The token contains a standard web link to any MP3 audio file (podcasts, public domain stories, cloud links).
-              </div>
-            </li>
-            <li>
-              <span class="point-icon">⚡</span>
-              <div>
-                <strong>Direct Streaming & Buffering:</strong> The ESP32 reads the tag over SPI, connects to the host, and streams digital audio straight into the MAX98357A I2S DAC with zero local SD card required.
-              </div>
-            </li>
-            <li>
-              <span class="point-icon">📊</span>
-              <div>
-                <strong>Full OLED Progress Tracking:</strong> Shows <em>Reading Tag</em>, <em>Downloading / Buffering</em>, live <em>Elapsed / Remaining timebar</em> (<code>03:45 / -08:00</code>), and a celebration <em>DONE</em> screen!
-              </div>
-            </li>
-            <li>
-              <span class="point-icon">📻</span>
-              <div>
-                <strong>Instant Cycle Button Return:</strong> Tapping the radio cycle button (GPIO 33) at any time interrupts the story and resumes the allow-listed radio stations.
-              </div>
-            </li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- Interactive Story Token Tap Simulator -->
-      <div class="nfc-interactive-deck">
-        <div class="deck-header">
-          <div class="deck-title-group">
-            <span class="deck-badge">Interactive Simulator</span>
-            <h3>Tap a Story Token to Play on Kangaroo Radio</h3>
-            <p>Click any token below to simulate tapping it against the radio's top lid tap zone:</p>
-          </div>
-          <div class="deck-return-group">
-            <button class="btn-return-radio" id="btn-return-radio" title="Simulates pressing the physical radio station push button on GPIO 33">
-              <span class="btn-icon">📻</span>
-              <span class="btn-text">Press Radio Button (Exit Story & Resume Live Radio)</span>
-            </button>
-          </div>
-        </div>
-
-        <div class="nfc-tokens-grid">
-          <!-- Token 1: Wombat Stew -->
-          <div class="nfc-token-card" data-token-id="wombat" data-title="Wombat Stew" data-author="Marcia Vaughan & Pamela Allen" data-duration="11:45" data-url="assets/wombat_stew.wav">
-            <div class="token-disc">
-              <span class="token-art">🦘</span>
-              <span class="token-nfc-wave">((( 🎴 )))</span>
-            </div>
-            <div class="token-details">
-              <span class="token-tag">Aussie Bush Adventure</span>
-              <h4>Wombat Stew</h4>
-              <p class="token-author">By Marcia Vaughan & Pamela Allen</p>
-              <div class="token-meta">
-                <span class="token-dur">⏱️ 11:45</span>
-                <span class="token-format">MP3 Stream • 128 kbps</span>
-              </div>
-            </div>
-            <button class="btn-tap-token" id="btn-tap-wombat">
-              <span class="tap-icon">🎴</span>
-              <span class="tap-text">Tap Token to Play</span>
-            </button>
-          </div>
-
-          <!-- Token 2: Possum Magic -->
-          <div class="nfc-token-card" data-token-id="possum" data-title="Possum Magic" data-author="Mem Fox & Julie Vivas" data-duration="08:30" data-url="assets/possum_magic.wav">
-            <div class="token-disc">
-              <span class="token-art">✨</span>
-              <span class="token-nfc-wave">((( 🎴 )))</span>
-            </div>
-            <div class="token-details">
-              <span class="token-tag">Magical Australian Classic</span>
-              <h4>Possum Magic</h4>
-              <p class="token-author">By Mem Fox & Julie Vivas</p>
-              <div class="token-meta">
-                <span class="token-dur">⏱️ 08:30</span>
-                <span class="token-format">MP3 Stream • 128 kbps</span>
-              </div>
-            </div>
-            <button class="btn-tap-token" id="btn-tap-possum">
-              <span class="tap-icon">🎴</span>
-              <span class="tap-text">Tap Token to Play</span>
-            </button>
-          </div>
-
-          <!-- Token 3: Snugglepot & Cuddlepie -->
-          <div class="nfc-token-card" data-token-id="snugglepot" data-title="Snugglepot & Cuddlepie" data-author="May Gibbs Australian Folklore" data-duration="14:15" data-url="assets/snugglepot.wav">
-            <div class="token-disc">
-              <span class="token-art">🍃</span>
-              <span class="token-nfc-wave">((( 🎴 )))</span>
-            </div>
-            <div class="token-details">
-              <span class="token-tag">Australian Gumnut Babies</span>
-              <h4>Snugglepot & Cuddlepie</h4>
-              <p class="token-author">By May Gibbs</p>
-              <div class="token-meta">
-                <span class="token-dur">⏱️ 14:15</span>
-                <span class="token-format">MP3 Stream • 128 kbps</span>
-              </div>
-            </div>
-            <button class="btn-tap-token" id="btn-tap-snugglepot">
-              <span class="tap-icon">🎴</span>
-              <span class="tap-text">Tap Token to Play</span>
-            </button>
-          </div>
-
-          <!-- Token 4: Kangaroo Beach -->
-          <div class="nfc-token-card" data-token-id="kangaroo" data-title="Kangaroo Beach Lullaby" data-author="ABC Kids Bedtime Tales" data-duration="05:20" data-url="assets/kangaroo_beach.wav">
-            <div class="token-disc">
-              <span class="token-art">🌊</span>
-              <span class="token-nfc-wave">((( 🎴 )))</span>
-            </div>
-            <div class="token-details">
-              <span class="token-tag">Gentle Ocean Lullaby</span>
-              <h4>Kangaroo Beach Lullaby</h4>
-              <p class="token-author">ABC Kids Listen Series</p>
-              <div class="token-meta">
-                <span class="token-dur">⏱️ 05:20</span>
-                <span class="token-format">MP3 Stream • 128 kbps</span>
-              </div>
-            </div>
-            <button class="btn-tap-token" id="btn-tap-kangaroo">
-              <span class="tap-icon">🎴</span>
-              <span class="tap-text">Tap Token to Play</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Custom MP3 URL Tester -->
-        <div class="custom-url-tester-box">
-          <div class="tester-header">
-            <h4>🧪 Test Any Custom MP3 URL on Virtual Radio</h4>
-            <p>Paste any public direct MP3 link below to test how the radio extracts the title and streams it:</p>
-          </div>
-          <div class="tester-input-row">
-            <input type="url" id="custom-mp3-input" placeholder="https://example.com/audio/my_custom_fairytale.mp3" value="https://upload.wikimedia.org/wikipedia/commons/wombat_story.mp3">
-            <button class="btn btn-primary" id="btn-test-custom-nfc">
-              <span>🎴 Tap Custom NFC Token</span>
-            </button>
-          </div>
-          <small class="tester-hint">Supported formats: Direct HTTP/HTTPS links to <code>.mp3</code>, <code>.m4a</code>, or <code>.wav</code> files.</small>
-        </div>
-      </div>
-
-      <!-- Technical Architecture Breakdown Cards -->
-      <div class="nfc-tech-grid">
-        <div class="tech-box">
-          <div class="tech-icon-circle">📱</div>
-          <h4>Write Tags in 5 Seconds via Phone</h4>
-          <p>
-            No computer or code required to make tokens! Download the free <strong>NFC Tools</strong> app (iOS/Android). Open app &rarr; <em>Write</em> &rarr; <em>Add a record</em> &rarr; <em>Custom URL/URI</em> &rarr; paste your MP3 link &rarr; hold your phone against the token sticker. Done!
-          </p>
-        </div>
-
-        <div class="tech-box">
-          <div class="tech-icon-circle">🔌</div>
-          <h4>Hardware VSPI Bus Pinout</h4>
-          <p>
-            The RC522 module uses the ESP32's dedicated hardware SPI bus: <code>SCK</code> &rarr; GPIO 18, <code>MISO</code> &rarr; GPIO 19, <code>MOSI</code> &rarr; GPIO 23, <code>SDA (SS)</code> &rarr; GPIO 5, and <code>RST</code> &rarr; GPIO 4. Powered safely from <strong>3.3V</strong>!
-          </p>
-        </div>
-
-        <div class="tech-box">
-          <div class="tech-icon-circle">🎛️</div>
-          <h4>Hardware Button Priority</h4>
-          <p>
-            Kids get full control: tapping an NFC token starts the story, but pressing the physical <strong>Station Cycle Push Button (GPIO 33)</strong> immediately kills the story stream, resets the buffer, and returns to the curated live radio channels.
-          </p>
-        </div>
-
-        <div class="tech-box">
-          <div class="tech-icon-circle">📺</div>
-          <h4>Intelligent OLED State Machine</h4>
-          <p>
-            The monochrome SSD1306 displays clean, reassuring feedback at every stage: <code>READING TAG</code> &rarr; <code>BUFFERING...</code> &rarr; <code>PLAYING [01:23 / -03:45]</code> with a 128px progress bar &rarr; <code>DONE</code> screen &rarr; auto-resume.
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Parts Breakdown & Interactive Shopping List -->
-  <section class="section" id="parts-guide">
-    <div class="container">
-      <div class="section-header">
-        <span class="section-kicker">Everything You Need</span>
-        <h2 class="section-title">Exact Parts List & Australian Buy Links</h2>
-        <p class="section-subtitle">
-          Sourced specifically from Australian suppliers with fast local dispatch so you can order everything from <strong>just one or two stores</strong> without waiting weeks for overseas freight.
-        </p>
-      </div>
-
-      <!-- Parts Photo Display -->
-      <div class="parts-photo-card">
-        <img src="assets/parts.jpg" alt="Neatly laid out components for the DIY radio on a green cutting mat" class="parts-img" id="parts-knolling-img">
-        <div class="parts-photo-overlay">
-          <span>📸 Everything you see above fits together easily with plug-in jumper wires.</span>
-        </div>
-      </div>
-
-      <!-- Store Filter Tabs -->
-      <div class="filter-controls">
-        <div class="filter-label">Order Route:</div>
-        <div class="filter-tabs" id="store-filter-tabs">
-          <button class="filter-tab active" data-store="all">All Retailers</button>
-          <button class="filter-tab" data-store="core">Core Electronics (1-Stop Shop Newcastle, NSW)</button>
-          <button class="filter-tab" data-store="jaycar">Jaycar (In-Store Pickup Sydney)</button>
-          <button class="filter-tab" data-store="amazon">Amazon Australia Prime</button>
-        </div>
-      </div>
-
-      <!-- Interactive Shopping Table with Live Budget Calculator -->
-      <div class="shopping-table-card">
-        <div class="table-header-row">
-          <div class="th col-check">Got It?</div>
-          <div class="th col-part">Component & Exact Specs</div>
-          <div class="th col-why">Why It's Needed</div>
-          <div class="th col-price">Est. Price</div>
-          <div class="th col-link">Buy in Australia</div>
-        </div>
-
-        <div class="table-body" id="parts-table-body">
-          <!-- Item 1: ESP32 -->
-          <div class="table-row" data-store="core amazon jaycar">
-            <div class="td col-check">
-              <input type="checkbox" id="part-esp32" class="part-checkbox" data-price="9.50">
-            </div>
-            <div class="td col-part">
-              <strong>ESP32 Development Board (USB-C)</strong>
-              <span class="part-meta">FireBeetle 2 ESP32-E (DFR0654) or DevKitC (DEV-19900)</span>
-            </div>
-            <div class="td col-why">The brain. Connects to 2.4GHz Wi-Fi and decodes the ABC Kids HLS/AAC stream in real time.</div>
-            <div class="td col-price">$9.50 AUD</div>
-            <div class="td col-link">
-              <div class="link-buttons">
-                <a href="https://core-electronics.com.au/firebeetle-2-esp32-e-iot-microcontroller.html" target="_blank" rel="noopener" class="store-badge core-badge">Core: FireBeetle 2 (DFR0654)</a>
-                <a href="https://www.jaycar.com.au/esp32-main-development-board/p/XC3800" target="_blank" rel="noopener" class="store-badge jaycar-badge">Jaycar: ESP32 (XC3800)</a>
-                <a href="https://www.amazon.com.au/s?k=ESP32+Type-C+development+board" target="_blank" rel="noopener" class="store-badge amazon-badge">Amazon AU Prime</a>
-              </div>
-            </div>
-          </div>
-
-          <!-- Item 2: MAX98357A I2S DAC Amp -->
-          <div class="table-row" data-store="core amazon">
-            <div class="td col-check">
-              <input type="checkbox" id="part-max98357a" class="part-checkbox" data-price="6.90">
-            </div>
-            <div class="td col-part">
-              <strong>MAX98357A I2S 3.2W Class-D Mono Amplifier</strong>
-              <span class="part-meta">Adafruit ADA3006 or SparkFun DEV-14809</span>
-            </div>
-            <div class="td col-why">Built-in internal PLL derives MCLK from BCLK. Crystal-clear digital audio with zero analog hiss.</div>
-            <div class="td col-price">$6.90 AUD</div>
-            <div class="td col-link">
-              <div class="link-buttons">
-                <a href="https://core-electronics.com.au/adafruit-i2s-3w-class-d-amplifier-breakout-max98357a.html" target="_blank" rel="noopener" class="store-badge core-badge">Core: Adafruit (ADA3006)</a>
-                <a href="https://core-electronics.com.au/sparkfun-i2s-audio-breakout-max98357a.html" target="_blank" rel="noopener" class="store-badge core-badge">Core: SparkFun (DEV-14809)</a>
-                <a href="https://www.amazon.com.au/s?k=MAX98357A+I2S+amplifier" target="_blank" rel="noopener" class="store-badge amazon-badge">Amazon AU Prime</a>
-              </div>
-            </div>
-          </div>
-
-          <!-- Item 3: 3W Speaker -->
-          <div class="table-row" data-store="core amazon jaycar">
-            <div class="td col-check">
-              <input type="checkbox" id="part-speaker" class="part-checkbox" data-price="6.50">
-            </div>
-            <div class="td col-part">
-              <strong>3W 4Ω Full-Range Cone Speaker (50mm / 3")</strong>
-              <span class="part-meta">Adafruit ADA1314 or Jaycar AS3004 (4 Ohm 3 Watt)</span>
-            </div>
-            <div class="td col-why">Deep rubber surround cone for warm vocal reproduction. Perfectly matched to the MAX98357A 3.2W output.</div>
-            <div class="td col-price">$6.50 AUD</div>
-            <div class="td col-link">
-              <div class="link-buttons">
-                <a href="https://core-electronics.com.au/speaker-3-diameter-4-ohm-3-watt.html" target="_blank" rel="noopener" class="store-badge core-badge">Core: Adafruit 3" (ADA1314)</a>
-                <a href="https://www.jaycar.com.au/mini-4-ohm-speaker-50mm/p/AS3004" target="_blank" rel="noopener" class="store-badge jaycar-badge">Jaycar: 50mm 4Ω (AS3004)</a>
-                <a href="https://www.amazon.com.au/s?k=3w+4+ohm+full+range+speaker" target="_blank" rel="noopener" class="store-badge amazon-badge">Amazon AU Prime</a>
-              </div>
-            </div>
-          </div>
-
-          <!-- Item 4: 18650 Battery & Holder -->
-          <div class="table-row" data-store="core amazon jaycar">
-            <div class="td col-check">
-              <input type="checkbox" id="part-battery" class="part-checkbox" data-price="11.50">
-            </div>
-            <div class="td col-part">
-              <strong>18650 Li-ion Battery (3.7V ~2600mAh) + Single Slot Holder</strong>
-              <span class="part-meta">Jaycar SB2423 + PH9201 or Core Electronics PRT-13851</span>
-            </div>
-            <div class="td col-why">Rechargeable power for 12 to 18 hours of playtime. Holder with leads means <strong>zero soldering on the battery</strong>.</div>
-            <div class="td col-price">$11.50 AUD</div>
-            <div class="td col-link">
-              <div class="link-buttons">
-                <a href="https://www.jaycar.com.au/18650-li-ion-rechargeable-battery-2600mah/p/SB2423" target="_blank" rel="noopener" class="store-badge jaycar-badge">Jaycar: 18650 Cell (SB2423)</a>
-                <a href="https://www.jaycar.com.au/1-x-18650-pcb-battery-holder/p/PH9201" target="_blank" rel="noopener" class="store-badge jaycar-badge">Jaycar: Holder (PH9201)</a>
-                <a href="https://core-electronics.com.au/polymer-lithium-ion-battery-2000mah.html" target="_blank" rel="noopener" class="store-badge core-badge">Core: 2000mAh LiPo (PRT-13851)</a>
-              </div>
-            </div>
-          </div>
-
-          <!-- Item 5: USB-C Charger & 5V Boost -->
-          <div class="table-row" data-store="core amazon">
-            <div class="td col-check">
-              <input type="checkbox" id="part-tp4056" class="part-checkbox" data-price="6.50">
-            </div>
-            <div class="td col-part">
-              <strong>USB-C LiPo Charger + 5V Step-Up Boost (or All-in-One Shield)</strong>
-              <span class="part-meta">Makerverse CE08374 + Pololu POLOLU-2115 (or 18650 Shield V3)</span>
-            </div>
-            <div class="td col-why">Safely charges via USB-C and steps up 3.7V to 5.0V so the ESP32 never suffers brownout resets when Wi-Fi spikes.</div>
-            <div class="td col-price">$6.50 AUD</div>
-            <div class="td col-link">
-              <div class="link-buttons">
-                <a href="https://core-electronics.com.au/makerverse-usb-c-lipo-charger.html" target="_blank" rel="noopener" class="store-badge core-badge">Core: Charger (CE08374)</a>
-                <a href="https://core-electronics.com.au/pololu-5v-step-up-voltage-regulator-u3v12f5.html" target="_blank" rel="noopener" class="store-badge core-badge">Core: 5V Boost (POLOLU-2115)</a>
-                <a href="https://www.amazon.com.au/s?k=18650+battery+shield+v3+type+c" target="_blank" rel="noopener" class="store-badge amazon-badge">Amazon AU: All-in-One Shield</a>
-              </div>
-            </div>
-          </div>
-
-          <!-- Item 6: Switch & Volume Potentiometer -->
-          <div class="table-row" data-store="core amazon jaycar">
-            <div class="td col-check">
-              <input type="checkbox" id="part-switch" class="part-checkbox" data-price="3.80">
-            </div>
-            <div class="td col-part">
-              <strong>SPST Toggle Switch + 10kΩ Linear Potentiometer with Knob</strong>
-              <span class="part-meta">Jaycar ST0570 + RP5710 or Core COM-00102 + COM-09939</span>
-            </div>
-            <div class="td col-why">Vintage tactile feel: flip on to play, twist knob for smooth room-volume control.</div>
-            <div class="td col-price">$3.80 AUD</div>
-            <div class="td col-link">
-              <div class="link-buttons">
-                <a href="https://core-electronics.com.au/spdt-mini-power-switch.html" target="_blank" rel="noopener" class="store-badge core-badge">Core: Switch (COM-00102)</a>
-                <a href="https://core-electronics.com.au/rotary-potentiometer-10k-ohm-linear.html" target="_blank" rel="noopener" class="store-badge core-badge">Core: 10k Pot (COM-09939)</a>
-                <a href="https://www.jaycar.com.au/spst-standard-toggle-switch/p/ST0570" target="_blank" rel="noopener" class="store-badge jaycar-badge">Jaycar: Toggle (ST0570)</a>
-              </div>
-            </div>
-          </div>
-
-          <!-- Item 7: Station Cycle Push Button -->
-          <div class="table-row" data-store="core amazon jaycar">
-            <div class="td col-check">
-              <input type="checkbox" id="part-button" class="part-checkbox" data-price="2.00">
-            </div>
-            <div class="td col-part">
-              <strong>Station Cycle Push Button (12mm / 16mm Momentary NO)</strong>
-              <span class="part-meta">Tactile Pushbutton (Normally Open) / Core COM-09190 or Jaycar SP0600</span>
-            </div>
-            <div class="td col-why">Cycles through the 6 allow-listed child-safe stations. Connects directly to GPIO 33 & GND (uses internal pull-up!).</div>
-            <div class="td col-price">$2.00 AUD</div>
-            <div class="td col-link">
-              <div class="link-buttons">
-                <a href="https://core-electronics.com.au/momentary-pushbutton-switch-12mm-square.html" target="_blank" rel="noopener" class="store-badge core-badge">Core: 12mm Button (COM-09190)</a>
-                <a href="https://www.jaycar.com.au/spst-standard-pushbutton-switch/p/SP0600" target="_blank" rel="noopener" class="store-badge jaycar-badge">Jaycar: Pushbutton (SP0600)</a>
-                <a href="https://www.amazon.com.au/s?k=momentary+push+button+16mm" target="_blank" rel="noopener" class="store-badge amazon-badge">Amazon AU Prime</a>
-              </div>
-            </div>
-          </div>
-
-          <!-- Item 8: Dupont Jumper Wires -->
-          <div class="table-row" data-store="core amazon jaycar">
-            <div class="td col-check">
-              <input type="checkbox" id="part-wires" class="part-checkbox" data-price="4.00">
-            </div>
-            <div class="td col-part">
-              <strong>Dupont Jumper Wires (Female-to-Female & Male-to-Female)</strong>
-              <span class="part-meta">Core PRT-12794 (40-pack, 150mm) or Jaycar WC6024</span>
-            </div>
-            <div class="td col-why">Plug everything together onto pin headers like Lego bricks without touching a soldering iron!</div>
-            <div class="td col-price">$4.00 AUD</div>
-            <div class="td col-link">
-              <div class="link-buttons">
-                <a href="https://core-electronics.com.au/premium-female-female-jumper-wires-40-x-6-150mm.html" target="_blank" rel="noopener" class="store-badge core-badge">Core: 40pk F-F (PRT-12794)</a>
-                <a href="https://www.jaycar.com.au/40-piece-female-to-female-jumper-leads/p/WC6024" target="_blank" rel="noopener" class="store-badge jaycar-badge">Jaycar: Leads (WC6024)</a>
-                <a href="https://www.amazon.com.au/s?k=dupont+jumper+wires" target="_blank" rel="noopener" class="store-badge amazon-badge">Amazon AU Prime</a>
-              </div>
-            </div>
-          </div>
-
-          <!-- Item 9: Wooden Box Enclosure -->
-          <div class="table-row" data-store="all">
-            <div class="td col-check">
-              <input type="checkbox" id="part-box" class="part-checkbox" data-price="5.00">
-            </div>
-            <div class="td col-part">
-              <strong>Enclosure / Wooden Craft Box</strong>
-              <span class="part-meta">Kmart $5 bamboo/timber box, Bunnings craft box, or repurposed shoebox</span>
-            </div>
-            <div class="td col-why">House all components safely and provides acoustic resonance for warm bass.</div>
-            <div class="td col-price">$5.00 AUD</div>
-            <div class="td col-link">
-              <div class="link-buttons">
-                <a href="https://www.kmart.com.au/search/?searchTerm=wooden+box" target="_blank" rel="noopener" class="store-badge kmart-badge">Kmart Australia</a>
-                <a href="https://www.bunnings.com.au/search/products?q=craft+box" target="_blank" rel="noopener" class="store-badge bunnings-badge">Bunnings Warehouse</a>
-              </div>
-            </div>
-          </div>
-
-          <!-- Item 10: 0.96" Monochrome I2C OLED Display -->
-          <div class="table-row" data-store="core amazon jaycar">
-            <div class="td col-check">
-              <input type="checkbox" id="part-oled" class="part-checkbox" data-price="8.50">
-            </div>
-            <div class="td col-part">
-              <strong>0.96" I2C Monochrome OLED Display (128×64 SSD1306)</strong>
-              <span class="part-meta">DFRobot DFR0650, Makerverse 0.96" I2C OLED, or Jaycar XC4384</span>
-            </div>
-            <div class="td col-why">Monochrome status panel. Displays "Connecting to Wi-Fi", clear diagnostics ("WiFi FooBar not found", "Wrong password", "No internet"), station name, and volume bar!</div>
-            <div class="td col-price">$8.50 AUD</div>
-            <div class="td col-link">
-              <div class="link-buttons">
-                <a href="https://core-electronics.com.au/gravity-i2c-oled-2864-display.html" target="_blank" rel="noopener" class="store-badge core-badge">Core: DFR0650 OLED</a>
-                <a href="https://www.jaycar.com.au/0-96-inch-oled-display-module/p/XC4384" target="_blank" rel="noopener" class="store-badge jaycar-badge">Jaycar: 0.96" OLED (XC4384)</a>
-                <a href="https://www.amazon.com.au/s?k=0.96+I2C+OLED+display+SSD1306" target="_blank" rel="noopener" class="store-badge amazon-badge">Amazon AU Prime</a>
-              </div>
-            </div>
-          </div>
-
-          <!-- Item 11: RC522 RFID / NFC Reader Module -->
-          <div class="table-row" data-store="core amazon jaycar">
-            <div class="td col-check">
-              <input type="checkbox" id="part-rc522" class="part-checkbox" data-price="4.50">
-            </div>
-            <div class="td col-part">
-              <strong>RC522 13.56 MHz RFID / NFC Reader Module (SPI)</strong>
-              <span class="part-meta">MF-RC522 SPI Module / Core CE05869 or Jaycar XC5262</span>
-            </div>
-            <div class="td col-why">Mounts hidden directly under the wooden top lid. Reads NTAG213 / NTAG215 story tokens through up to 8mm of timber!</div>
-            <div class="td col-price">$4.50 AUD</div>
-            <div class="td col-link">
-              <div class="link-buttons">
-                <a href="https://core-electronics.com.au/rfid-rc522-reader-module.html" target="_blank" rel="noopener" class="store-badge core-badge">Core: RC522 Module</a>
-                <a href="https://www.jaycar.com.au/arduino-compatible-mifare-rc522-rfid-card-reader-module/p/XC5262" target="_blank" rel="noopener" class="store-badge jaycar-badge">Jaycar: RC522 (XC5262)</a>
-                <a href="https://www.amazon.com.au/s?k=RC522+RFID+reader+module" target="_blank" rel="noopener" class="store-badge amazon-badge">Amazon AU Prime</a>
-              </div>
-            </div>
-          </div>
-
-          <!-- Item 12: NTAG213 / NTAG215 NFC Stickers -->
-          <div class="table-row" data-store="amazon core">
-            <div class="td col-check">
-              <input type="checkbox" id="part-nfc-tags" class="part-checkbox" data-price="4.00">
-            </div>
-            <div class="td col-part">
-              <strong>NTAG213 / NTAG215 Rewritable NFC Stickers (10-Pack)</strong>
-              <span class="part-meta">25mm circular self-adhesive NFC chips (144 bytes / 504 bytes NDEF)</span>
-            </div>
-            <div class="td col-why">Stick them on wooden tokens, LEGO bricks, or Aussie flashcards. Rewritable thousands of times with any smartphone!</div>
-            <div class="td col-price">$4.00 AUD</div>
-            <div class="td col-link">
-              <div class="link-buttons">
-                <a href="https://www.amazon.com.au/s?k=NTAG215+NFC+stickers" target="_blank" rel="noopener" class="store-badge amazon-badge">Amazon AU Prime (10pk)</a>
-                <a href="https://core-electronics.com.au/nfc-tag-ntag213-sticker.html" target="_blank" rel="noopener" class="store-badge core-badge">Core: NTAG Stickers</a>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Live Budget Tally -->
-        <div class="shopping-footer">
-          <div class="budget-tracker">
-            <span class="tracker-label">Estimated Total:</span>
-            <span class="tracker-total" id="budget-total-display">$69.70 AUD</span>
-            <span class="tracker-count" id="budget-count-display">(0 of 12 items collected)</span>
-          </div>
-          <button class="btn btn-outline" id="btn-select-all-parts">Mark All Collected</button>
-        </div>
-      </div>
-
-      <!-- Component Alternatives Accordion -->
-      <div class="alternatives-wrapper">
-        <h3 class="alternatives-title">🔄 Alternative Part Options & Upgrades</h3>
-        <div class="alternatives-grid">
-          <div class="alt-card">
-            <div class="alt-badge">Ultra-Beginner Power</div>
-            <h4>V3 18650 Battery Shield with USB-C</h4>
-            <p>Instead of wiring a separate TP4056 board and battery holder, this single board combines the 18650 battery clip, USB-C fast charging, power switch, and 5V output pins all in one. Plug and play!</p>
-            <span class="alt-price">~$8.50 on Amazon AU</span>
-          </div>
-          <div class="alt-card">
-            <div class="alt-badge">Audiophile Sound</div>
-            <h4>5W 40mm Speaker with Passive Radiator</h4>
-            <p>Want deeper, richer lullabies? A 5W speaker paired with a small 40mm rubber passive bass radiator turns the wooden box into a mini Sonos speaker with warm, resonant low-end frequencies.</p>
-            <span class="alt-price">~$9.00 on Core Electronics</span>
-          </div>
-          <div class="alt-card">
-            <div class="alt-badge">Compact Build</div>
-            <h4>Flat 3.7V 2000mAh LiPo Battery</h4>
-            <p>If your wooden box is shallow, a flat lithium polymer pouch battery with a standard JST connector fits into tight spaces where an 18650 cylinder might be too bulky.</p>
-            <span class="alt-price">~$12.00 on Core Electronics</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- The Acoustic Secret Section (Interactive Sound Demo) -->
-  <section class="section acoustic-section" id="sound-science">
-    <div class="container">
-      <div class="acoustic-card">
-        <div class="acoustic-content">
-          <span class="badge badge-primary">Acoustics 101</span>
-          <h2>The Secret to Great Sound: "The Baffle Effect"</h2>
-          <p>
-            When you first wire up your 3W speaker on your table, you might think: <em>"Wait, this sounds thin and tinny!"</em> 
-          </p>
-          <p>
-            This is called <strong>acoustic phase cancellation</strong>. When a speaker cone pushes forward, it creates high air pressure in front, but low pressure behind. With a bare speaker, the sound from the back instantly cancels out the sound from the front!
-          </p>
-          <p>
-            The moment you mount the speaker inside a <strong>sealed wooden box</strong> with a cutout hole, the backwards wave is trapped inside. The sound instantly transforms into <strong>deep, rich, warm audio</strong>.
-          </p>
-
-          <!-- Interactive Acoustic Simulator -->
-          <div class="sound-demo-box">
-            <div class="sound-demo-header">
-              <span class="demo-title">Interactive Sound Simulator</span>
-              <span class="demo-subtitle">Hear the difference an enclosure makes:</span>
-            </div>
-            <div class="sound-demo-buttons">
-              <button class="sound-btn" id="btn-sound-bare" data-mode="bare">
-                <span class="icon">📢</span>
-                <span class="label">Bare Speaker (Sitting on desk)</span>
-                <span class="subtext">Thin, tinny, weak bass</span>
-              </button>
-              <button class="sound-btn active" id="btn-sound-enclosed" data-mode="enclosed">
-                <span class="icon">📻</span>
-                <span class="label">Mounted in Sealed Box</span>
-                <span class="subtext">Warm, rich, full frequencies</span>
-              </button>
-            </div>
-            <div class="sound-waveform-visual" id="waveform-visual">
-              <div class="wave-bar"></div>
-              <div class="wave-bar"></div>
-              <div class="wave-bar"></div>
-              <div class="wave-bar"></div>
-              <div class="wave-bar"></div>
-              <div class="wave-bar"></div>
-              <div class="wave-bar"></div>
-              <div class="wave-bar"></div>
-            </div>
-            <div class="sound-feedback-text" id="sound-feedback-text">
-              ✨ Currently simulating: <strong>Warm Enclosed Box</strong> (Deep resonant lullabies & clear speech).
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Pediatric Hearing Safety & Child-Safe Volume Guard Card -->
-      <div class="safety-guard-card">
-        <div class="safety-guard-header">
-          <div class="safety-guard-icon">🛡️</div>
-          <div>
-            <span class="badge badge-success">Pediatric Hearing Safety</span>
-            <h3>Built-In Child-Safe Volume Guard: Never Too Loud</h3>
-          </div>
-        </div>
-        <div class="safety-guard-body">
-          <p>
-            The MAX98357A I2S amplifier outputs up to <strong>3.2 Watts</strong> into a 4Ω speaker. In a compact wooden nursery cabinet, uncapped full blast can exceed <strong>92–95 dBA</strong> at 1 meter! According to pediatric audiologists and WHO hearing safety guidelines, young children's ear canals amplify high frequencies, so sustained exposure above <strong>80–85 dBA</strong> can lead to hearing damage.
-          </p>
-          <div class="safety-guard-grid">
-            <div class="safety-feature-box">
-              <span class="sf-icon">🚫</span>
-              <h4>The Danger of Uncapped Knobs</h4>
-              <p>Toddlers love twisting dials and knobs to their physical limits. If a child turns the knob 100% clockwise, an uncapped radio will blast at deafening nursery volumes.</p>
-            </div>
-            <div class="safety-feature-box">
-              <span class="sf-icon">🔒</span>
-              <h4>Software Ear Guard (No Soldering)</h4>
-              <p>We hardcode <code>#define MAX_VOLUME_LIMIT 14</code> into the ESP32 code. This scales the knob's entire physical rotation smoothly up to a safe <strong>~75 dBA ceiling</strong>.</p>
-            </div>
-            <div class="safety-feature-box">
-              <span class="sf-icon">📺</span>
-              <h4>Live OLED Confirmation</h4>
-              <p>The 0.96" OLED screen displays <code>SAFE: 65%</code> and draws a safety ceiling marker on the volume overlay, giving parents instant visual peace of mind.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Wiring & Pinout Guide Section -->
-  <section class="section" id="wiring-guide">
-    <div class="container">
-      <div class="section-header">
-        <span class="section-kicker">Simple Connections</span>
-        <h2 class="section-title">Color-Coded Circuit & Pinout Guide</h2>
-        <p class="section-subtitle">
-          There are only 7 core wires needed between the ESP32, the amplifier, and the battery. Hover over any connection in the diagram or table below to highlight it.
-        </p>
-      </div>
-
-      <div class="wiring-grid">
-        <!-- SVG Interactive Circuit Diagram -->
-        <div class="circuit-diagram-card">
-          <div class="diagram-title-bar">
-            <span>🔌 Interactive Wiring Schematic</span>
-            <span class="badge badge-light">Click any wire to inspect</span>
-          </div>
-
-          <div class="svg-container">
-            <svg viewBox="0 0 760 480" class="circuit-svg" id="circuit-svg" xmlns="http://www.w3.org/2000/svg">
-              <!-- Defs for filters/gradients -->
-              <defs>
-                <linearGradient id="gradEsp32" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stop-color="#1e293b"/>
-                  <stop offset="100%" stop-color="#0f172a"/>
-                </linearGradient>
-                <linearGradient id="gradMax" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stop-color="#6b21a8"/>
-                  <stop offset="100%" stop-color="#4c1d95"/>
-                </linearGradient>
-                <linearGradient id="gradBatt" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stop-color="#15803d"/>
-                  <stop offset="100%" stop-color="#166534"/>
-                </linearGradient>
-                <linearGradient id="gradTp" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stop-color="#1d4ed8"/>
-                  <stop offset="100%" stop-color="#1e40af"/>
-                </linearGradient>
-              </defs>
-
-              <!-- Components -->
-              <!-- 1. TP4056 Charger -->
-              <g class="comp-box" id="svg-comp-tp">
-                <rect x="30" y="40" width="150" height="110" rx="8" fill="url(#gradTp)" stroke="#3b82f6" stroke-width="2"/>
-                <text x="105" y="65" text-anchor="middle" fill="#fff" font-weight="700" font-size="13">TP4056 USB-C</text>
-                <text x="105" y="80" text-anchor="middle" fill="#93c5fd" font-size="10">Charger & Protection</text>
-                <rect x="25" y="88" width="15" height="24" rx="3" fill="#cbd5e1"/>
-                <text x="32" y="104" font-size="8" fill="#0f172a" text-anchor="middle">USB</text>
-                <!-- Ports -->
-                <circle cx="160" cy="65" r="5" fill="#ef4444" id="pin-tp-outplus"/><text x="145" y="68" fill="#fca5a5" font-size="9">OUT+</text>
-                <circle cx="160" cy="85" r="5" fill="#3b82f6" id="pin-tp-outminus"/><text x="145" y="88" fill="#93c5fd" font-size="9">OUT-</text>
-                <circle cx="160" cy="115" r="5" fill="#ef4444" id="pin-tp-bplus"/><text x="145" y="118" fill="#fca5a5" font-size="9">B+</text>
-                <circle cx="160" cy="135" r="5" fill="#1e293b" id="pin-tp-bminus"/><text x="145" y="138" fill="#94a3b8" font-size="9">B-</text>
-              </g>
-
-              <!-- 2. 18650 Battery -->
-              <g class="comp-box" id="svg-comp-battery">
-                <rect x="30" y="210" width="150" height="70" rx="6" fill="url(#gradBatt)" stroke="#22c55e" stroke-width="2"/>
-                <rect x="180" y="235" width="10" height="20" rx="2" fill="#94a3b8"/>
-                <text x="105" y="245" text-anchor="middle" fill="#fff" font-weight="700" font-size="13">18650 Cell</text>
-                <text x="105" y="262" text-anchor="middle" fill="#bbf7d0" font-size="10">3.7V 2600mAh</text>
-                <text x="45" y="248" fill="#ef4444" font-size="12" font-weight="bold">+</text>
-                <text x="165" y="248" fill="#94a3b8" font-size="12" font-weight="bold">-</text>
-              </g>
-
-              <!-- 3. Toggle Switch -->
-              <g class="comp-box" id="svg-comp-switch">
-                <rect x="230" y="45" width="60" height="50" rx="6" fill="#334155" stroke="#64748b" stroke-width="2"/>
-                <circle cx="260" cy="70" r="10" fill="#f59e0b"/>
-                <text x="260" y="88" text-anchor="middle" fill="#fff" font-size="8">SW</text>
-                <text x="260" y="112" text-anchor="middle" fill="#94a3b8" font-size="9">Power Switch</text>
-              </g>
-
-              <!-- 4. ESP32 Microcontroller -->
-              <g class="comp-box" id="svg-comp-esp32">
-                <rect x="340" y="30" width="170" height="250" rx="10" fill="url(#gradEsp32)" stroke="#38bdf8" stroke-width="2"/>
-                <rect x="380" y="60" width="90" height="80" rx="4" fill="#475569"/>
-                <text x="425" y="105" text-anchor="middle" fill="#cbd5e1" font-size="10">ESP-WROOM-32</text>
-                <text x="425" y="48" text-anchor="middle" fill="#38bdf8" font-weight="700" font-size="13">ESP32 Dev Board</text>
-
-                <!-- Pins on ESP32 Left -->
-                <circle cx="350" cy="145" r="5" fill="#ef4444"/><text x="360" y="149" fill="#fff" font-size="10">3.3V (OLED)</text>
-                <circle cx="350" cy="170" r="5" fill="#ef4444"/><text x="360" y="174" fill="#fff" font-size="10">VIN / 5V</text>
-                <circle cx="350" cy="195" r="5" fill="#3b82f6"/><text x="360" y="199" fill="#fff" font-size="10">GND</text>
-                <circle cx="350" cy="220" r="5" fill="#eab308"/><text x="360" y="224" fill="#fff" font-size="10">GPIO 34 (Pot)</text>
-                <circle cx="350" cy="245" r="5" fill="#f59e0b"/><text x="360" y="249" fill="#fff" font-size="10">GPIO 33 (Btn)</text>
-
-                <!-- Pins on ESP32 Right -->
-                <circle cx="500" cy="165" r="5" fill="#10b981"/><text x="425" y="169" fill="#fff" font-size="10">GPIO 25 (LRC)</text>
-                <circle cx="500" cy="190" r="5" fill="#06b6d4"/><text x="425" y="194" fill="#fff" font-size="10">GPIO 26 (BCLK)</text>
-                <circle cx="500" cy="215" r="5" fill="#a855f7"/><text x="425" y="219" fill="#fff" font-size="10">GPIO 27 (DIN)</text>
-                <circle cx="500" cy="240" r="5" fill="#eab308"/><text x="425" y="244" fill="#fff" font-size="10">GPIO 22 (SCL)</text>
-                <circle cx="500" cy="265" r="5" fill="#06b6d4"/><text x="425" y="269" fill="#fff" font-size="10">GPIO 21 (SDA)</text>
-              </g>
-
-              <!-- 5. MAX98357A I2S Amp -->
-              <g class="comp-box" id="svg-comp-max">
-                <rect x="570" y="120" width="160" height="160" rx="8" fill="url(#gradMax)" stroke="#c084fc" stroke-width="2"/>
-                <text x="650" y="145" text-anchor="middle" fill="#fff" font-weight="700" font-size="13">MAX98357A</text>
-                <text x="650" y="160" text-anchor="middle" fill="#d8b4fe" font-size="10">3.2W I2S Class-D Amp</text>
-
-                <!-- Pins on MAX left -->
-                <circle cx="580" cy="180" r="5" fill="#10b981"/><text x="590" y="184" fill="#fff" font-size="10">LRC (WS)</text>
-                <circle cx="580" cy="205" r="5" fill="#06b6d4"/><text x="590" y="209" fill="#fff" font-size="10">BCLK</text>
-                <circle cx="580" cy="230" r="5" fill="#a855f7"/><text x="590" y="234" fill="#fff" font-size="10">DIN</text>
-                <circle cx="580" cy="255" r="5" fill="#ef4444"/><text x="590" y="259" fill="#fff" font-size="10">VIN</text>
-
-                <!-- Speaker Out on MAX right -->
-                <circle cx="720" cy="195" r="5" fill="#f97316"/><text x="680" y="199" fill="#fed7aa" font-size="10">SPK +</text>
-                <circle cx="720" cy="225" r="5" fill="#f97316"/><text x="680" y="229" fill="#fed7aa" font-size="10">SPK -</text>
-              </g>
-
-              <!-- 6. Speaker -->
-              <g class="comp-box" id="svg-comp-spk">
-                <circle cx="650" cy="390" r="55" fill="#334155" stroke="#94a3b8" stroke-width="4"/>
-                <circle cx="650" cy="390" r="30" fill="#1e293b"/>
-                <circle cx="650" cy="390" r="14" fill="#0f172a"/>
-                <text x="650" y="394" text-anchor="middle" fill="#fff" font-size="11" font-weight="bold">3W 4Ω</text>
-                <text x="650" y="465" text-anchor="middle" fill="#94a3b8" font-size="11">Speaker</text>
-              </g>
-
-              <!-- 7. Station Cycle Push Button -->
-              <g class="comp-box" id="svg-comp-btn">
-                <rect x="230" y="145" width="60" height="50" rx="6" fill="#334155" stroke="#f59e0b" stroke-width="2"/>
-                <circle cx="260" cy="170" r="10" fill="#f59e0b"/>
-                <text x="260" y="188" text-anchor="middle" fill="#fff" font-size="8">BTN</text>
-                <text x="260" y="210" text-anchor="middle" fill="#f59e0b" font-size="9" font-weight="bold">Station</text>
-              </g>
-
-              <!-- 8. Monochrome OLED Display Breakout -->
-              <g class="comp-box" id="svg-comp-oled">
-                <rect x="180" y="240" width="135" height="135" rx="8" fill="#0f172a" stroke="#38bdf8" stroke-width="2"/>
-                <rect x="190" y="265" width="115" height="58" rx="4" fill="#020408" stroke="#1e293b"/>
-                <text x="247" y="282" fill="#38bdf8" font-size="8" font-weight="bold" text-anchor="middle">ABC Kids listen</text>
-                <text x="247" y="295" fill="#93c5fd" font-size="7" text-anchor="middle">WIFI OK | VOL 67%</text>
-                <text x="247" y="310" fill="#38bdf8" font-size="7" text-anchor="middle">ılı.lıllılı.ıllı</text>
-                <text x="247" y="256" text-anchor="middle" fill="#fff" font-weight="700" font-size="10">OLED SSD1306</text>
-                <text x="247" y="337" text-anchor="middle" fill="#64748b" font-size="8">128x64 Monochrome</text>
-
-                <!-- Pins on bottom of OLED -->
-                <circle cx="205" cy="365" r="4" fill="#ef4444" id="pin-oled-vcc"/><text x="205" y="356" fill="#fca5a5" font-size="7" text-anchor="middle">VCC</text>
-                <circle cx="230" cy="365" r="4" fill="#3b82f6" id="pin-oled-gnd"/><text x="230" y="356" fill="#93c5fd" font-size="7" text-anchor="middle">GND</text>
-                <circle cx="255" cy="365" r="4" fill="#eab308" id="pin-oled-scl"/><text x="255" y="356" fill="#fef08a" font-size="7" text-anchor="middle">SCL</text>
-                <circle cx="280" cy="365" r="4" fill="#06b6d4" id="pin-oled-sda"/><text x="280" y="356" fill="#a5f3fc" font-size="7" text-anchor="middle">SDA</text>
-              </g>
-
-              <!-- WIRES (Color-coded) -->
-              <!-- Battery to TP4056 B+/B- -->
-              <path d="M 45 210 L 45 170 L 160 115" fill="none" stroke="#ef4444" stroke-width="2.5" class="wire-path wire-batt"/>
-              <path d="M 165 210 L 165 180 L 160 135" fill="none" stroke="#000000" stroke-width="2.5" class="wire-path wire-batt"/>
-
-              <!-- TP4056 OUT+ to Switch to ESP32 VIN -->
-              <path d="M 160 65 L 230 65" fill="none" stroke="#ef4444" stroke-width="3" class="wire-path wire-pwr"/>
-              <path d="M 290 65 L 320 65 L 320 170 L 350 170" fill="none" stroke="#ef4444" stroke-width="3" class="wire-path wire-pwr"/>
-
-              <!-- TP4056 OUT- to ESP32 GND -->
-              <path d="M 160 85 L 210 85 L 210 195 L 350 195" fill="none" stroke="#3b82f6" stroke-width="3" class="wire-path wire-gnd"/>
-
-              <!-- Station Button to GPIO 33 & GND -->
-              <path d="M 350 245 L 305 245 L 305 170 L 290 170" fill="none" stroke="#f59e0b" stroke-width="2.5" class="wire-path wire-btn"/>
-              <path d="M 230 170 L 210 170 L 210 195" fill="none" stroke="#3b82f6" stroke-width="2" class="wire-path wire-gnd"/>
-
-              <!-- ESP32 to MAX98357A I2S Lines -->
-              <!-- GPIO 25 (LRC) -> LRC -->
-              <path d="M 500 165 L 540 165 L 540 180 L 580 180" fill="none" stroke="#10b981" stroke-width="2.5" class="wire-path wire-lrc"/>
-              <!-- GPIO 26 (BCLK) -> BCLK -->
-              <path d="M 500 190 L 580 190 L 580 205" fill="none" stroke="#06b6d4" stroke-width="2.5" class="wire-path wire-bclk"/>
-              <!-- GPIO 27 (DIN) -> DIN (Moved from 22 to free I2C SCL) -->
-              <path d="M 500 215 L 540 215 L 540 230 L 580 230" fill="none" stroke="#a855f7" stroke-width="2.5" class="wire-path wire-din"/>
-
-              <!-- Power branch to MAX98357A VIN & GND -->
-              <path d="M 320 170 L 320 295 L 595 295 L 595 260 L 580 260" fill="none" stroke="#ef4444" stroke-dasharray="4,3" stroke-width="2" class="wire-path wire-pwr"/>
-              <path d="M 350 195 L 340 195 L 340 310 L 575 310 L 575 268" fill="none" stroke="#3b82f6" stroke-dasharray="4,3" stroke-width="2" class="wire-path wire-gnd"/>
-
-              <!-- OLED Display Wires (I2C & 3.3V) -->
-              <!-- OLED VCC (3.3V) -> ESP32 3.3V -->
-              <path d="M 205 365 L 205 405 L 330 405 L 330 145 L 350 145" fill="none" stroke="#ef4444" stroke-width="2.5" class="wire-path wire-oled-vcc"/>
-              <!-- OLED GND -> ESP32 GND -->
-              <path d="M 230 365 L 230 420 L 340 420 L 340 195 L 350 195" fill="none" stroke="#3b82f6" stroke-width="2.5" class="wire-path wire-oled-gnd"/>
-              <!-- OLED SCL -> ESP32 GPIO 22 -->
-              <path d="M 255 365 L 255 435 L 480 435 L 480 240 L 500 240" fill="none" stroke="#eab308" stroke-width="2.5" class="wire-path wire-scl"/>
-              <!-- OLED SDA -> ESP32 GPIO 21 -->
-              <path d="M 280 365 L 280 450 L 495 450 L 495 265 L 500 265" fill="none" stroke="#06b6d4" stroke-width="2.5" class="wire-path wire-sda"/>
-
-              <!-- MAX98357A to Speaker -->
-              <path d="M 720 195 L 740 195 L 740 370 L 690 370" fill="none" stroke="#f97316" stroke-width="2.5" class="wire-path wire-spk"/>
-              <path d="M 720 225 L 730 225 L 730 405 L 690 405" fill="none" stroke="#f97316" stroke-width="2.5" class="wire-path wire-spk"/>
-            </svg>
-          </div>
-          <div class="diagram-legend">
-            <span class="legend-item"><span class="color-dot red"></span> 5V / 3.3V Power</span>
-            <span class="legend-item"><span class="color-dot blue"></span> Ground (GND)</span>
-            <span class="legend-item"><span class="color-dot green"></span> LRC (Word Clock)</span>
-            <span class="legend-item"><span class="color-dot cyan"></span> BCLK & SDA (Data)</span>
-            <span class="legend-item"><span class="color-dot" style="background:#eab308"></span> SCL (I2C Clock)</span>
-            <span class="legend-item"><span class="color-dot purple"></span> DIN (GPIO 27)</span>
-            <span class="legend-item"><span class="color-dot" style="background:#f59e0b"></span> Station Button</span>
-            <span class="legend-item"><span class="color-dot orange"></span> Speaker Leads</span>
-          </div>
-        </div>
-
-        <!-- Pinout Quick Reference Table -->
-        <div class="pinout-card">
-          <div class="card-header">
-            <h3>📌 Pin-by-Pin Hookup Table</h3>
-            <p>Simple 1-to-1 jumper wire mapping:</p>
-          </div>
-          <div class="pin-table">
-            <div class="pin-row header">
-              <div>From Component</div>
-              <div>Pin Name</div>
-              <div>Connects To</div>
-            </div>
-            <div class="pin-row" data-target="wire-lrc">
-              <div><strong>MAX98357A</strong></div>
-              <div><code>LRC</code> (WS)</div>
-              <div>ESP32 <strong>GPIO 25</strong></div>
-            </div>
-            <div class="pin-row" data-target="wire-bclk">
-              <div><strong>MAX98357A</strong></div>
-              <div><code>BCLK</code></div>
-              <div>ESP32 <strong>GPIO 26</strong></div>
-            </div>
-            <div class="pin-row" data-target="wire-din">
-              <div><strong>MAX98357A</strong></div>
-              <div><code>DIN</code></div>
-              <div>ESP32 <strong>GPIO 27</strong> (freed GPIO 22 for I2C)</div>
-            </div>
-            <div class="pin-row" data-target="wire-gnd">
-              <div><strong>MAX98357A</strong></div>
-              <div><code>GND</code></div>
-              <div>ESP32 <strong>GND</strong></div>
-            </div>
-            <div class="pin-row" data-target="wire-pwr">
-              <div><strong>MAX98357A</strong></div>
-              <div><code>VIN</code></div>
-              <div>ESP32 <strong>VIN / 5V</strong></div>
-            </div>
-            <div class="pin-row" data-target="wire-spk">
-              <div><strong>MAX98357A</strong></div>
-              <div><code>+ / -</code> Terminals</div>
-              <div>Speaker <strong>+ and -</strong></div>
-            </div>
-            <!-- OLED Connections -->
-            <div class="pin-row" data-target="wire-scl">
-              <div><strong>0.96" OLED</strong></div>
-              <div><code>SCL</code></div>
-              <div>ESP32 <strong>GPIO 22</strong> (Hardware I2C Clock)</div>
-            </div>
-            <div class="pin-row" data-target="wire-sda">
-              <div><strong>0.96" OLED</strong></div>
-              <div><code>SDA</code></div>
-              <div>ESP32 <strong>GPIO 21</strong> (Hardware I2C Data)</div>
-            </div>
-            <div class="pin-row" data-target="wire-oled-vcc">
-              <div><strong>0.96" OLED</strong></div>
-              <div><code>VCC</code></div>
-              <div>ESP32 <strong>3.3V</strong> (NEVER 5V!)</div>
-            </div>
-            <div class="pin-row" data-target="wire-oled-gnd">
-              <div><strong>0.96" OLED</strong></div>
-              <div><code>GND</code></div>
-              <div>ESP32 <strong>GND</strong></div>
-            </div>
-            <div class="pin-row" data-target="wire-btn">
-              <div><strong>Station Button</strong></div>
-              <div><code>Leg 1 & 2</code></div>
-              <div>ESP32 <strong>GPIO 33</strong> & <strong>GND</strong> (internal pull-up)</div>
-            </div>
-            <!-- RC522 RFID/NFC Reader Connections (VSPI Bus) -->
-            <div class="pin-row" data-target="wire-nfc-ss">
-              <div><strong>RC522 RFID Reader</strong></div>
-              <div><code>SDA (SS / CS)</code></div>
-              <div>ESP32 <strong>GPIO 5</strong> (VSPI Chip Select)</div>
-            </div>
-            <div class="pin-row" data-target="wire-nfc-sck">
-              <div><strong>RC522 RFID Reader</strong></div>
-              <div><code>SCK</code></div>
-              <div>ESP32 <strong>GPIO 18</strong> (VSPI Hardware Clock)</div>
-            </div>
-            <div class="pin-row" data-target="wire-nfc-mosi">
-              <div><strong>RC522 RFID Reader</strong></div>
-              <div><code>MOSI</code></div>
-              <div>ESP32 <strong>GPIO 23</strong> (VSPI Master Out)</div>
-            </div>
-            <div class="pin-row" data-target="wire-nfc-miso">
-              <div><strong>RC522 RFID Reader</strong></div>
-              <div><code>MISO</code></div>
-              <div>ESP32 <strong>GPIO 19</strong> (VSPI Master In)</div>
-            </div>
-            <div class="pin-row" data-target="wire-nfc-rst">
-              <div><strong>RC522 RFID Reader</strong></div>
-              <div><code>RST</code></div>
-              <div>ESP32 <strong>GPIO 4</strong> (Reader Reset)</div>
-            </div>
-            <div class="pin-row" data-target="wire-oled-vcc">
-              <div><strong>RC522 RFID Reader</strong></div>
-              <div><code>3.3V (VCC)</code></div>
-              <div>ESP32 <strong>3.3V</strong> (⚠️ NEVER 5V or chip will burn!)</div>
-            </div>
-            <div class="pin-row" data-target="wire-oled-gnd">
-              <div><strong>RC522 RFID Reader</strong></div>
-              <div><code>GND</code></div>
-              <div>ESP32 <strong>GND</strong></div>
-            </div>
-            <div class="pin-row" data-target="wire-batt">
-              <div><strong>18650 Battery</strong></div>
-              <div><code>Red (+) / Black (-)</code></div>
-              <div>TP4056 <strong>B+ and B-</strong></div>
-            </div>
-            <div class="pin-row" data-target="wire-pwr">
-              <div><strong>TP4056 Board</strong></div>
-              <div><code>OUT+</code></div>
-              <div>Through Switch to <strong>VIN</strong></div>
-            </div>
-            <div class="pin-row" data-target="wire-gnd">
-              <div><strong>TP4056 Board</strong></div>
-              <div><code>OUT-</code></div>
-              <div>Common <strong>GND</strong></div>
-            </div>
-          </div>
-          <div class="pinout-tip">
-            💡 <em>Gain setting tip: Leave the <code>GAIN</code> pin on the MAX98357A completely disconnected. It defaults to 9dB, which is the perfect sweet spot for warm children's audio without distortion!</em>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Step-by-Step Novice Assembly Guide -->
-  <section class="section" id="step-by-step">
-    <div class="container">
-      <div class="section-header">
-        <span class="section-kicker">Follow Along</span>
-        <h2 class="section-title">Step-by-Step Novice Build Walkthrough</h2>
-        <p class="section-subtitle">
-          Designed for someone who has never touched a microcontroller before. We test everything safely on your desk <strong>before</strong> putting anything into a box.
-        </p>
-      </div>
-
-      <!-- Assembly Photo Feature -->
-      <div class="assembly-hero-card">
-        <img src="assets/assembly.jpg" alt="Interior view of the wooden radio case with components neatly mounted and wired" class="assembly-img" id="assembly-progress-img">
-        <div class="assembly-overlay">
-          <span class="overlay-badge">Cabinet Interior</span>
-          <h4>How clean it looks when mounted</h4>
-          <p>The speaker is mounted over the round grille, components are secured with hot-glue or small standoffs, and wires are neatly routed.</p>
-        </div>
-      </div>
-
-      <!-- Step Cards Progression -->
-      <div class="steps-timeline">
-        <!-- Step 1 -->
-        <div class="step-card">
-          <div class="step-number-col">
-            <span class="step-num">01</span>
-          </div>
-          <div class="step-content">
-            <div class="step-badge">Desktop Bench Test</div>
-            <h3>Test the Audio on Your Desk First (No Box Yet!)</h3>
-            <p>
-              Always test your electronics in the open before mounting them. Plug the ESP32 into your laptop using a standard USB-C data cable (make sure it's a data cable, not a charge-only cable).
-            </p>
-            <ul class="step-checklist">
-              <li>Use your female-to-female Dupont jumper wires to connect the 5 pins of the MAX98357A to the ESP32 as shown in the pinout table.</li>
-              <li>Connect the two speaker wires into the amplifier's screw terminals or solder pads.</li>
-              <li>Keep the battery disconnected for now — the laptop USB-C cable will power the ESP32 and amplifier during testing!</li>
-            </ul>
-          </div>
-        </div>
-
-        <!-- Step 2 -->
-        <div class="step-card">
-          <div class="step-number-col">
-            <span class="step-num">02</span>
-          </div>
-          <div class="step-content">
-            <div class="step-badge">Software Setup</div>
-            <h3>Flash the ESP32 (Takes 5 Minutes in Arduino IDE)</h3>
-            <p>
-              Don't worry if you've never coded in your life. You only need to copy and paste.
-            </p>
-            <div class="sub-steps">
-              <div class="sub-step">
-                <strong>1. Download Arduino IDE:</strong> Download the free IDE from <a href="https://www.arduino.cc/en/software" target="_blank" rel="noopener">arduino.cc</a> (Windows/Mac/Linux).
-              </div>
-              <div class="sub-step">
-                <strong>2. Add ESP32 Boards:</strong> In Arduino IDE, go to <em>Settings > Additional Board Manager URLs</em> and paste: <code>https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json</code>. Then go to <em>Boards Manager</em>, search "esp32", and click <strong>Install</strong>.
-              </div>
-              <div class="sub-step">
-                <strong>3. Install the Libraries:</strong> Go to <em>Tools > Manage Libraries...</em>, search for and install <strong>ESP32-audioI2S</strong> (by schreibfaul1) and <strong>Adafruit SSD1306</strong> (by Adafruit, which automatically includes <em>Adafruit GFX</em>).
-              </div>
-              <div class="sub-step">
-                <strong>4. Flash the Code:</strong> Use our code generator below to generate your sketch, select your ESP32 board and COM port in the menu, and hit the <strong>Upload</strong> arrow!
-              </div>
-            </div>
-            <div class="callout-box">
-              🎉 <strong>The Magic Moment:</strong> Within 5 seconds of uploading, your OLED screen will light up, display "Connecting to Wi-Fi", then switch to "ABC Kids listen" with live bouncing audio equalizer bars as music flows from the speaker!
-            </div>
-          </div>
-        </div>
-
-        <!-- Step 3 -->
-        <div class="step-card">
-          <div class="step-number-col">
-            <span class="step-num">03</span>
-          </div>
-          <div class="step-content">
-            <div class="step-badge">Battery & Power</div>
-            <h3>Hook Up the USB-C Rechargeable Battery</h3>
-            <p>
-              Once your desktop bench test works, it's time to make it truly wireless:
-            </p>
-            <ul class="step-checklist">
-              <li><strong>Connect Battery:</strong> Pop your 18650 cell into the battery holder. Wire the holder's Red (+) lead to the TP4056 board's <code>B+</code> pad and the Black (-) lead to <code>B-</code>.</li>
-              <li><strong>Wire the Power Switch:</strong> Wire the TP4056 <code>OUT+</code> through your toggle switch, then into the ESP32 <code>VIN</code> (and amplifier <code>VIN</code>).</li>
-              <li><strong>Connect Ground:</strong> Connect TP4056 <code>OUT-</code> to the ESP32 <code>GND</code>.</li>
-              <li><strong>Test USB-C Charging:</strong> Plug a phone charger into the TP4056 USB-C port. The red LED on the charger will glow while charging and turn blue when full!</li>
-            </ul>
-            <div class="alert-box-warning">
-              ⚠️ <strong>Battery Safety:</strong> Never reverse the positive and negative battery wires, and never solder with the 18650 cell installed inside the holder. Always remove the battery while wiring!
-            </div>
-          </div>
-        </div>
-
-        <!-- Step 4 -->
-        <div class="step-card">
-          <div class="step-number-col">
-            <span class="step-num">04</span>
-          </div>
-          <div class="step-content">
-            <div class="step-badge">Cabinet & Finishing</div>
-            <h3>Crafting & Mounting Inside Your Wooden Enclosure</h3>
-            <p>
-              This is where your creation transforms into a cherished family heirloom:
-            </p>
-            <ul class="step-checklist">
-              <li><strong>Speaker Hole:</strong> Use a hole saw or spade bit (usually 40mm to 50mm) to drill a circular hole in the front face.</li>
-              <li><strong>OLED Screen Window:</strong> Cut a small 28mm x 15mm rectangular window for the 0.96" OLED display.</li>
-              <li><strong>Vintage Fabric Grille:</strong> Glue a small square of linen, tweed, or speaker cloth behind the hole before screwing or gluing the speaker in place.</li>
-              <li><strong>Control Holes:</strong> Drill a 6mm hole for the toggle switch and a 7mm hole for the volume potentiometer.</li>
-              <li><strong>USB-C Slot:</strong> In the back or side of the box, cut a small 12mm x 4mm slot so the TP4056's USB-C port sits flush with the outside. Secure the TP4056 board with high-strength hot-glue or epoxy.</li>
-              <li><strong>Seal the Box:</strong> Ensure the back lid seals tightly. Any air leaks around the speaker will reduce the warm acoustic bass!</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Interactive Wi-Fi & Firmware Code Generator -->
-  <section class="section" id="code-generator">
-    <div class="container">
-      <div class="section-header">
-        <span class="section-kicker">Customized For You</span>
-        <h2 class="section-title">Instant Wi-Fi & Firmware Generator</h2>
-        <p class="section-subtitle">
-          Type in your home Wi-Fi details below. The code updates automatically in real-time, pre-configured with the official Australian ABC Kids digital streaming URL.
-        </p>
-      </div>
-
-      <div class="generator-wrapper">
-        <!-- Configuration Form -->
-        <div class="config-form-card">
-          <h3>⚙️ Your Radio Settings</h3>
-          <p>These details are stored only in your browser and injected directly into your copy-ready code:</p>
-
-          <div class="form-group">
-            <label for="input-ssid">Wi-Fi Name (SSID) <span class="badge badge-light">2.4 GHz only</span></label>
-            <input type="text" id="input-ssid" value="MyHomeWiFi" placeholder="e.g. Telstra_Home_2.4G">
-            <small>Tip: ESP32 only connects to 2.4 GHz networks, not 5 GHz.</small>
-          </div>
-
-          <div class="form-group">
-            <label for="input-password">Wi-Fi Password</label>
-            <input type="text" id="input-password" value="SecretPassword123" placeholder="Your Wi-Fi password">
-          </div>
-
-          <div class="form-group">
-            <label for="input-volume">Default Startup Volume (0 to 21)</label>
-            <div class="slider-row">
-              <input type="range" id="input-volume" min="5" max="21" value="14" class="range-slider">
-              <span class="range-val" id="vol-display-val">14 / 21</span>
-            </div>
-            <small>Level 14 is a comfortable, pleasant room volume for nursery or kitchen.</small>
-          </div>
-
-          <div class="form-group">
-            <label for="select-volume-cap">🛡️ Child-Safe Volume Safety Cap</label>
-            <select id="select-volume-cap" class="form-select">
-              <option value="14" selected>14 / 21 (~67% - Recommended for Kids / ~75 dBA safe)</option>
-              <option value="11">11 / 21 (~50% - Gentle Bedtime / Quiet Nursery / ~68 dBA)</option>
-              <option value="17">17 / 21 (~80% - Outdoors / Family Playroom / ~82 dBA)</option>
-              <option value="21">21 / 21 (100% - Uncapped Maximum / Adult Use / 92+ dBA)</option>
-            </select>
-            <small>Caps maximum sound in software so kids cannot turn the knob too loud!</small>
-          </div>
-
-          <div class="form-group">
-            <label for="select-startup-station">Default Startup Station</label>
-            <select id="select-startup-station" class="form-select">
-              <option value="0">1. ABC Kids listen (Australia)</option>
-              <option value="1">2. Fun Kids UK (Live)</option>
-              <option value="2">3. Fun Kids Junior (Toddlers)</option>
-              <option value="3">4. Rock the Cradle (Minnesota Public Radio)</option>
-              <option value="4">5. Positively Sleep Kids (Bedtime Lullabies)</option>
-              <option value="5">6. ABC Classic (NSW)</option>
-            </select>
-            <small>Tap the push button on GPIO 33 at any time to cycle to the next station!</small>
-          </div>
-
-          <div class="stream-info-pill">
-            <span class="status-indicator"></span>
-            <span>Allow-List: <strong>6 Verified Child-Safe Stations Pre-Configured</strong></span>
-          </div>
-        </div>
-
-        <!-- Code Preview Card -->
-        <div class="code-preview-card">
-          <div class="code-header">
-            <div class="window-dots">
-              <span class="dot red"></span>
-              <span class="dot yellow"></span>
-              <span class="dot green"></span>
-            </div>
-            <span class="code-filename">KangarooRadio_ABCKids.ino</span>
-            <button class="btn-copy" id="btn-copy-code">
-              <span class="copy-icon">📋</span>
-              <span class="copy-text">Copy Code</span>
-            </button>
-          </div>
-
-          <pre class="code-block"><code id="code-display">// Kangaroo Radio — DIY Child-Safe Multi-Station Radio with OLED
-// Hardware: ESP32 + MAX98357A I2S DAC Amp + 0.96" Monochrome OLED + 3W Speaker
-
-#include &lt;Arduino.h&gt;
-#include &lt;WiFi.h&gt;
-#include &lt;Wire.h&gt;
-#include &lt;Adafruit_GFX.h&gt;
-#include &lt;Adafruit_SSD1306.h&gt;
-#include "Audio.h"
-#include &lt;SPI.h&gt;
-#include &lt;MFRC522.h&gt;
-
-// Wi-Fi Credentials
-const char* ssid     = "<span class="hl-var" id="code-ssid">MyHomeWiFi</span>";
-const char* password = "<span class="hl-var" id="code-pass">SecretPassword123</span>";
-
-// Pinout Definitions
-#define I2S_DOUT      27    // DIN on MAX98357A (moved from 22 to free I2C SCL)
-#define I2S_BCLK      26    // BCLK on MAX98357A
-#define I2S_LRC       25    // LRC (WS) on MAX98357A
-#define I2C_SDA       21    // Hardware I2C SDA (OLED)
-#define I2C_SCL       22    // Hardware I2C SCL (OLED)
-#define BUTTON_PIN    33    // Station Cycle Push Button (to GND)
-#define POT_PIN       34    // Volume Potentiometer (ADC1, 3.3V reference)
-#define SS_PIN        5     // RC522 RFID Chip Select (VSPI)
-#define RST_PIN       4     // RC522 RFID Reset
-
-// Child-Safe Volume Safety Cap (Scales 10k knob smoothly to safe ceiling)
-#define MAX_VOLUME_LIMIT <span class="hl-var" id="code-volume-cap">14</span>  // Safe ceiling (~75 dBA)
-
-// 0.96" Monochrome SSD1306 OLED (128x64) & Hardware Modules
-#define SCREEN_WIDTH  128
-#define SCREEN_HEIGHT 64
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &amp;Wire, -1);
-Audio audio;
-MFRC522 rfid(SS_PIN, RST_PIN);
-
-struct Station {
-  const char* name;
-  const char* genre;
-  const char* url;
-};
-
-const Station stations[] = {
-  { "ABC Kids listen", "Preschool & Aussie Stories", "https://streaming.abc-cdn.net.au/audio/hls/abcextra.m3u8?source=web" },
-  { "Fun Kids UK", "Pop, Stories & Quizzes", "https://listen-funkids.sharp-stream.com/funkids.mp3" },
-  { "Fun Kids Junior", "Gentle Nursery Rhymes (0-4)", "http://listen-funkids.sharp-stream.com/funkidsjunior.mp3" },
-  { "Rock the Cradle", "Indie Music for Families", "http://rockthecradle.stream.publicradio.org/rockthecradle.mp3" },
-  { "Positively Sleep", "Calm Lullabies & Ambient", "https://streaming.positivity.radio/pr/sleepkids/icecast.audio" },
-  { "ABC Classic", "Peaceful Classical for Play", "https://streaming.abc-cdn.net.au/audio/hls/classicfmnsw.m3u8?source=web" }
-};
-
-const int TOTAL_STATIONS = sizeof(stations) / sizeof(stations[0]);
-int currentStation = <span class="hl-var" id="code-startup-station">0</span>;
-int lastVolume = -1;
-unsigned long lastButtonPress = 0;
-
-void drawTopBar(const char* tag, int vol) {
-  display.fillRect(0, 0, SCREEN_WIDTH, 11, SSD1306_WHITE);
-  display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
-  display.setTextSize(1);
-  display.setCursor(2, 2); display.print(tag);
-  display.setCursor(74, 2); display.print("SAFE:");
-  display.print(map(vol, 0, MAX_VOLUME_LIMIT, 0, 100)); display.print("%");
-  display.setTextColor(SSD1306_WHITE);
-}
-
-void showConnectingScreen(const char* targetSsid, int progress) {
-  display.clearDisplay();
-  drawTopBar("KANGAROO RADIO", 14);
-  display.setCursor(0, 18); display.print("Connecting to Wi-Fi");
-  display.setCursor(0, 30); display.print("SSID: "); display.print(targetSsid);
-  display.drawRect(4, 45, 120, 10, SSD1306_WHITE);
-  display.fillRect(6, 47, map(progress, 0, 35, 10, 116), 6, SSD1306_WHITE);
-  display.display();
-}
-
-void showErrorScreen(const char* title, const char* line1, const char* line2) {
-  display.clearDisplay();
-  display.fillRect(0, 0, SCREEN_WIDTH, 13, SSD1306_WHITE);
-  display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
-  display.setCursor(14, 3); display.print("[ ! ] ERROR [ ! ]");
-  display.setTextColor(SSD1306_WHITE);
-  display.setCursor(0, 20); display.print("Reason: "); display.println(title);
-  display.setCursor(0, 34); display.println(line1);
-  display.setCursor(0, 48); display.println(line2);
-  display.display();
-}
-
-void showStationScreen(int idx, int vol, int tick = 0) {
-  display.clearDisplay();
-  drawTopBar("WIFI OK", vol);
-  display.setCursor(0, 16); display.print("STATION ["); display.print(idx + 1); display.print("/6]");
-  display.setCursor(0, 28); display.print(stations[idx].name);
-  display.setCursor(0, 40); display.print(stations[idx].genre);
-  int bars[] = {4, 7, 11, 8, 13, 9, 6, 12, 10, 5, 8, 14, 7, 10, 6, 12};
-  for (int i = 0; i &lt; 16; i++) {
-    int h = bars[(i + tick) % 16];
-    display.fillRect(4 + (i * 7), 63 - h, 4, h, SSD1306_WHITE);
-  }
-  display.display();
-}
-
-void switchStation(int index) {
-  if (index &lt; 0 || index &gt;= TOTAL_STATIONS) return;
-  currentStation = index;
-  showStationScreen(currentStation, lastVolume &gt;= 0 ? lastVolume : 14);
-  audio.connecttohost(stations[currentStation].url);
-}
-
-void setup() {
-  Serial.begin(115200);
-  pinMode(BUTTON_PIN, INPUT_PULLUP);
-
-  // Initialize OLED Display (Hardware I2C SDA=21, SCL=22)
-  Wire.begin(I2C_SDA, I2C_SCL);
-  display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
-
-  // Connect to Wi-Fi with live OLED diagnostic feedback
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, password);
-  int attempts = 0;
-  while (WiFi.status() != WL_CONNECTED &amp;&amp; attempts &lt; 35) {
-    delay(350);
-    showConnectingScreen(ssid, attempts);
-    attempts++;
-  }
-
-  if (WiFi.status() != WL_CONNECTED) {
-    if (WiFi.status() == WL_NO_SSID_AVAIL) {
-      showErrorScreen("SSID NOT FOUND", "Wifi not found", "Check router 2.4GHz");
-    } else {
-      showErrorScreen("WRONG PASSWORD", "Auth failed on:", ssid);
-    }
-    while (WiFi.status() != WL_CONNECTED) { delay(1000); }
-  }
-
-  // Audio setup
-  audio.setPinout(I2S_BCLK, I2S_LRC, I2S_DOUT);
-  audio.setVolume(<span class="hl-var" id="code-vol">14</span>);
-  switchStation(currentStation);
-}
-
-void loop() {
-  audio.loop();
-
-  // Push button station cycling
-  if (digitalRead(BUTTON_PIN) == LOW) {
-    if (millis() - lastButtonPress &gt; 450) {
-      lastButtonPress = millis();
-      switchStation((currentStation + 1) % TOTAL_STATIONS);
-    }
-  }
-
-  // Volume potentiometer check with Child-Safe Cap
-  static unsigned long lastPot = 0;
-  if (millis() - lastPot > 200) {
-    lastPot = millis();
-    int newVol = map(analogRead(POT_PIN), 0, 4095, 0, MAX_VOLUME_LIMIT);
-    if (abs(newVol - lastVolume) > 0) {
-      lastVolume = newVol;
-      audio.setVolume(newVol);
-      showStationScreen(currentStation, lastVolume);
-    }
-  }
-}</code></pre>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Downsides, Gotchas & Troubleshooting FAQ -->
-  <section class="section" id="troubleshooting">
-    <div class="container">
-      <div class="section-header">
-        <span class="section-kicker">Avoid the Traps</span>
-        <h2 class="section-title">Common Gotchas, Downsides & Fixes</h2>
-        <p class="section-subtitle">
-          Everything that could possibly trip up a novice builder, with instant fixes.
-        </p>
-      </div>
-
-      <div class="faq-grid">
-        <div class="faq-card">
-          <div class="faq-icon">📶</div>
-          <h4>Gotcha #1: 2.4 GHz vs 5 GHz Wi-Fi</h4>
-          <p>
-            The ESP32 microcontroller only supports <strong>2.4 GHz Wi-Fi</strong>. If your modern home router has a single combined Wi-Fi name for both 2.4GHz and 5GHz, the ESP32 can occasionally struggle to connect on first try.
-          </p>
-          <div class="faq-fix">
-            <strong>Fix:</strong> Log in to your home router and enable a dedicated <code>2.4GHz</code> network name (or enable your router's "Guest Network" on 2.4 GHz).
-          </div>
-        </div>
-
-        <div class="faq-card">
-          <div class="faq-icon">🌏</div>
-          <h4>Gotcha #2: Australian Geoblocking</h4>
-          <p>
-            Due to licensing for children's music and stories (like Bluey and Play School), the ABC strictly restricts its digital streams to <strong>Australian IP addresses</strong>.
-          </p>
-          <div class="faq-fix">
-            <strong>Fix:</strong> This radio will work seamlessly in Sydney and anywhere in Australia. If taking it overseas on holiday, you'd need an in-home VPN or local proxy.
-          </div>
-        </div>
-
-        <div class="faq-card">
-          <div class="faq-icon">🚗</div>
-          <h4>Gotcha #3: Taking It in the Car or Camping</h4>
-          <p>
-            Because it uses Wi-Fi, what happens when you take the kids to grandma's or in the car?
-          </p>
-          <div class="faq-fix">
-            <strong>Fix:</strong> In the code, you can add your <strong>phone's mobile hotspot name and password</strong> as a secondary network! When away from home, switch on your phone hotspot and the radio connects automatically.
-          </div>
-        </div>
-
-        <div class="faq-card">
-          <div class="faq-icon">🔌</div>
-          <h4>Gotcha #4: Low-Volume Buzzing or Wi-Fi Whine</h4>
-          <p>
-            When the ESP32 transmits Wi-Fi packets, tiny power dips can cause a faint squeaking or buzzing in the speaker if power rails are shared carelessly.
-          </p>
-          <div class="faq-fix">
-            <strong>Fix:</strong> Add a cheap <strong>220µF electrolytic capacitor</strong> directly across the <code>VIN</code> and <code>GND</code> pins of the MAX98357A amplifier. It smooths power fluctuations completely!
-          </div>
-        </div>
-
-        <div class="faq-card">
-          <div class="faq-icon">🔋</div>
-          <h4>Gotcha #5: Over-Discharging Lithium Batteries</h4>
-          <p>
-            If a standard 18650 cell drops below 2.5V, it can permanently lose capacity or become dangerous to recharge.
-          </p>
-          <div class="faq-fix">
-            <strong>Fix:</strong> Only use the TP4056 board version that includes the <strong>DW01A protection chip</strong> (distinguished by 4 solder pads: B+, B-, OUT+, OUT-), which cuts off power automatically at 2.9V.
-          </div>
-        </div>
-
-        <div class="faq-card">
-          <div class="faq-icon">🛠️</div>
-          <h4>Gotcha #6: Solder-Free Dupont Wires Coming Loose</h4>
-          <p>
-            If you build the entire project with solderless push-on jumper wires, tossing the radio in a backpack could shake a wire loose.
-          </p>
-          <div class="faq-fix">
-            <strong>Fix:</strong> Once your bench test is 100% verified, apply a small dab of hot-glue over the plastic pin headers. It holds firmly but can easily be peeled off later if you ever want to reconfigure it!
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Bonus: True Analog FM Alternative Section -->
-  <section class="section fm-section" id="fm-alternative">
-    <div class="container">
-      <div class="fm-card">
-        <div class="fm-header">
-          <span class="badge badge-accent">Optional Alternative</span>
-          <h2>What If You Genuinely Want an Over-The-Air FM Radio?</h2>
-          <p>
-            If you want to build a radio for traditional Sydney FM stations (like <strong>Triple J 105.7 FM</strong>, <strong>ABC Classic 92.9 FM</strong>, or <strong>2DayFM 104.1 FM</strong>), or you want to set up a small in-home FM transmitter:
-          </p>
-        </div>
-        <div class="fm-grid">
-          <div class="fm-steps">
-            <h4>The FM Parts Swap:</h4>
-            <ul>
-              <li>Swap the MAX98357A for an <strong>RDA5807M</strong> or <strong>TEA5767</strong> FM receiver breakout module (~$3.50 AUD).</li>
-              <li>Add a <strong>PAM8403</strong> (3W stereo) or <strong>PAM8302</strong> (mono) analog amplifier board.</li>
-              <li>Attach a <strong>75cm thin wire antenna</strong> to the ANT pin on the FM module.</li>
-            </ul>
-          </div>
-          <div class="fm-code-box">
-            <h4>Hardcoded Auto-Tune Frequency (Arduino):</h4>
-            <pre><code>#include &lt;Wire.h&gt;
-#include &lt;radio.h&gt;
-#include &lt;RDA5807M.h&gt;
-
-RDA5807M radio;
-
-void setup() {
-  radio.init();
-  radio.setBandFrequency(RADIO_BAND_FM, 10570); // 105.7 Triple J Sydney
-  radio.setVolume(12);
-}</code></pre>
-            <small>Locks straight onto 105.7 MHz whenever power is turned on!</small>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Persistent Floating Live Radio Player Dock -->
-  <div class="live-player-bar hidden" id="live-player-bar">
-    <div class="live-player-container">
-      <div class="live-player-info">
-        <div class="live-player-pulsing-dot"></div>
-        <div class="live-player-meta">
-          <span class="live-player-station" id="player-station-title">ABC Kids listen</span>
-          <span class="live-player-status" id="player-station-status">🔴 LIVE STREAMING</span>
-        </div>
-      </div>
-      <div class="live-player-eq" id="player-live-eq">
-        <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
-      </div>
-      <div class="live-player-controls">
-        <button class="player-ctrl-btn" id="player-btn-prev" title="Previous Station">⏮</button>
-        <button class="player-ctrl-btn play-pause" id="player-btn-toggle" title="Play/Pause">⏸</button>
-        <button class="player-ctrl-btn" id="player-btn-next" title="Next Station">⏭</button>
-        <div class="player-vol-wrapper">
-          <button class="btn-safe-cap" id="btn-toggle-safe-vol" title="Child-Safe Volume Cap Active (~75 dBA safe limit)">
-            <span class="safe-icon">🔒</span>
-            <span class="safe-label">Safe Cap (65%)</span>
-          </button>
-          <span class="vol-icon" id="player-vol-icon">🔊</span>
-          <input type="range" id="player-vol-slider" min="0" max="1" step="0.05" value="0.65" class="player-vol-range" title="Volume">
-          <span class="player-vol-pct" id="player-vol-pct">65% [SAFE]</span>
-        </div>
-        <button class="player-ctrl-btn close-btn" id="player-btn-close" title="Stop & Close Player">✕</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Footer -->
-  <footer class="footer">
-    <div class="container footer-content">
-      <div class="footer-brand">
-        <span class="logo-icon">📻</span>
-        <span class="logo-text">Kangaroo<strong>Radio</strong></span>
-        <p>A fun, zero-soldering DIY open-source guide for Australian families and makers.</p>
-      </div>
-      <div class="footer-links">
-        <a href="#hero-section">Back to Top</a>
-        <a href="#parts-guide">Shopping List</a>
-        <a href="#wiring-guide">Wiring Diagram</a>
-        <a href="#code-generator">Code Generator</a>
-        <a href="https://www.abc.net.au/listen" target="_blank" rel="noopener">Official ABC listen</a>
-      </div>
-    </div>
-  </footer>
-
-  <!-- External High Performance Libraries for Audio & 3D WebGL -->
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-  <script src="app.js"></script>
+    </section>
+  </main>
+  <footer><span class="brand">Kangaroo Radio</span><p>A documented maker project. Build, check, then enclose.</p><a href="validation.html">Verification & physical checks</a> · <a href="maintaining.html">Maintaining the project</a> · <a href="LICENSE.txt">MIT licence</a></footer>
 </body>
 </html>

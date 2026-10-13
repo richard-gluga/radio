@@ -1,0 +1,11 @@
+{
+  "core": "esp32:esp32@3.3.12",
+  "fqbn": "esp32:esp32:esp32:FlashSize=16M,PartitionScheme=app3M_fat9M_16MB,PSRAM=enabled,FlashMode=dio,FlashFreq=80,CPUFreq=240,UploadSpeed=115200",
+  "libraries": [
+    "ESP32-audioI2S-master@4.0.0",
+    "Adafruit SSD1306@2.5.17",
+    "Adafruit GFX Library@1.12.6",
+    "Adafruit BusIO@1.17.4",
+    "MFRC522@1.4.12"
+  ]
+}

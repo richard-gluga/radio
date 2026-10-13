@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 870" role="img" aria-labelledby="title desc">
+<title id="title">Kangaroo Radio connection overview for DFR1139</title>
+<desc id="desc">Protected single cell battery positive passes through switch S1 to the board battery plus, negative goes directly to battery minus. USB goes only to the board USB-C port. Board VCC powers the amplifier, 3V3 powers the OLED, RC522 and pot. All grounds are common; neither speaker output is ground. Signal assignments appear inside each block.</desc>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0 0 7 3 0 6" fill="none" stroke="#225d47"/></marker></defs>
+<rect width="960" height="870" rx="16" fill="#fffef9"/>
+<g font-family="system-ui,sans-serif" fill="#17352e" font-size="17">
+<text x="32" y="38" font-size="25" font-weight="700">DFR1139 connection overview</text>
+<text x="32" y="66">Logical diagram — connect by pin label, not by a box's position here.</text>
+<g fill="#edf3e9" stroke="#a8bbab" stroke-width="2">
+<rect x="32" y="105" width="280" height="140" rx="10"/>
+<rect x="650" y="105" width="275" height="140" rx="10"/>
+<rect x="320" y="305" width="325" height="150" rx="10"/>
+<rect x="32" y="530" width="260" height="230" rx="10"/>
+<rect x="350" y="530" width="255" height="230" rx="10"/>
+<rect x="655" y="530" width="270" height="230" rx="10"/>
+</g>
+<text x="50" y="133" font-weight="700">Protected 1S 1781 pack</text>
+<text x="50" y="161">3.7 V nominal · 4.2 V full</text>
+<text x="50" y="191">+ → S1 switch → board BAT +</text>
+<text x="50" y="219">− → uninterrupted → BAT −</text>
+<text x="670" y="133" font-weight="700">USB-C on the board</text>
+<text x="670" y="161">Computer: data / upload</text>
+<text x="670" y="189">5 V / 2 A supply: operation</text>
+<text x="670" y="217">S1 ON to charge the pack</text>
+<path d="M312 196H382V305M650 196H580V305" fill="none" stroke="#225d47" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="340" y="335" font-weight="700" font-size="21">FireBeetle 2 DFR1139</text>
+<text x="340" y="364">Onboard charger/source switching</text>
+<text x="340" y="393">VCC → amplifier VIN</text>
+<text x="340" y="421">3V3 → OLED, reader, pot</text>
+<text x="340" y="443">GND → common ground bus</text>
+<path d="M360 455V488H162V530M480 455V530M605 455V488H790V530" fill="none" stroke="#225d47" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="50" y="558" font-weight="700">Adafruit 3006 + speaker</text>
+<text x="50" y="588">VIN ← VCC; GND ← GND</text>
+<text x="50" y="616">BCLK ← GPIO26 / D3</text>
+<text x="50" y="644">LRC ← GPIO25 / D2</text>
+<text x="50" y="672">DIN ← GPIO13 / D7</text>
+<text x="50" y="700">GAIN → VIN; SD left open</text>
+<text x="50" y="728">OUT +/− → 8 Ω speaker</text>
+<text x="368" y="558" font-weight="700">OLED + controls</text>
+<text x="368" y="588">OLED VCC ← 3V3</text>
+<text x="368" y="616">SDA/SCL ← GPIO21/22</text>
+<text x="368" y="644">OLED GND ← GND</text>
+<text x="368" y="672">Button: GPIO14 ↔ GND</text>
+<text x="368" y="700">Pot ends: 3V3 and GND</text>
+<text x="368" y="728">Pot centre: GPIO35 / A3</text>
+<text x="673" y="558" font-weight="700">RC522 (SPI, 3.3 V)</text>
+<text x="673" y="588">3.3V ← 3V3; GND ← GND</text>
+<text x="673" y="616">SDA/SS ← GPIO4 / D12</text>
+<text x="673" y="644">RST ← GPIO17 / D10</text>
+<text x="673" y="672">SCK ← GPIO18</text>
+<text x="673" y="700">MOSI/MISO ← GPIO23/19</text>
+<text x="673" y="728">IRQ left open</text>
+<text x="32" y="803" font-weight="700">USB bypasses S1. Full OFF = USB unplugged + S1 OFF.</text>
+<text x="32" y="834">No external boost or charger. Speaker outputs must never connect to GND.</text>
+</g></svg>

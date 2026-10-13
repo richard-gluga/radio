@@ -1,0 +1,29 @@
+{
+  "folder": "KangarooRadio_ABCKids",
+  "files": [
+    {
+      "name": "Hardware.h",
+      "sha256": "a52178288b154e013b465feac13b606526b63ac35876a1c118cf5012e90f99a9"
+    },
+    {
+      "name": "KangarooRadio_ABCKids.ino",
+      "sha256": "3c10540e1ee8f3f3c676eefb02afb5fd721e4a9da36be869b97daa1b5a7ed5ca"
+    },
+    {
+      "name": "NdefUri.h",
+      "sha256": "768c19e85423df38a39e265eb7413065d30d008d3b6ecc5fda96f83a091d12e7"
+    },
+    {
+      "name": "RadioConfig.h",
+      "sha256": "a1e3fc6dd67adbc4ef711f471dc51f047e4c8b8c056ebd5d8f6113197df3934f"
+    },
+    {
+      "name": "RadioLogic.h",
+      "sha256": "14846fedbfebd5c476ca5d733236a5fee3b634e2b2882a602805d923db902c1e"
+    },
+    {
+      "name": "Stations.h",
+      "sha256": "9a300869dfb832048b2cd5a367b94da1961b8aa7a940fc334ee33a71dfde054d"
+    }
+  ]
+}

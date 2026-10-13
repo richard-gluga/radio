@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Build a rechargeable ESP32 radio with an OLED, volume knob and NFC story cards. Exact parts, complete firmware and step-by-step checks.">
+  <title>Kangaroo Radio — the complete build guide</title>
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="vendor/hls-1.6.13.min.js"></script>
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <a class="skip" href="#guide">Skip to instructions</a>
+  <header class="topbar"><a class="brand" href="#top">Kangaroo <strong>Radio</strong><span class="brand-dot" aria-hidden="true"></span></a>
+    <nav aria-label="Main navigation"><a href="#guide">Build guide</a><a href="#configure">Get firmware</a><a href="#listen">Try the audio</a><a href="validation.html">Verification</a></nav>
+  </header>
+  <main id="top">
+    <section class="hero" aria-labelledby="hero-title">
+      <div><p class="eyebrow">A family maker project · revised October 2026</p><h1 id="hero-title">A little radio.<br>A project you can follow.</h1>
+      <p class="hero-copy">Internet radio, a real volume knob and stories that start with a tap. Build it one checked connection at a time.</p>
+      <div class="actions"><a class="button" href="#guide">Start with the parts</a><a class="button secondary" href="#configure">Configure the firmware</a></div>
+      <p class="hero-note">DFR1139 + OLED + NFC · soldering required · rechargeable via USB-C</p></div>
+      <div class="radio-illustration" role="img" aria-label="Concept illustration of a radio with speaker grille, OLED, volume knob and station button. Not a photograph or a dimensioned plan.">
+        <div class="radio-handle"></div><div class="radio-body"><div class="speaker-grille"></div><div class="radio-controls"><div class="oled-art">KANGAROO RADIO<br><br>ABC Kids listen<br>Playing</div><div class="knob-art"></div><div class="button-art"></div></div></div><small>Concept illustration · follow the wiring tables</small>
+      </div>
+    </section>
+    <div class="build-layout">
+      <aside class="contents"><details open><summary>On this page</summary><!-- CONTENTS --><a href="#configure">Configuration download</a><a href="#listen">Audio preview</a></details></aside>
+      <article id="guide" class="guide"><!-- GUIDE --></article>
+    </div>
+    <section id="configure" class="tool-section" aria-labelledby="configure-title">
+      <div class="section-intro"><p class="eyebrow">Complete sketch, one source</p><h2 id="configure-title">Make your firmware download</h2><p>Read section 4 first. Start with Hardware test, then download Normal radio when the wiring passes. All sketch files are included.</p></div>
+      <form id="config-form" class="panel" autocomplete="off">
+        <div class="form-grid">
+          <label>Build mode<select id="mode" name="mode"><option value="test">Hardware test — no Wi-Fi/audio</option><option value="radio">Normal radio</option></select></label>
+          <label>Startup station<select id="startup" name="startup"><option value="0">ABC Kids listen</option></select></label>
+          <label>Home Wi-Fi name<input id="ssid" name="ssid" type="text" spellcheck="false" autocomplete="off" aria-describedby="wifi-help"></label>
+          <label>Home Wi-Fi password<input id="password" name="password" type="password" autocomplete="new-password" aria-describedby="wifi-help"></label>
+          <label>Backup Wi-Fi name (optional)<input id="backup-ssid" name="backupSsid" type="text" spellcheck="false" autocomplete="off"></label>
+          <label>Backup password<input id="backup-password" name="backupPassword" type="password" autocomplete="new-password"></label>
+          <label>Maximum volume step (0–21)<input id="volume-cap" name="cap" type="number" min="0" max="21" value="10" required></label>
+        </div>
+        <p id="wifi-help" class="help">Spaces and letter case are preserved. An empty password means an open network. Wi-Fi names must be 1–32 UTF-8 bytes in Normal radio mode. This form does not save or upload your credentials.</p>
+        <p class="help">A volume step is not a dBA measurement. Start quietly; check the finished radio's listening level.</p>
+        <button type="submit">Download complete sketch ZIP</button>
+        <p id="config-status" role="status" aria-live="polite"></p>
+        <p class="help"><a href="downloads/KangarooRadio_ABCKids.zip" download>Unconfigured ZIP</a> · Extract before opening in Arduino IDE. Your configured download contains your Wi-Fi password; keep it private.</p>
+      </form>
+    </section>
+    <section id="listen" class="tool-section" aria-labelledby="listen-title">
+      <div class="section-intro"><p class="eyebrow">Optional browser preview</p><h2 id="listen-title">Listen before you build</h2><p>This uses your computer or phone's audio. It does not write NFC tags or prove ESP32 playback compatibility. Begin at low device volume.</p></div>
+      <div class="panel"><div id="stations" class="station-grid"></div>
+        <div class="demo-row"><button id="play-demo" type="button">Play five-second audio check</button><button id="copy-demo" type="button" class="secondary">Copy demo URL for a tag</button></div>
+        <p class="help">Original synthetic WAV · 5 seconds · mono, 22.05 kHz, 16-bit PCM. Not a story narration or a calibration signal.</p>
+        <form id="custom-form"><label for="custom-url">Your public direct audio URL</label><div class="inline-form"><input id="custom-url" type="url" placeholder="https://your-host.example/story.mp3" required><button type="submit">Preview URL</button></div></form>
+        <div id="player" class="player" hidden><p id="player-title"></p><audio id="audio" controls preload="none"></audio><button id="stop-audio" type="button" class="secondary">Stop and close</button></div>
+        <p id="player-status" role="status" aria-live="polite">Choose a station or the short audio check.</p>
+        <label id="demo-url-label" hidden>Demo URL<input id="demo-url" type="text" readonly></label>
+      </div>
+    </section>
+  </main>
+  <footer><span class="brand">Kangaroo Radio</span><p>A documented maker project. Build, check, then enclose.</p><a href="validation.html">Verification & physical checks</a> · <a href="maintaining.html">Maintaining the project</a> · <a href="LICENSE.txt">MIT licence</a></footer>
+</body>
+</html>
