@@ -1,5 +1,6 @@
 // Endpoints match Hardware.h and README. Coordinates follow DFR1139's official
-// component-side pinout (USB at the top); peripheral endpoints are schematic.
+// component-side pinout (USB at the top). Module header positions are in peripherals.js.
+import {peripheralDrawing} from './peripherals.js';
 export const wires = [
   ['rails','3V3','3V3 rail','Use one board 3V3 pin for the marked breadboard supply rail. Check any rail split with continuity while unpowered.','power'],
   ['rails','GND','GND rail','Use one board GND pin for the ground rail. Keep this rail separate from 3V3.','ground'],
@@ -47,18 +48,14 @@ export function wiringSvg(index) {
       points += `<g><circle cx="${x}" cy="${y}" r="${on?8:5}" fill="${on?'#ffe3a5':'#d2dcd3'}" stroke="${on?'#af572e':'#6f8177'}" stroke-width="${on?3:1}"/><text x="${side==='left'?98:322}" y="${y+5}" text-anchor="${side==='left'?'end':'start'}" fill="${on?'#9a3c23':'#53665f'}" font-size="16" font-weight="${on?800:400}">${name}</text></g>`;
     });
   }
-  const labels = {rails:'Breadboard rails',oled:'DFR0650 OLED',controls:'Knob & button',reader:'CN0090 RC522',amp:'Adafruit 3006'};
+  const part = peripheralDrawing(group, target);
   const from = pinLabels[pin] || (pin==='local'?'On the amplifier':'Speaker outputs');
-  const endpoints = wires.filter(w=>w[0]===group);
-  const active = endpoints.findIndex(w=>w===wires[index]);
-  const targetY = 176 + active * 43;
   let route = '';
-  if (selected) {
+  if (selected && part.destination) {
+    const {x,y} = part.destination;
     const viaRail = (pin==='3V3' || pin==='GND') && group!=='amp' && group!=='rails';
-    route = `<path d="M${selected.x} ${selected.y} H402 V${targetY} H465" stroke="${colour}" stroke-width="4" fill="none" stroke-linejoin="round"/>`;
-    if (viaRail) route += `<rect x="373" y="${targetY-11}" width="56" height="22" rx="4" fill="#fff4d8" stroke="${colour}"/><text x="401" y="${targetY+4}" text-anchor="middle" font-size="12">via rail</text>`;
-  } else {
-    route = `<path d="M466 ${targetY} H430 V${targetY+23} H466" stroke="${colour}" stroke-width="4" fill="none"/>`;
+    route = `<path data-connection="${target}" d="M${selected.x} ${selected.y} H410 V${part.leadY} H${x} V${y}" stroke="${colour}" stroke-width="4" fill="none" stroke-linejoin="round"/>`;
+    if (viaRail) route += `<rect x="382" y="${part.leadY-11}" width="56" height="22" rx="4" fill="#fff4d8" stroke="${colour}"/><text x="410" y="${part.leadY+4}" text-anchor="middle" font-size="12">via rail</text>`;
   }
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 685" role="img" aria-label="${from} to ${target}"><rect x="0" y="0" width="760" height="685" rx="20" fill="#f1f1e8"/><text x="208" y="36" text-anchor="middle" font-size="17" fill="#17352e">DFR1139 · component side</text><rect x="105" y="68" width="210" height="561" rx="18" fill="#35493d"/><rect x="180" y="58" width="61" height="47" rx="5" fill="#cbd3cc" stroke="#718077"/><text x="210" y="87" text-anchor="middle" font-size="13">USB-C</text><rect x="144" y="399" width="134" height="158" rx="5" fill="#c6ccc3"/><text x="211" y="452" text-anchor="middle" font-size="17">ESP32</text><text x="211" y="480" text-anchor="middle" font-size="16">N16R2</text><path d="M150 584h12v20h12v-20h12v20h12v-20h12v20h12v-20h12v20h12v-20h12" fill="none" stroke="#c6a557" stroke-width="4"/><rect x="243" y="138" width="44" height="63" fill="#e8dfb0"/><text x="265" y="172" text-anchor="middle" font-size="12">BAT</text>${points}${route}<rect x="459" y="91" width="279" height="${endpoints.length*43+95}" rx="12" fill="white" stroke="#bbcabc"/><text x="599" y="125" text-anchor="middle" font-size="18" fill="#17352e">${labels[group]}</text><text x="599" y="145" text-anchor="middle" font-size="12" fill="#53665f">SCHEMATIC ENDPOINTS</text>${endpoints.map((w,i)=>`<g><rect x="472" y="${159+i*43}" width="253" height="34" rx="6" fill="${i===active?'#ffebbf':'#f3f5ef'}" stroke="${i===active?colour:'#d4dcd3'}"/><circle cx="474" cy="${176+i*43}" r="5" fill="${i===active?colour:'#a9b8aa'}"/><text x="490" y="${181+i*43}" font-size="16" fill="#17352e" font-weight="${i===active?700:400}">${w[2]}</text></g>`).join('')}<text x="380" y="661" text-anchor="middle" font-size="16" fill="#17352e">POWER DISCONNECTED · Match labels before connecting</text></svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 685" role="img" aria-label="${from} to ${target}"><rect x="0" y="0" width="760" height="685" rx="20" fill="#f1f1e8"/><text x="208" y="36" text-anchor="middle" font-size="17" fill="#17352e">DFR1139 · component side</text><rect x="105" y="68" width="210" height="561" rx="18" fill="#35493d"/><rect x="180" y="58" width="61" height="47" rx="5" fill="#cbd3cc" stroke="#718077"/><text x="210" y="87" text-anchor="middle" font-size="13">USB-C</text><rect x="144" y="399" width="134" height="158" rx="5" fill="#c6ccc3"/><text x="211" y="452" text-anchor="middle" font-size="17">ESP32</text><text x="211" y="480" text-anchor="middle" font-size="16">N16R2</text><path d="M150 584h12v20h12v-20h12v20h12v-20h12v20h12v-20h12v20h12v-20h12" fill="none" stroke="#c6a557" stroke-width="4"/><rect x="243" y="138" width="44" height="63" fill="#e8dfb0"/><text x="265" y="172" text-anchor="middle" font-size="12">BAT</text>${part.body}${route}${points}${part.localRoutes}${part.pads}<text x="600" y="36" text-anchor="middle" font-size="15" fill="#17352e">${part.title}</text><text x="600" y="62" text-anchor="middle" font-size="12" fill="#53665f">Simplified drawing · match the orientation</text><text x="380" y="661" text-anchor="middle" font-size="16" fill="#17352e">POWER DISCONNECTED · Match labels before connecting</text></svg>`;
 }

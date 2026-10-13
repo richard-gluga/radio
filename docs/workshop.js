@@ -1,4 +1,5 @@
 import {wires, pinLabels, wiringSvg} from './wiring.js';
+import {moduleViews} from './peripherals.js';
 const $ = id => document.getElementById(id);
 const stages = [...document.querySelectorAll('.build-stage')];
 const checks = [...document.querySelectorAll('[data-check]')];
@@ -137,6 +138,11 @@ function drawWire() {
   $('wire-count').textContent=`Connection ${siblings.findIndex(x=>x.i===wireIndex)+1} of ${siblings.length} in this group`;
   $('wire-endpoints').textContent=(pinLabels[wire[1]]?pinLabels[wire[1]]+' → ':'')+wire[2];
   $('wire-note').textContent=wire[3];$('wire-back').disabled=wireIndex===0;$('wire-next').disabled=wireIndex===wires.length-1;
+  const view=moduleViews[wire[0]];
+  $('wire-orientation').textContent=view.orientation;
+  $('wire-source').hidden=!view.source;
+  if(view.source){$('wire-source').href=view.source;$('wire-source').textContent=view.sourceLabel;}
+  else $('wire-source').removeAttribute('href');
 }
 $('wire-group').addEventListener('change',()=>{wireIndex=wires.findIndex(w=>w[0]===$('wire-group').value);drawWire();});
 $('wire-select').addEventListener('change',()=>{wireIndex=Number($('wire-select').value);drawWire();});

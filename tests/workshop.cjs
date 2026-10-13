@@ -44,6 +44,9 @@ const base='http://127.0.0.1:8769/docs/';
     const text=await page.locator('#wire-select option:checked').innerText();
     assert.ok((await page.locator('#wire-endpoints').innerText()).includes(text));
     assert.ok((await page.locator('#wire-picture svg').getAttribute('aria-label')).includes(text));
+    const selected=await page.locator('#wire-picture [data-selected="true"]').count();
+    assert.equal(selected,['GAIN → VIN','Speaker + / −'].includes(text)?2:1,`Highlighted module pads: ${text}`);
+    if(['oled','reader','amp'].includes(group)) assert.equal(await page.locator('#wire-source').isVisible(),true);
    }
   }
   await page.locator('[data-stage-link="4"]').click();

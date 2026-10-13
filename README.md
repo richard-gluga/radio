@@ -8,7 +8,7 @@ The source and instructions are checked together. Physical audio level, battery 
 
 [Open the illustrated guide and configuration form](https://richard-gluga.github.io/radio/) · [Download the complete unconfigured sketch](docs/downloads/KangarooRadio_ABCKids.zip)
 
-On the website, choose **Guided build** for one stage at a time or **Full reference** to see everything. Checkmarks and shopping choices are saved in your browser; clearing browser data removes them. The wiring bench highlights one connection at a time. The [printable pack](docs/printables.html) includes story artwork, control labels, cardboard layout pieces and a bench checklist. You can follow this README without those interactive tools.
+On the website, choose **Guided build** for one stage at a time or **Full reference** to see everything. Checkmarks and shopping choices are saved in your browser; clearing browser data removes them. The wiring bench highlights one connection at a time on drawings of the boards. Turn each board to match the stated viewing orientation, then confirm its printed pin labels. The [printable pack](docs/printables.html) includes story artwork, control labels, cardboard layout pieces and a bench checklist. You can follow this README without those interactive tools.
 
 ## 1. Understand the build
 

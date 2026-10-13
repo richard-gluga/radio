@@ -1,13 +1,14 @@
 <!-- CONFIGURE -->
-<!-- Wiring is a pin-location drawing on the left and a labelled schematic on the right. -->
+<!-- Module header positions follow the linked manufacturers' drawings/photos. -->
 <section id="wiring-lab" class="workshop-tool" aria-labelledby="wiring-title">
   <p class="eyebrow">One connection at a time</p><h3 id="wiring-title">Your wiring bench</h3>
   <p>Unplug USB and disconnect the battery before changing a wire. Use the printed pin labels on your parts.</p>
   <div class="wire-toolbar"><label>Work on<select id="wire-group"><option value="rails">Power rails</option><option value="oled">OLED screen</option><option value="controls">Knob & button</option><option value="reader">NFC reader</option><option value="amp">Amplifier & speaker</option></select></label><label>Connection<select id="wire-select"></select></label></div>
   <label class="diagram-zoom enhanced-only"><input id="wire-zoom" type="checkbox">Enlarge diagram (scroll sideways on a small screen)</label><div id="wire-picture" tabindex="0" role="region" aria-label="Wiring diagram; scroll to inspect when enlarged"></div>
   <div class="wire-callout" aria-live="polite"><p id="wire-count" class="eyebrow"></p><h4 id="wire-endpoints"></h4><p id="wire-note"></p></div>
+  <p id="wire-orientation" class="help"></p><p><a id="wire-source" class="help" hidden>Manufacturer reference</a></p>
   <div class="actions"><button id="wire-back" type="button" class="secondary">Previous wire</button><button id="wire-next" type="button">Next wire</button><a href="assets/wiring.svg" target="_blank" rel="noopener">Complete connection overview</a></div>
-  <p class="help">Left: DFR1139 viewed from the component side, USB-C at the top, following the <a href="https://wiki.dfrobot.com/dfr1139/">manufacturer pinout</a>. Right: labelled connection endpoints, not physical pin positions. Wire colours are suggestions; labels determine the connection. Repeated board power pins share a supply. The breadboard holes must be checked with a meter.</p>
+  <p class="help">Left: DFR1139 viewed from the component side, USB-C at the top, following the <a href="https://wiki.dfrobot.com/dfr1139/">manufacturer pinout</a>. Right: screen, reader and amplifier header positions follow their linked manufacturer references; outlines are simplified and not to scale. Controls and rails are terminal sketches. Wire colours are suggestions; labels determine the connection. NC means leave the pad unconnected. Repeated board power pins share a supply. Check the breadboard holes with a meter.</p>
 </section>
 <section id="diagnostics" class="workshop-tool" aria-labelledby="diagnostics-title">
   <p class="eyebrow">Know what success looks like</p><h3 id="diagnostics-title">Compare your first boot</h3>
