@@ -6,31 +6,39 @@
   <meta name="description" content="Build a rechargeable ESP32 radio with an OLED, volume knob and NFC story cards. Exact parts, complete firmware and step-by-step checks.">
   <title>Kangaroo Radio — the complete build guide</title>
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="workshop.css">
   <script defer src="vendor/hls-1.6.13.min.js"></script>
   <script type="module" src="app.js"></script>
+  <script type="module" src="workshop.js"></script>
 </head>
 <body>
   <a class="skip" href="#guide">Skip to instructions</a>
   <header class="topbar"><a class="brand" href="#top">Kangaroo <strong>Radio</strong><span class="brand-dot" aria-hidden="true"></span></a>
-    <nav aria-label="Main navigation"><a href="#guide">Build guide</a><a href="#configure">Get firmware</a><a href="#listen">Try the audio</a><a href="validation.html">Verification</a></nav>
+    <nav aria-label="Main navigation"><a href="#guide">Build with me</a><a href="#wiring-lab">Wiring bench</a><a href="#listen">Listen</a><a href="printables.html">Print & make</a></nav>
   </header>
   <main id="top">
     <section class="hero" aria-labelledby="hero-title">
-      <div><p class="eyebrow">A family maker project · revised October 2026</p><h1 id="hero-title">A little radio.<br>A project you can follow.</h1>
-      <p class="hero-copy">Internet radio, a real volume knob and stories that start with a tap. Build it one checked connection at a time.</p>
-      <div class="actions"><a class="button" href="#guide">Start with the parts</a><a class="button secondary" href="#configure">Configure the firmware</a></div>
-      <p class="hero-note">DFR1139 + OLED + NFC · soldering required · rechargeable via USB-C</p></div>
-      <div class="radio-illustration" role="img" aria-label="Concept illustration of a radio with speaker grille, OLED, volume knob and station button. Not a photograph or a dimensioned plan.">
-        <div class="radio-handle"></div><div class="radio-body"><div class="speaker-grille"></div><div class="radio-controls"><div class="oled-art">KANGAROO RADIO<br><br>ABC Kids listen<br>Playing</div><div class="knob-art"></div><div class="button-art"></div></div></div><small>Concept illustration · follow the wiring tables</small>
+      <div><p class="eyebrow">Make something they’ll make memories with</p><h1 id="hero-title">Little hands.<br>Big adventures.</h1>
+      <p class="hero-copy">A real knob to turn. A button to explore. A story that starts with a tap. Build your own rechargeable family radio, one small success at a time.</p>
+      <div class="actions"><a class="button" id="start-build" href="#guide">Let’s build a radio <span aria-hidden="true">↗</span></a><a class="button secondary" href="#listen">Meet Pip’s first story</a></div>
+      <ul class="hero-facts"><li>13 guided stages</li><li>Saved progress</li><li>Print & make extras</li></ul>
+      <p class="hero-note">Adult assembly · soldering required · 2.4 GHz Wi-Fi<br>DFR1139 + OLED + NFC · USB-C charging</p></div>
+      <div class="hero-preview"><div class="radio-illustration">
+        <div class="radio-handle"></div><div class="radio-body"><div class="speaker-grille" aria-hidden="true"></div><div class="radio-controls"><div class="oled-art"><span>KANGAROO RADIO</span><span id="hero-audio-state" aria-live="polite">Ready for a story</span></div><div class="knob-art" aria-hidden="true"></div><button id="hero-station" class="button-art" type="button" aria-label="Preview next station" title="Preview next station"></button></div></div>
+      </div><button id="hero-story" type="button" class="hero-story-card"><img src="assets/pip-story.svg" alt=""><span><small>A card-sized adventure</small><strong>Pip and the little light</strong>Tap to hear the story <span aria-hidden="true">▶</span></span></button><div class="preview-controls"><label for="preview-volume">Preview volume</label><input id="preview-volume" type="range" min="0" max="100" value="25"><button id="hero-stop" type="button" class="secondary">Stop</button></div><p class="hero-caption">Interactive concept · plays on this device.<br>Computer-narrated story; this is not a hardware demonstration.</p>
       </div>
     </section>
+    <section class="journey-strip" aria-label="Your journey"><div><span>01</span><strong>Get curious</strong><small>Meet the parts</small></div><div><span>02</span><strong>Make connections</strong><small>Wire, upload, check</small></div><div><span>03</span><strong>Hear it happen</strong><small>Your first station & story</small></div><div><span>04</span><strong>Make it yours</strong><small>Finish, label, enjoy</small></div></section>
+    <noscript><p class="no-script-note">JavaScript is off. The complete instructions and printable sheets are available below. Use the unconfigured ZIP and follow the manual configuration instructions; interactive previews and saved progress need JavaScript.</p></noscript>
+    <section id="build-dashboard" class="build-dashboard enhanced-only" aria-label="Build progress"><div><p class="eyebrow">Your workbench</p><h2 id="progress-title">One small step at a time.</h2><p id="progress-text" role="status">Ready when you are.</p><progress id="build-progress" max="13" value="0" aria-label="Completed stages"></progress><p class="help" id="storage-status">Checkmarks and shopping choices stay on this browser. Wi-Fi details are never saved.</p></div><div><div class="view-switch" role="group" aria-label="Guide view"><button id="guided-view" type="button" aria-pressed="true">Guided build</button><button id="reference-view" type="button" class="secondary" aria-pressed="false">Full reference</button></div><div class="actions"><button id="resume-build" type="button" class="secondary">Resume my step</button><button id="reset-build" type="button" class="text-button">Reset checkmarks</button></div></div></section>
     <div class="build-layout">
-      <aside class="contents"><details open><summary>On this page</summary><!-- CONTENTS --><a href="#configure">Configuration download</a><a href="#listen">Audio preview</a></details></aside>
+      <aside class="contents"><details open><summary>Your build, step by step</summary><!-- CONTENTS --><a href="#configure">Configuration download</a><a href="#fix-it">Help me find a fix</a><a href="#listen">Audio preview</a></details></aside>
       <article id="guide" class="guide"><!-- GUIDE --></article>
     </div>
     <section id="configure" class="tool-section" aria-labelledby="configure-title">
       <div class="section-intro"><p class="eyebrow">Complete sketch, one source</p><h2 id="configure-title">Make your firmware download</h2><p>Read section 4 first. Start with Hardware test, then download Normal radio when the wiring passes. All sketch files are included.</p></div>
       <form id="config-form" class="panel" autocomplete="off">
+        <fieldset id="config-inputs" disabled><legend class="visually-hidden">Firmware configuration</legend>
         <div class="form-grid">
           <label>Build mode<select id="mode" name="mode"><option value="test">Hardware test — no Wi-Fi/audio</option><option value="radio">Normal radio</option></select></label>
           <label>Startup station<select id="startup" name="startup"><option value="0">ABC Kids listen</option></select></label>
@@ -43,16 +51,18 @@
         <p id="wifi-help" class="help">Spaces and letter case are preserved. An empty password means an open network. Wi-Fi names must be 1–32 UTF-8 bytes in Normal radio mode. This form does not save or upload your credentials.</p>
         <p class="help">A volume step is not a dBA measurement. Start quietly; check the finished radio's listening level.</p>
         <button type="submit">Download complete sketch ZIP</button>
+        </fieldset>
         <p id="config-status" role="status" aria-live="polite"></p>
         <p class="help"><a href="downloads/KangarooRadio_ABCKids.zip" download>Unconfigured ZIP</a> · Extract before opening in Arduino IDE. Your configured download contains your Wi-Fi password; keep it private.</p>
       </form>
     </section>
     <section id="listen" class="tool-section" aria-labelledby="listen-title">
       <div class="section-intro"><p class="eyebrow">Optional browser preview</p><h2 id="listen-title">Listen before you build</h2><p>This uses your computer or phone's audio. It does not write NFC tags or prove ESP32 playback compatibility. Begin at low device volume.</p></div>
-      <div class="panel"><div id="stations" class="station-grid"></div>
+      <div class="story-feature"><img src="assets/pip-story.svg" alt="Pip the kangaroo carries a firefly home on a leaf"><div><p class="eyebrow">Your first story card</p><h3>Pip and the little light</h3><p>A lost firefly. A helpful kangaroo. A little journey home. An original 45-second adventure to give your first card a voice.</p><div class="actions"><button id="play-story" type="button">Listen to Pip’s story</button><button id="copy-story" type="button" class="secondary">Copy story URL</button></div><p class="help">Computer narration · original text and artwork · <a href="assets/pip-and-the-little-light.txt">Read the transcript</a> · <a href="printables.html#cards">Print the card</a></p></div></div>
+      <div class="panel"><h3 class="panel-heading">Explore the stations</h3><div id="stations" class="station-grid"></div>
         <div class="demo-row"><button id="play-demo" type="button">Play five-second audio check</button><button id="copy-demo" type="button" class="secondary">Copy demo URL for a tag</button></div>
         <p class="help">Original synthetic WAV · 5 seconds · mono, 22.05 kHz, 16-bit PCM. Not a story narration or a calibration signal.</p>
-        <form id="custom-form"><label for="custom-url">Your public direct audio URL</label><div class="inline-form"><input id="custom-url" type="url" placeholder="https://your-host.example/story.mp3" required><button type="submit">Preview URL</button></div></form>
+        <form id="custom-form"><fieldset id="custom-inputs" disabled><legend class="visually-hidden">Preview your audio</legend><label for="custom-url">Your public direct audio URL</label><div class="inline-form"><input id="custom-url" type="url" placeholder="https://your-host.example/story.mp3" required><button type="submit">Preview URL</button></div></fieldset></form>
         <div id="player" class="player" hidden><p id="player-title"></p><audio id="audio" controls preload="none"></audio><button id="stop-audio" type="button" class="secondary">Stop and close</button></div>
         <p id="player-status" role="status" aria-live="polite">Choose a station or the short audio check.</p>
         <label id="demo-url-label" hidden>Demo URL<input id="demo-url" type="text" readonly></label>

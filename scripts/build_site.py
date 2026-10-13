@@ -12,6 +12,7 @@ import wave
 import zipfile
 
 import markdown
+from experience import enrich, printables
 
 ROOT = Path(__file__).resolve().parents[1]
 DOCS = ROOT / "docs"
@@ -26,7 +27,7 @@ def products():
         readme = readme.replace(f"]({name}.md)", f"]({name.lower()}.html)")
     readme = readme.replace("](LICENSE)", "](LICENSE.txt)")
     readme = readme.replace("](firmware/KangarooRadio_ABCKids)", "](downloads/KangarooRadio_ABCKids.zip)")
-    md = markdown.Markdown(extensions=["tables", "fenced_code", "toc"], extension_configs={"toc": {"toc_depth": "2"}})
+    md = markdown.Markdown(extensions=["tables", "fenced_code", "toc", "sane_lists"], extension_configs={"toc": {"toc_depth": "2"}})
     content = md.convert(readme)
     # Preserve the table on desktop; make its four fields readable as cards on
     # phones, where narrow part numbers and long specifications otherwise wrap.
@@ -36,7 +37,13 @@ def products():
         return table.replace("<table>", '<table class="parts-table">', 1)
     content = re.sub(r"<table>.*?</table>", shopping_table, content, count=1, flags=re.S)
     template = (ROOT / "site/template.html").read_text()
-    yield DOCS / "index.html", template.replace("<!-- GUIDE -->", content).replace("<!-- CONTENTS -->", md.toc).encode()
+    configure = re.search(r'    <section id="configure".*?</section>', template, re.S)[0]
+    template = template.replace(configure, '')
+    content, contents = enrich(content, configure)
+    yield DOCS / "index.html", template.replace("<!-- GUIDE -->", content).replace("<!-- CONTENTS -->", contents).encode()
+    yield DOCS / "experience.json", (ROOT / "site/experience.json").read_bytes()
+    yield DOCS / "printables.html", printables().encode()
+    yield DOCS / "assets/pip-and-the-little-light.txt", (ROOT / "site/story.txt").read_bytes()
     for name in ["VALIDATION", "MAINTAINING"]:
         body = markdown.markdown((ROOT / f"{name}.md").read_text(), extensions=["tables", "fenced_code"])
         body = body.replace('href="README.md"', 'href="index.html"').replace('href="LICENSE"', 'href="LICENSE.txt"')

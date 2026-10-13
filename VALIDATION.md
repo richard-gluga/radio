@@ -29,32 +29,15 @@ The pin map is checked against the manufacturer's DFR1139 schematic. GPIO16 is e
 
 The configured radio uses 59,608 bytes of statically allocated internal RAM. That figure excludes runtime allocations, task stacks, TLS and PSRAM buffers; it is not proof of sufficient memory under every live-stream condition. The browser test also rejects a download whose source hash changes halfway through generation. Reproduction commands are in [MAINTAINING.md](MAINTAINING.md).
 
-During the pre-publication external-link check, the new public `assets/audio-check.wav` URL returned 404 because the revised site was not yet deployed. Its file existed and played locally. The guide requires checking the published URL before writing a tag. DigiKey and Jaycar rejected direct automated requests with HTTP 403; their product pages were separately reviewed through the web lookup tool. They were not misclassified as missing products. Other actual tutorial/reference links responded successfully; example domains are placeholders, not offered audio files.
+External product links were reviewed on 13 October 2026. DigiKey and Jaycar rejected direct automated requests with HTTP 403; their product pages were separately reviewed through web lookup. Check current stock and specifications before buying.
 
-## Corrections covered by this revision
+## Interactive guide checks
 
-| Earlier issue | Correction and evidence |
-|---|---|
-| Board/audio-library mismatch | DFR1139 with 2 MB PSRAM, exact core/library versions and explicit flash/partition/PSRAM settings; configured compilation exercises the playback code |
-| Conflicting or unsuitable GPIO assignments | One pin map in `Hardware.h`, matching tutorial/diagram; ADC1 GPIO35 for the knob, excluding the onboard battery divider and PSRAM connection |
-| Ambiguous amplifier power and speaker wiring | VCC-to-VIN, separate 3V3 bus, 8 Ω enclosed speaker, explicit gain connection and isolated speaker outputs |
-| Charger, battery and switch assumptions | Board's own source switching/charger; Adafruit 1781 has a documented charging-current recommendation; exact extension and polarity procedure; ST0579 has an explicit DC contact rating |
-| Retailer field contradicts switch datasheet | ST0570 was excluded: its web fields say DC, but its linked drawing gives AC ratings. ST0579 is the selected part |
-| Incomplete shopping and assembly steps | Headers, soldering, tools, connectors, insulated distribution, knob, mounting hardware, USB supply and enclosure clearance are included |
-| Display/reader/tag ambiguity | Exact SSD1306/I2C display and SPI reader, supported NTAG213/215 URI workflow, explicit exclusion of supplied S50 tags |
-| Truncated URLs and incorrect NDEF handling | Bounded byte parser, full advertised memory read, URI prefix expansion, malformed/partial/oversize rejection and host regression cases |
-| Fake playback state, progress or successful story completion | Decoder-derived states, approximate/unknown timing, EOF classification and explicit errors; no unconditional Done label |
-| Controls freezing during connection attempts | Audio/network connection work belongs to the audio task; UI queues the latest selection; remaining DNS/TLS latency is documented |
-| Volume starts above its configured cap | Initial and ongoing audio volume both use the clamped knob value; no independent startup volume |
-| Missing recovery and confusing station button | Bounded Wi-Fi home/backup attempts, station retry delays, one action per press and story-to-radio behavior |
-| Browser code differs from supplied firmware | Browser packages canonical source files and changes only `RadioConfig.h`; checksums reject a mixed deployment |
-| Broken credential escaping or silently changed spaces | Byte-preserving C++ string escaping, input validation, and independent extraction/compile tests |
-| Browser playback races and misleading previews | Old media listeners/promises invalidated on switch/close; real media controls, real test WAV and explicit error states |
-| Wrong audio and illustrative images presented as evidence | Unattributed book samples and misleading images removed; original test signal, original logical SVG and labelled concept illustration |
-| Unsupported cost, hearing-safety, runtime or NFC-range claims | Removed guarantees; complete shopping checklist and explicit measurement/acceptance steps |
-| Incomplete FM alternative and duplicated documentation | FM fragment removed; canonical README generates the website guide; station list generates browser data |
+The website adds a guided view alongside the full reference. `tests/workshop.cjs` passes in Chrome: all 13 stages at five viewport widths (360–1920 px), restored checkmarks and shopping choices, 25 wiring connections, 23 symptom flows, exported shopping text, both firmware-form locations, no credential persistence, real 45.5-second story decoding, and no-JavaScript/disabled-storage fallbacks. Existing configured-download, checksum and playback-cancellation tests also pass. The firmware sources are unchanged by this website update; the compile evidence above applies to those same sources.
 
-The remaining physical checks below are real gaps in validation, not completed work disguised as documentation.
+The board illustration's pin positions follow the manufacturer's component-side DFR1139 pinout, with USB-C at the top. Peripheral endpoints are explicitly schematic. The displayed Serial/OLED examples are derived from the firmware and labelled as examples. Neither illustration proves the physical wiring has been built.
+
+Printable layout dimensions and the 50 mm scale square are checked in the browser's print layout; review PDFs are generated for visual inspection. The full-size outlines are for cardboard placement. **No exact enclosure or drilling template has been physically validated.** Printer settings must still be checked with a ruler. The printable build record includes a photo shot list, measurement fields and a novice observation sheet to collect the remaining evidence.
 
 ## Physical acceptance checklist — not performed here
 
@@ -69,7 +52,7 @@ Do not mark these complete without an assembled radio and actual observations. R
 - Play the five-second PCM WAV and a known-length constant-bitrate MP3. Observe time/unknown-duration behavior, successful completion, mid-file disconnection and the four-second return. Verify that a never-started file and a known early EOF remain errors; an ordinary EOF says End, without certifying complete delivery.
 - Test reader range through the actual lid with the speaker/battery in their final positions. Test USB access, switches, loose-wire resistance, strain relief, sharp edges and battery retention.
 - Measure listening sound level at a stated distance using a suitable meter and representative loud sources, on USB and a full battery. Record conditions and results; software steps are not dBA.
-- Measure runtime and charge behavior; record capacity, volume, station and cutoff criterion. Do not restore a 12–18-hour promise without those measurements.
+- Measure runtime and charge behavior; record capacity, volume, station and cutoff criterion.
 - Ask a novice who did not write the guide to complete the build using only these instructions. Record every ambiguity and fix it before calling the guide novice-validated.
 
-No actual build photographs, sound-pressure measurements, battery endurance results or electrical certification are supplied by this repository revision. The original misleading images and audio examples have been removed rather than presented as evidence.
+No actual build photographs, sound-pressure measurements, battery endurance results or electrical certification are supplied by this repository revision.

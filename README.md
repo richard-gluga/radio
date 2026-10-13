@@ -2,11 +2,13 @@
 
 Build a rechargeable Wi-Fi radio with a volume knob, station button, monochrome display and tap-to-play NFC story cards. It plays six internet stations, including ABC Kids listen in Australia, and direct audio URLs that a parent writes to tags. No subscription or SD card is required; an internet connection is.
 
-**Read this before buying:** this revision uses **DFRobot DFR1139 (FireBeetle 2 ESP32-E N16R2)**. The older DFR0654 and generic ESP32 boards are not substitutes. Some soldering, a multimeter and adult assembly are required. The old parts list, power diagram, generated sketch and concept pictures have been replaced.
+**Before you start:** use **DFRobot DFR1139 (FireBeetle 2 ESP32-E N16R2)** and the exact parts below. Set aside a clear workbench and plan several sessions. Some soldering, a multimeter and adult assembly are required.
 
 The source and instructions are checked together. Physical audio level, battery runtime, NFC range through the lid and a complete novice assembly still require measurement on an assembled unit. See [verification status](VALIDATION.md). This is a maker project, not a certified children's product. Do not infer an acoustic safety rating from a volume number.
 
 [Open the illustrated guide and configuration form](https://richard-gluga.github.io/radio/) · [Download the complete unconfigured sketch](docs/downloads/KangarooRadio_ABCKids.zip)
+
+On the website, choose **Guided build** for one stage at a time or **Full reference** to see everything. Checkmarks and shopping choices are saved in your browser; clearing browser data removes them. The wiring bench highlights one connection at a time. The [printable pack](docs/printables.html) includes story artwork, control labels, cardboard layout pieces and a bench checklist. You can follow this README without those interactive tools.
 
 ## 1. Understand the build
 
@@ -14,7 +16,7 @@ You will build and check the radio in this order: identify parts → install sof
 
 The ESP32 connects to your router's 2.4 GHz Wi-Fi. Its I2S digital audio output feeds a MAX98357A amplifier. The amplifier drives one enclosed 8 Ω speaker. The OLED shows actual connection/playback state, and the RC522 reads the URL from a tag; the audio itself remains on the internet. A short press changes station or leaves a story. Hold-and-repeat is disabled.
 
-The selected board already has a USB-C connector, a single-cell lithium charger and USB/battery power switching. Its **VCC output** powers the amplifier at approximately the USB supply minus a diode drop, or at battery voltage. The amplifier accepts 2.5–5.5 V. **There is no external TP4056, boost converter or battery holder in this build.** Its maximum output varies with supply voltage; a 5 W speaker rating is its power-handling capacity, not a claim that this radio delivers 5 W.
+The selected board already has a USB-C connector, a single-cell lithium charger and USB/battery power switching. Its **VCC output** powers the amplifier at approximately the USB supply minus a diode drop, or at battery voltage. The amplifier accepts 2.5–5.5 V. Use the board's built-in power system. Its maximum output varies with supply voltage; a 5 W speaker rating is its power-handling capacity, not a claim that this radio delivers 5 W.
 
 The battery switch disconnects the battery's positive wire using a separate extension harness. **USB power bypasses this switch.** USB charging requires the battery switch ON. For silence while charging, turn the volume fully down. For complete power-off, unplug USB and turn the switch OFF. The operating table in section 10 repeats this deliberately.
 
@@ -24,10 +26,10 @@ Read the SKU, voltage and connector descriptions on the product page before orde
 
 | Qty | Part to buy | Important details | Purchase/reference |
 |---|---|---|---|
-| 1 | **DFRobot DFR1139**, FireBeetle 2 ESP32-E N16R2 | 16 MB flash, 2 MB PSRAM, USB-C. Headers may need soldering. Not DFR0654. | [Core Electronics](https://core-electronics.com.au/firebeetle-2-esp32-e-n16r2-iot-microcontroller-16m-flash-2m-psram-supports-wi-fi-bluetooth.html), [DFRobot](https://www.dfrobot.com/product-2837.html) |
+| 1 | **DFRobot DFR1139**, FireBeetle 2 ESP32-E N16R2 | 16 MB flash, 2 MB PSRAM, USB-C. Headers may need soldering. | [Core Electronics](https://core-electronics.com.au/firebeetle-2-esp32-e-n16r2-iot-microcontroller-16m-flash-2m-psram-supports-wi-fi-bluetooth.html), [DFRobot](https://www.dfrobot.com/product-2837.html) |
 | 1 | **Adafruit 3006**, MAX98357A I2S mono amplifier | Original breakout with VIN, GND, SD, GAIN, DIN, BCLK and LRC. Fit its headers; fit the speaker terminal if supplied loose. | [Adafruit](https://www.adafruit.com/product/3006), [Core Electronics](https://core-electronics.com.au/adafruit-i2s-3w-class-d-amplifier-breakout-max.html) |
 | 1 | **Core CE08483**, enclosed **8 Ω, 5 W** speaker | 100 × 45 × 21 mm; two pre-tinned leads; built-in passive radiator. Keep its enclosure intact. | [Core Electronics](https://core-electronics.com.au/makerverse-enclosed-speaker-8-ohm-5-watt.html) |
-| 1 | **DFRobot DFR0650**, 0.96-inch SSD1306 OLED | 128 × 64, factory I2C mode, address 0x3C; 30 × 30 mm board. Not an SH1106 display. | [Little Bird](https://littlebirdelectronics.com.au/products/monochrome-0-96-128x64-i2c-spi-oled-display), [DFRobot documentation](https://wiki.dfrobot.com/dfr0650/) |
+| 1 | **DFRobot DFR0650**, 0.96-inch SSD1306 OLED | 128 × 64, factory I2C mode, address 0x3C; 30 × 30 mm board. | [Little Bird](https://littlebirdelectronics.com.au/products/monochrome-0-96-128x64-i2c-spi-oled-display), [DFRobot documentation](https://wiki.dfrobot.com/dfr0650/) |
 | 1 | **SunFounder CN0090**, RC522 SPI reader module | 13.56 MHz, 3.3 V, eight-pin header. The included S50 card/key fob are **not** the story tags used here. | [DigiKey Australia](https://www.digikey.com.au/en/products/detail/sunfounder/CN0090/18668629) |
 | 2 or more | **NTAG213 or NTAG215**, blank writable NDEF tags | Standard non-metal tags. Prefer card-size tags for handling; embed stickers in large, securely closed tokens. Avoid MIFARE Classic, 125 kHz, locked or password-protected tags. | [Core CE08498 NTAG213 card](https://core-electronics.com.au/rfidnfc-tag-credit-card-sized-ntag213-chip-1356mhz.html) |
 | 1 | **Adafruit 1781**, protected 3.7 V 2200 mAh cylindrical Li-ion pack | Factory-fitted protection and JST-PH lead; 4.2 V charging. Manufacturer recommends ≤1 A charge and sustained discharge. About 69 × 18 mm, plus cable clearance. Buy the complete wired pack, not a loose 18650 cell. | [Little Bird](https://littlebirdelectronics.com.au/products/lithium-ion-cylindrical-battery-3-7v-2200mah), [Adafruit specifications](https://www.adafruit.com/product/1781) |
@@ -36,14 +38,14 @@ Read the SKU, voltage and connector descriptions on the product page before orde
 | 1 | **SparkFun COM-09939**, 10 kΩ linear potentiometer | Three terminals; 6 mm, 18-tooth shaft in the current drawing. M7 × 0.75 mounting bushing: obtain its matching nut/washer if not supplied. A ¼-inch shaft is not identical to 6 mm. | [SparkFun](https://www.sparkfun.com/rotary-potentiometer-10k-ohm-linear.html) |
 | 1 | **Adafruit 2047** white T18 potentiometer knob | 6 mm, 18-tooth push-fit; matches the specified pot shaft. Check retention before use. | [Adafruit](https://www.adafruit.com/product/2047) |
 | 1 | **Adafruit 1131**, JST-PH battery extension | 2.0 mm pitch, two pins, male-to-female, 500 mm, 26 AWG. Verify polarity as described in section 10; matching housings alone do not prove it. | [Adafruit](https://www.adafruit.com/product/1131), [Little Bird](https://littlebirdelectronics.com.au/products/jst-ph-battery-extension-cable-500mm) |
-| 1 pack each | 2.54 mm jumper leads: female-to-female and male-to-female | Short, preferably 10–15 cm. Used for signal wiring and the bench setup. | Buy the stated genders, not the old WC6024 suggestion. |
+| 1 pack each | 2.54 mm jumper leads: female-to-female and male-to-female | Short, preferably 10–15 cm. Used for signal wiring and the bench setup. | Buy both stated connector types. |
 | 1 each | Solderless breadboard **and** solderable protoboard | Breadboard for bench distribution; insulated, soldered connections for the final enclosure. A 400-tie-point breadboard is sufficient if modules sit beside it. | Standard 2.54 mm spacing. |
 | As needed | Male pin header, 22 AWG stranded insulated wire, heat-shrink, electronics solder, cable ties, nylon spacers/screws/washers | Red for positive, black for ground; several colours for signals. Obtain M2 hardware for the OLED. | Match mounting holes on the received parts. |
 | 1 | USB-A-to-USB-C **data** cable and regulated **5 V, 2 A** USB supply | Use the computer USB port for programming; use the wall supply for final operation/charging. No external voltage connection to VCC. | Reputable Australian-compliant USB supply. |
 | 1 | Non-metal enclosure with removable, screw-secured lid | At least **200 × 140 × 80 mm usable internal space**, with a thin non-metal region over the NFC antenna. Larger is easier. | Buy by internal dimensions, not a generic craft-box photo. |
 | As needed | Speaker grille/cloth, foam gasket, insulating base sheet and battery retaining strap | Grille must protect both the cone and passive radiator; strap must not crush the battery. | No loose magnets or detachable small token parts. |
 
-The board, speaker and battery alone were listed at about AUD $26.25, $5.80 and $20.00 respectively when checked on **13 October 2026**. They are only three items. Make a basket containing **every row**, then add delivery and any missing tools. There is no defensible $35–$45 complete-build price. Buy the enclosure after confirming that everything fits.
+Make a basket containing **every row**, then add delivery and any missing tools. Check current prices with the linked suppliers. Buy the enclosure after confirming that everything fits.
 
 ### Tools and skills
 
@@ -57,7 +59,7 @@ Open the [DFR1139 pinout and schematic](https://wiki.dfrobot.com/dfr1139/). Conf
 
 “GPIO” means the chip's numbered input/output connection. The board also has labels such as **D7** or **A3**. The table below gives both. These are not physical pin positions. VCC and 3V3 are different supplies. GND is the common electrical reference, not either speaker output.
 
-GPIO16/NC is reserved; do not connect it. GPIO34/A2 is already wired to the battery-measurement divider; do not attach the volume pot there. GPIO27 and GPIO5 are used onboard. This revision avoids all four.
+GPIO16/NC is reserved; do not connect it. GPIO34/A2 is already wired to the battery-measurement divider; do not attach the volume pot there. GPIO27 and GPIO5 are used onboard. Leave all four unused.
 
 On the amplifier, identify the **two speaker output terminals** separately from GND. Neither speaker lead connects to GND. On the RC522 the pin labelled **SDA** is the **SPI chip-select** pin in this build; it does not connect to the OLED's SDA.
 
@@ -85,7 +87,7 @@ A **sketch** is the folder of source files Arduino compiles and uploads to the b
 | MFRC522 | GithubCommunity / miguelbalboa | **1.4.12** |
 
 5. Connect **only the bare FireBeetle** to the computer using the USB data cable. Leave the battery and all peripherals disconnected for this first test. An LED may flash because there is no battery; that alone is not a fault.
-6. Select **Tools → Board → esp32 → ESP32 Dev Module**. This generic entry is intentional; the sketch uses raw GPIO numbers. Do not select an ESP32-S3/C3 board or install DFRobot's older core instead.
+6. Select **Tools → Board → esp32 → ESP32 Dev Module**. This generic entry is intentional; the sketch uses raw GPIO numbers. Use the board package and version listed above.
 7. Set the following Tools menu options. Other settings can remain at their defaults.
 
 | Setting | Value |
@@ -156,7 +158,7 @@ Unplug USB. Place the amplifier beside the breadboard. Fit the speaker's two lea
 | SD | Unconnected; the board's default enables audio |
 | Speaker + and − terminals | The two speaker leads only; **neither goes to GND** |
 
-For the two 22 AWG power leads, solder to the underside of the labelled VCC/GND pads on the FireBeetle and VIN/GND pads on the amplifier, where the header pins pass through. Leave no loose strands; inspect for bridges to adjacent pads. Keep the leads under 15 cm, support them so they cannot pull on a pad, and insulate the board undersides. Do not try to push stranded wire into a female jumper socket. The board GND header still connects to the signal-ground rail. Solder a short insulated GAIN-to-VIN link on the amplifier while it is unpowered; check that it touches only those two pads. The firmware mixes stereo audio to mono. Do not attach headphones or another amplifier to the speaker terminals. The amplifier already contains its necessary circuitry; a speculative capacitor is not a substitute for correct power wiring.
+For the two 22 AWG power leads, solder to the underside of the labelled VCC/GND pads on the FireBeetle and VIN/GND pads on the amplifier, where the header pins pass through. Leave no loose strands; inspect for bridges to adjacent pads. Keep the leads under 15 cm, support them so they cannot pull on a pad, and insulate the board undersides. Do not try to push stranded wire into a female jumper socket. The board GND header still connects to the signal-ground rail. Solder a short insulated GAIN-to-VIN link on the amplifier while it is unpowered; check that it touches only those two pads. The firmware mixes stereo audio to mono. Do not attach headphones or another amplifier to the speaker terminals.
 
 **Power check:** use the multimeter in **DC volts**, with black lead in COM and red in V/Ω, not the current socket. Before connecting amplifier VIN, power the board from USB and measure between VCC and GND: expect roughly 4.5–5.0 V. Measure 3V3 to GND: approximately 3.3 V. Avoid bridging adjacent pins with a probe. Unplug USB, complete the amplifier power connection and inspect again. Never connect a battery directly to the board's 3V3 pin.
 
@@ -174,7 +176,7 @@ For the two 22 AWG power leads, solder to the underside of the labelled VCC/GND 
 
 If the form is unavailable, open `RadioConfig.h` in the extracted sketch using its Arduino IDE tab. Replace `YOUR_WIFI_SSID` and `YOUR_WIFI_PASSWORD` between the double quotes; preserve the quotes and semicolons. Leave both backup strings `""` if unused. `START_STATION` is numbered 0–5 in the table order below, `MAX_VOLUME` is 0–21, and `HARDWARE_TEST` must be `false` for playback. Save, Verify and Upload. Inside these C++ strings, write a literal double quote as `\"` and a literal backslash as `\\`; do not replace characters with typographic “smart quotes”. The form performs this escaping automatically.
 
-The OLED reports Connecting, Waiting for decoder, Playing, or an error. It has no fake sound-level meter. Internet-radio failures retry with delays up to 30 seconds. A bad story URL stays in an error state until you tap another tag or press the station button. Display strings are limited to the screen width; full diagnostic messages appear in Serial Monitor.
+The OLED reports Connecting, Waiting for decoder, Playing, or an error. Internet-radio failures retry with delays up to 30 seconds. A bad story URL stays in an error state until you tap another tag or press the station button. Display strings are limited to the screen width; full diagnostic messages appear in Serial Monitor.
 
 | Station | Official page / availability |
 |---|---|
@@ -199,7 +201,7 @@ Test URL to write to the tag:
 https://richard-gluga.github.io/radio/assets/audio-check.wav
 ```
 
-**Publication matters:** this URL works only after this revised `docs/` site has been published. Open it on your phone first. If it returns 404, use a direct URL from the published version you are viewing, or a file you control. The website's “Copy demo URL” button uses its actual hosting address. A file path such as `assets/audio-check.wav` or a `localhost` URL is not a usable internet URL for the radio.
+**Check the URL:** open it on your phone first. If it is unavailable, use a working public direct audio URL you control. The website's “Copy demo URL” button uses its actual hosting address. A file path such as `assets/audio-check.wav` or a `localhost` URL is not a usable internet URL for the radio.
 
 1. Install **NFC Tools by wakdev** from the phone's app store, using the links on [the developer's site](https://www.wakdev.com/en/apps/nfc-tools.html). Check that your phone supports NFC writing.
 2. Use **Read** to identify the tag. It must be a writable NTAG213 or NTAG215. A reader kit's MIFARE Classic/S50 card is not interchangeable with these tags.
@@ -208,6 +210,8 @@ https://richard-gluga.github.io/radio/assets/audio-check.wav
 5. With radio Wi-Fi connected, place the tag near the RC522 antenna for about a second. Keep it still. Remove it after the radio responds. To play the same tag again, remove and present it again; leaving it resting on the reader does not restart it continuously.
 6. Hear the five-second check, then observe **End of audio** and return to the previous radio station after four seconds. Times come from the audio library and are approximate (`left~`); sources without a duration show **unknown**. End means the source stopped, not proof that every byte arrived. A connection that never starts or ends substantially before its reported duration remains in an error state for you to retry.
 7. During playback, press the station button to return to the previous radio station. A subsequent press advances to the next station. A bad or incomplete tag should display an error and leave existing playback alone.
+
+Once the short check works, give your first card a story: **Pip and the little light**, an original approximately 45-second story with computer narration. [Listen to the WAV](docs/assets/pip-and-the-little-light.wav), [read the transcript](docs/assets/pip-and-the-little-light.txt), and [print its card artwork](docs/printables.html#cards). Use **Copy story URL** on the website, open that URL on your phone, then write it as the card's single URL/URI record. The artwork alone does not create an NFC tag. Test the complete story on the radio; browser playback verifies only the browser path.
 
 For your own stories, host an MP3 file with permission to distribute it. A conservative starting format is mono or stereo MP3 at 44.1 kHz, 128 kbps constant bitrate. A direct HTTPS file link should return audio without a login, expiring access token, HTML download page or DRM. YouTube/Spotify/share-page URLs are not direct audio URLs. Browser playback does not prove ESP32 decoder/TLS compatibility: test the actual radio. HTTP is accepted but is unencrypted; prefer HTTPS. The firmware does not provide a content filter or guarantee authenticated TLS; do not use private or sensitive recordings/URLs with this tutorial's audio transport.
 
@@ -223,7 +227,7 @@ A value such as `MAX_VOLUME = 10` describes the audio library's volume scale. It
 
 ## 10. Add rechargeable battery power
 
-Finish the USB tests first. Use **only the protected single-cell Adafruit 1781 battery specified above** for this recipe. Do not substitute a 9 V alkaline, a two-cell/7.4 V pack, LiFePO4, a bare unprotected cell or the old SB2423 listing. Keep the battery disconnected and away from the soldering area while making the harness.
+Finish the USB tests first. Use **only the protected single-cell Adafruit 1781 battery specified above** for this recipe. Do not substitute a 9 V alkaline, a two-cell/7.4 V pack, LiFePO4 or a bare unprotected cell. Keep the battery disconnected and away from the soldering area while making the harness.
 
 ### Make and inspect the switch harness
 
@@ -235,7 +239,7 @@ Finish the USB tests first. Use **only the protected single-cell Adafruit 1781 b
 6. Set the meter to DC volts, black lead in COM and red in V/Ω. With USB unplugged and the harness **not connected to the board**, plug the battery into the harness, turn the switch ON, and carefully measure the two board-end contacts. The red probe on the contact that will meet board **+** must show a **positive voltage**, typically 3.5–4.2 V. Keep probes apart; do not bridge the contacts. If the reading is negative, zero, over 4.2 V, or you cannot identify polarity confidently, disconnect and correct/replace the extension before proceeding. Do not alter the battery connector while it is live.
 7. Turn the switch OFF. Insert the harness into the board's PH battery socket, matching polarity. Turn volume fully down and switch ON. The radio should boot from battery. If it resets or the battery is below the board's supported operating range, switch OFF and proceed to supervised charging. Never repeatedly run the battery into its protection cutoff.
 
-The DFR1139 has onboard charging and source switching; no second charger is connected in parallel. Its [published schematic](https://dfimg.dfrobot.com/wiki/20495/DFR1139_firebeetle-2-esp32-e-n16r8_schematics_v1.0.pdf) uses a TP4056X with a 2 kΩ programming resistor (approximately 0.6 A nominal charge current; actual current can be lower due to thermal regulation). That is below Adafruit's recommended **1 A maximum charging rate for pack 1781**. The 8 Ω speaker also reduces amplifier current compared with the old 4 Ω selection. Keep sustained battery-path current below 1 A; the software volume cap alone is not a current limiter. A different battery needs its own charge-current specification check. The pack's own protection is a last-resort backup, not a fuel gauge.
+The DFR1139 has onboard charging and source switching; no second charger is connected in parallel. Its [published schematic](https://dfimg.dfrobot.com/wiki/20495/DFR1139_firebeetle-2-esp32-e-n16r8_schematics_v1.0.pdf) uses a TP4056X with a 2 kΩ programming resistor (approximately 0.6 A nominal charge current; actual current can be lower due to thermal regulation). That is below Adafruit's recommended **1 A maximum charging rate for pack 1781**. Keep sustained battery-path current below 1 A; the software volume cap alone is not a current limiter. A different battery needs its own charge-current specification check. The pack's own protection is a last-resort backup, not a fuel gauge.
 
 ### Charge and operate
 
@@ -259,7 +263,7 @@ Stop use if the battery swells, is damaged, smells unusual or becomes hot. Do no
 Use a box with at least 200 × 140 × 80 mm **clear internal** space. Make a cardboard layout first: the speaker needs 100 × 45 × 21 mm, the battery is about 69 mm long and 18 mm in diameter, the OLED PCB is 30 × 30 mm, and the FireBeetle is about 60 × 25.4 mm. Allow additional space for connectors, bent wires, switch bodies and service access. Do not stack boards on the battery.
 
 1. Remove all electronics and the battery before drilling. Mark front positions for the speaker grille, OLED, knob and station button, and a side/rear position for the power switch and USB-C access. Place the RC522 behind the top/lid with its antenna facing the tapping surface. Keep metal fasteners, speaker magnets and the battery away from the reader antenna; test the actual layout for reliable reads.
-2. The CE08483 speaker is already enclosed. Keep its case intact and provide openings for **both** its 35 mm moving areas (speaker and passive radiator), with a grille spanning them. Its mounting pattern is 91.2 × 36.2 mm with 6 mm holes; use the received part to transfer centres, and check clearances before cutting. Do not block the radiator, glue onto a cone or assume a round 3-inch speaker template fits it. A foam gasket can reduce rattles. The outer wooden box does not guarantee more bass.
+2. The CE08483 speaker is already enclosed. Keep its case intact and provide openings for **both** its 35 mm moving areas (speaker and passive radiator), with a grille spanning them. Its mounting pattern is 91.2 × 36.2 mm with 6 mm holes; use the received part to transfer centres, and check clearances before cutting. Do not block the radiator, glue onto a cone. A foam gasket can reduce rattles. The outer wooden box does not guarantee more bass.
 3. Mark the OLED window from the actual display. The lit area is about 21.7 × 10.9 mm; keep all of it visible while leaving material to support the 30 mm PCB. Mount with M2 hardware/spacers without pressing on its glass. Add a clear protective window if needed. Do not cut a hole solely from the nominal “0.96-inch” diagonal.
 4. Transfer the threaded-shaft diameters of the actual pot/button/switch to the panel. The current COM-09939 drawing specifies an M7 bushing and a 6 mm shaft; the bushing, not the shaft, goes through the mounting hole. Its threaded section is short: use a thin inset mounting panel or recess a thick wooden wall so a washer and nut can engage fully. Fit the knob only after tightening the pot nut; align its mark to minimum with the pot fully anticlockwise. Drill a small pilot hole, enlarge gradually and dry-fit with washers and nuts. A generic 6/7/12 mm hole is not correct for every part. Keep enough thread exposed to secure each nut without overtightening.
 5. Provide an accessible opening for the USB-C plug **including its moulded body**, not just the metal socket. Secure the FireBeetle on spacers so plugging in a cable cannot bend the board. Do not rely on hot glue around a connector to take insertion forces.
@@ -268,7 +272,7 @@ Use a box with at least 200 × 140 × 80 mm **clear internal** space. Make a car
 8. Secure the battery using a broad nonconductive strap or supported pocket with no pressure on its protective wrapping or lead exit; prevent the cylindrical pack from rolling. Leave room for inspection; do not glue, screw through or tightly clamp it. Restrain the harness and signal wires separately. Ensure no screw can reach the battery even if the enclosure is squeezed.
 9. Re-run every bench checkpoint with the lid open, then with it closed. Check NFC reliability, Wi-Fi reception, sound, button/knob travel, charging access and absence of rattles. Reopen and inspect for pinched wires before tightening the lid screws. Only then make decorative tokens or labels.
 
-The connection overview is a logical diagram, not a photograph or a manufacturing drawing. There are no claimed photographs of a completed version of this revised build. Keep a record of your actual layout and measurements if you publish a build report.
+The connection overview is a logical diagram, not a photograph or a manufacturing drawing. The illustrations show connections and planning dimensions; physical assembly still needs verification. Keep a record of your actual layout and measurements if you publish a build report.
 
 ## 12. Troubleshooting by symptom
 
@@ -277,9 +281,9 @@ The connection overview is a logical diagram, not a photograph or a manufacturin
 | No USB port | Known data cable → another port → CH340 driver → Linux port permission. Disconnect external wiring while diagnosing. |
 | Upload cannot connect | Correct board/port → close other serial tools → reset → GPIO0-to-GND upload procedure in section 4. Remove the jumper afterward. |
 | Missing `Audio.h`, `MFRC522.h` or another header | Install the exact library and version from section 4. Keep every sketch header in the same folder. |
-| Compile errors after a library/core update | Restore pinned versions. Do not mix this code with the old HTML-generated sketch. |
+| Compile errors after a library/core update | Restore pinned versions. Download the complete sketch again if files are missing. |
 | “Sketch too big” | Select the specified 3 MB application partition, then Verify again. |
-| `PSRAM: MISSING` | DFR1139 hardware → ESP32 Dev Module → PSRAM Enabled → re-upload. DFR0654 cannot be fixed by a setting. |
+| `PSRAM: MISSING` | DFR1139 hardware → ESP32 Dev Module → PSRAM Enabled → re-upload. |
 | OLED blank | 3V3/GND → pin labels → GPIO21/22 → I2C mode and 0x3C. Run Hardware test; inspect solder joints. Never swap wires while powered. |
 | RC522 version 00/FF | 3.3 V, shared GND, SDA-to-GPIO4, RST-to-GPIO17, SPI wires and soldered header. Keep wires short. |
 | Knob does nothing/reversed | Middle lug to GPIO35/A3; outer lugs 3V3/GND. Swap outer wires with power off if reversed. Use Hardware test. |
@@ -287,8 +291,8 @@ The connection overview is a logical diagram, not a photograph or a manufacturin
 | Wi-Fi never connects | Exact SSID/password, 2.4 GHz, WPA2-compatible network, no captive portal; verify optional hotspot settings. Generate new configuration and upload. |
 | Wi-Fi connected, no audio | Knob above zero → amp VIN/GND → I2S wires → speaker terminals → another station. Read Serial logs for HTTP/TLS/decoder errors. |
 | ABC fails but another station plays | Confirm Australian public IP and no overseas VPN route. Check ABC's official player; stream addresses can change. |
-| Connecting/Buffering or repeated retries | Test the source URL; check internet/DNS and supply stability. Firmware uses timeouts and retries live radio. It does not fake Playing on a failed connection. |
-| Brownout/reboot at louder volume | Turn down; check power wiring, supply/cable and battery charge. Use USB wall power for comparison. Do not feed battery voltage into another board's 5 V VIN. |
+| Connecting/Buffering or repeated retries | Test the source URL; check internet/DNS and supply stability. Firmware uses timeouts and retries live radio. |
+| Brownout/reboot at louder volume | Turn down; check power wiring, supply/cable and battery charge. Use USB wall power for comparison. |
 | Tag says no URI/unsupported | Use NTAG213/215, write one URL/URI record, read it back with the phone; do not use the kit's S50 key fob. |
 | Tag works bare but not through the lid | Remove nearby metal/magnets, shorten reader wiring, try a thinner tapping area and test different tag orientation. |
 | Story URL fails | Confirm a public direct audio response, supported format, full unexpired URL and length. A webpage preview is not a device compatibility test. |
@@ -304,4 +308,4 @@ The firmware in [firmware/KangarooRadio_ABCKids](firmware/KangarooRadio_ABCKids)
 
 Primary technical references: [DFR1139 board and schematic](https://wiki.dfrobot.com/dfr1139/), [MAX98357A pinouts](https://learn.adafruit.com/adafruit-max98357-i2s-class-d-mono-amp/pinouts), [DFR0650 OLED](https://wiki.dfrobot.com/dfr0650/), [ESP32-audioI2S](https://github.com/schreibfaul1/ESP32-audioI2S), [MFRC522](https://github.com/miguelbalboa/rfid), [NXP NTAG213/215/216 datasheet](https://www.nxp.com/docs/en/data-sheet/NTAG213_215_216.pdf), and the exact supplier pages in the parts table.
 
-The project code, tutorial, original wiring SVG and generated audio-check signal are provided under [MIT](LICENSE). Third-party libraries retain their own licences. External station audio, book recordings, retailer photographs and trademarks are not licensed by this repository. The old unattributed story samples and misleading build images are not used in this revision. The incomplete FM alternative has been removed: an FM receiver needs its own complete hardware and firmware tutorial and cannot receive ABC Kids listen's internet-only stream by changing a frequency.
+The project code, tutorial, original illustrations, story text, computer narration and generated audio-check signal are provided under [MIT](LICENSE). The narration is rendered locally with eSpeak NG; no third-party recording is included. Third-party libraries retain their own licences. External station audio, retailer photographs and trademarks are not licensed by this repository.

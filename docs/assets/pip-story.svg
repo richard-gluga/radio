@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="440" viewBox="0 0 640 440" role="img" aria-labelledby="title desc">
+<title id="title">Pip and the little light</title><desc id="desc">An original illustration of a young kangaroo carrying a firefly on a leaf beside a creek at dusk.</desc>
+<defs><linearGradient id="sky" x2="0" y2="1"><stop stop-color="#193e48"/><stop offset="1" stop-color="#528b7b"/></linearGradient><radialGradient id="glow"><stop stop-color="#ffeb9a" stop-opacity=".7"/><stop offset="1" stop-color="#ffeb9a" stop-opacity="0"/></radialGradient></defs>
+<rect width="640" height="440" rx="24" fill="url(#sky)"/><circle cx="493" cy="85" r="30" fill="#ffe8b1"/>
+<path d="M0 272Q130 212 267 269T640 240V440H0Z" fill="#285954"/><path d="M0 320Q160 269 330 319T640 293V440H0Z" fill="#173f40"/>
+<path d="M640 309Q305 321 424 359T232 440H503Q602 401 495 363T640 332" fill="#8ab6a2"/>
+<path d="M541 330L568 67M562 134L526 107M556 210L596 174" stroke="#c79771" stroke-width="14" fill="none" stroke-linecap="round"/>
+<g fill="#457d65"><ellipse cx="548" cy="65" rx="49" ry="22" transform="rotate(-30 548 65)"/><ellipse cx="586" cy="86" rx="46" ry="19" transform="rotate(23 586 86)"/><ellipse cx="516" cy="112" rx="37" ry="15" transform="rotate(30 516 112)"/><ellipse cx="594" cy="167" rx="36" ry="16" transform="rotate(-35 594 167)"/></g>
+<path d="M264 321Q189 376 100 354Q153 333 213 274" fill="#cc895c"/>
+<ellipse cx="253" cy="271" rx="52" ry="76" transform="rotate(-12 253 271)" fill="#e4a876"/><ellipse cx="269" cy="281" rx="29" ry="45" fill="#f6cf9b"/>
+<path d="M215 319Q228 336 273 334Q291 341 277 350H205Q190 347 204 321" fill="#cc895c"/>
+<path d="M248 180Q209 139 215 78Q232 67 252 154M263 177Q253 93 276 72Q294 81 278 173" fill="#e4a876" stroke="#e4a876" stroke-width="10" stroke-linecap="round"/>
+<path d="M231 96L246 154M276 91L269 152" stroke="#bb765a" stroke-width="9" stroke-linecap="round"/>
+<path d="M228 183Q233 151 270 162Q287 173 313 182Q325 197 303 208L272 215Q234 223 228 183" fill="#e4a876"/><ellipse cx="311" cy="190" rx="8" ry="6" fill="#243b35"/><circle cx="273" cy="179" r="5" fill="#243b35"/><circle cx="274" cy="178" r="1.4" fill="white"/>
+<path d="M280 205Q290 210 298 204" stroke="#9b5d44" stroke-width="3" fill="none" stroke-linecap="round"/>
+<path d="M278 243Q299 267 336 248" stroke="#e4a876" stroke-width="17" fill="none" stroke-linecap="round"/>
+<path d="M322 250Q345 219 387 235Q369 264 322 250" fill="#a5be80"/><path d="M323 251L377 238" stroke="#4d8056" stroke-width="2"/>
+<circle cx="354" cy="225" r="36" fill="url(#glow)"/><ellipse cx="354" cy="225" rx="5" ry="6" fill="#fff0a3"/>
+<g fill="#ffeab0"><circle cx="529" cy="134" r="3"/><circle cx="578" cy="126" r="3"/><circle cx="606" cy="102" r="2"/><circle cx="596" cy="209" r="3"/><circle cx="518" cy="192" r="2"/><circle cx="553" cy="246" r="3"/><circle cx="86" cy="110" r="2"/><circle cx="365" cy="70" r="2"/></g>
+<g stroke="#669078" stroke-width="3" fill="none"><path d="M75 393L72 345M75 376L58 361M83 398L91 356M467 431L479 394M476 422L493 405"/></g>
+</svg>

@@ -1,0 +1,36 @@
+<!-- CONFIGURE -->
+<!-- Wiring is a pin-location drawing on the left and a labelled schematic on the right. -->
+<section id="wiring-lab" class="workshop-tool" aria-labelledby="wiring-title">
+  <p class="eyebrow">One connection at a time</p><h3 id="wiring-title">Your wiring bench</h3>
+  <p>Unplug USB and disconnect the battery before changing a wire. Use the printed pin labels on your parts.</p>
+  <div class="wire-toolbar"><label>Work on<select id="wire-group"><option value="rails">Power rails</option><option value="oled">OLED screen</option><option value="controls">Knob & button</option><option value="reader">NFC reader</option><option value="amp">Amplifier & speaker</option></select></label><label>Connection<select id="wire-select"></select></label></div>
+  <label class="diagram-zoom enhanced-only"><input id="wire-zoom" type="checkbox">Enlarge diagram (scroll sideways on a small screen)</label><div id="wire-picture" tabindex="0" role="region" aria-label="Wiring diagram; scroll to inspect when enlarged"></div>
+  <div class="wire-callout" aria-live="polite"><p id="wire-count" class="eyebrow"></p><h4 id="wire-endpoints"></h4><p id="wire-note"></p></div>
+  <div class="actions"><button id="wire-back" type="button" class="secondary">Previous wire</button><button id="wire-next" type="button">Next wire</button><a href="assets/wiring.svg" target="_blank" rel="noopener">Complete connection overview</a></div>
+  <p class="help">Left: DFR1139 viewed from the component side, USB-C at the top, following the <a href="https://wiki.dfrobot.com/dfr1139/">manufacturer pinout</a>. Right: labelled connection endpoints, not physical pin positions. Wire colours are suggestions; labels determine the connection. Repeated board power pins share a supply. The breadboard holes must be checked with a meter.</p>
+</section>
+<section id="diagnostics" class="workshop-tool" aria-labelledby="diagnostics-title">
+  <p class="eyebrow">Know what success looks like</p><h3 id="diagnostics-title">Compare your first boot</h3>
+  <p>These are example messages from the firmware, not a live connection to your board. The knob, button and reader-version numbers vary.</p>
+  <div class="diagnostic-grid"><div><span class="sample-label">Serial Monitor · 115200 baud</span><pre>KANGAROO RADIO / DFR1139 / core 3.3.12 / audio 4.0.0
+OLED: OK (0x3C)
+RC522: OK (version 0x92)
+PSRAM: OK (2097152 bytes)
+TEST: turn knob, press/release button, scan an NDEF URI tag.
+TEST: knob=0 volume=0/10 button=0</pre></div><div><span class="sample-label">Illustrated OLED · Hardware test</span><pre class="sample-oled">KANGAROO   VOL 00/10
+HARDWARE TEST
+Knob:   0 Button:0
+RC522 OK; tap a tag
+No Wi-Fi/audio here</pre></div></div>
+  <p class="help">On the bare board, OLED and RC522 NOT FOUND are expected. After wiring, both should report OK. Turn the knob and press the button to see the values change on your board.</p>
+</section>
+<section id="fix-it" class="workshop-tool" aria-labelledby="fix-title">
+  <p class="eyebrow">A small check, then the next</p><h3 id="fix-title">Let’s find the problem</h3>
+  <label>What do you see?<select id="symptom"><option value="">Choose a symptom…</option></select></label>
+  <div id="fix-card" hidden><p id="fix-count" class="eyebrow"></p><h4 id="fix-action" tabindex="-1"></h4><p id="fix-detail"></p><div class="actions"><button id="fix-back" type="button" class="secondary">Back a check</button><button id="fix-next" type="button">Still not working</button><button id="fix-done" type="button" class="secondary">That fixed it</button></div></div><p id="fix-status" role="status"></p>
+</section>
+<section id="finish-kit" class="workshop-tool" aria-labelledby="finish-title">
+  <p class="eyebrow">The finishing touches</p><h3 id="finish-title">Make a radio that feels like yours</h3>
+  <div class="finish-grid"><div><label>Radio label<input id="radio-name" maxlength="26" value="Kangaroo Radio" autocomplete="off"></label><label>Paper colour theme<select id="paper-theme"><option value="fern">Fern & honey</option><option value="sunset">Sunset & peach</option><option value="ocean">Ocean & sky</option></select></label><div id="label-preview" class="label-preview"><span aria-hidden="true">◌</span><strong id="label-name">Kangaroo Radio</strong><small>turn · press · tap</small></div><button id="print-labels" type="button">Print story cards & labels</button><p class="help">Labels are decorative paper. Attach story artwork to large cards containing NTAG213/215; printing does not create or write an NFC tag. Choose a nickname for your printed label.</p></div><div class="finish-links"><a href="printables.html#layout">Full-size cardboard layout pieces <span>Explore placement before choosing or cutting a box.</span></a><a href="printables.html#bench">Bench checkpoint sheet <span>Keep the next check beside your tools.</span></a><a href="printables.html#build-record">Physical build & novice walkthrough record <span>Record measurements and steps that need clarification.</span></a></div></div>
+  <p class="help">The layout sheet uses documented part sizes and includes a 50 mm scale check. It is a planning aid. A drilling template needs measurements from the received controls and a physically checked enclosure.</p>
+</section>

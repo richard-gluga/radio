@@ -54,6 +54,12 @@ with zipfile.ZipFile(DOCS / "downloads/KangarooRadio_ABCKids.zip") as z:
 
 with wave.open(str(DOCS / "assets/audio-check.wav")) as f:
     assert (f.getnchannels(), f.getsampwidth(), f.getframerate(), f.getnframes()) == (1, 2, 22050, 110250)
+with wave.open(str(DOCS / "assets/pip-and-the-little-light.wav")) as f:
+    assert (f.getnchannels(), f.getsampwidth(), f.getframerate()) == (1, 2, 22050)
+    assert 40 < f.getnframes() / f.getframerate() < 55
+assert (DOCS / "assets/pip-and-the-little-light.txt").read_bytes() == (ROOT / "site/story.txt").read_bytes()
+for obsolete in ["DFR0654", "WC6024", "ST0570", "SB2423", "CE04379", "old parts list", "old HTML-generated"]:
+    assert obsolete not in (ROOT / "README.md").read_text(), f"Obsolete tutorial advice: {obsolete}"
 
 readme = (ROOT / "README.md").read_text()
 for document in ROOT.glob("*.md"):

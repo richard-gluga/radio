@@ -1,6 +1,9 @@
 import {configuration, zipFiles, PlaybackSession} from './lib.js';
 const $ = id => document.getElementById(id);
-const status = (id, message, error = false) => { $(id).textContent = message; $(id).classList.toggle('error', error); };
+const status = (id, message, error = false) => {
+  $(id).textContent = message; $(id).classList.toggle('error', error);
+  if (id === 'player-status' && $('hero-audio-state')) $('hero-audio-state').textContent = message;
+};
 let stations = [];
 
 async function fetchOk(url) {
@@ -40,6 +43,7 @@ $('config-form').addEventListener('submit', async event => {
     status('config-status', `${error.message} Use the unconfigured ZIP below and edit RadioConfig.h if needed. Open the guide over HTTPS or a local web server.`, true);
   } finally { button.disabled = false; }
 });
+$('config-inputs').disabled = false;
 
 const session = new PlaybackSession();
 function stopPlayer() {
@@ -61,7 +65,7 @@ function playSource(url, title) {
   let hls = null, timeout = null;
   const events = new AbortController();
   const audio = document.createElement('audio');
-  audio.id = 'audio'; audio.controls = true; audio.preload = 'none'; audio.volume = 0.25;
+  audio.id = 'audio'; audio.controls = true; audio.preload = 'none'; audio.volume = Number($('preview-volume').value) / 100;
   const id = session.begin(() => {
     events.abort(); clearTimeout(timeout);
     hls?.destroy(); audio.pause(); audio.removeAttribute('src'); audio.load();
@@ -103,25 +107,40 @@ function playSource(url, title) {
 }
 
 $('play-demo').addEventListener('click', () => playSource('assets/audio-check.wav', 'Five-second audio check'));
+for (const id of ['play-story','hero-story']) $(id).addEventListener('click', () => playSource('assets/pip-and-the-little-light.wav', 'Pip and the little light'));
+$('hero-stop').addEventListener('click', stopPlayer);
+$('preview-volume').addEventListener('input', () => {
+  $('audio').volume = Number($('preview-volume').value) / 100;
+  document.querySelector('.knob-art').style.transform = `rotate(${Number($('preview-volume').value) * 2.7 - 135}deg)`;
+});
+let previewStation = -1;
+$('hero-station').addEventListener('click', () => {
+  if (!stations.length) { status('player-status', 'Stations are unavailable. Try the local story or reload the page.', true); return; }
+  previewStation = (previewStation + 1) % stations.length;
+  playSource(stations[previewStation].url, stations[previewStation].name);
+});
 $('custom-form').addEventListener('submit', event => {
   event.preventDefault();
   try { playSource($('custom-url').value.trim(), 'Your audio'); }
   catch { status('player-status', 'Enter a complete public HTTP or HTTPS URL.', true); }
 });
-$('copy-demo').addEventListener('click', async () => {
-  const url = new URL('assets/audio-check.wav', document.baseURI).href;
+$('custom-inputs').disabled = false;
+async function copyAudioUrl(path) {
+  const url = new URL(path, document.baseURI).href;
   $('demo-url-label').hidden = false; $('demo-url').value = url;
-  if (!['http:', 'https:'].includes(location.protocol) || ['localhost', '127.0.0.1'].includes(location.hostname)) {
+  if (!['http:', 'https:'].includes(location.protocol) || ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname)) {
     status('player-status', 'This preview address is local to your computer. Publish the site or use a public hosted file before writing a tag.', true); return;
   }
   try {
     await navigator.clipboard.writeText(url);
-    status('player-status', 'Demo URL copied. Open it on your phone to verify it, then write one URL/URI record.');
+    status('player-status', 'Audio URL copied. Open it on your phone to verify it, then write one URL/URI record.');
   } catch {
     $('demo-url').focus(); $('demo-url').select();
     status('player-status', 'Automatic copy is unavailable. Copy the selected URL below.');
   }
-});
+}
+$('copy-demo').addEventListener('click', () => copyAudioUrl('assets/audio-check.wav'));
+$('copy-story').addEventListener('click', () => copyAudioUrl('assets/pip-and-the-little-light.wav'));
 
 try {
   stations = await (await fetchOk('stations.json')).json();

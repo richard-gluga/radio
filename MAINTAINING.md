@@ -8,6 +8,10 @@ The README is the complete tutorial. `site/template.html` is the website shell, 
 - `scripts/versions.json`: pinned core, libraries and the exact FQBN used to compile.
 - `README.md`: build instructions, matching pin tables and primary references.
 - `docs/app.js`, `docs/lib.js`, `docs/styles.css`: browser tools and appearance.
+- `site/experience.json`, `site/tools.html`, `scripts/experience.py`: guided stage summaries, checkpoints and tools inserted beside the canonical instructions. Software step numbering uses Markdown's `sane_lists` extension.
+- `docs/workshop.js`, `docs/workshop.css`, `docs/wiring.js`: saved build/shopping state, symptom guidance, interactive wiring and workshop layout. Keep the troubleshooting sequences aligned with the README table and the pin map aligned with `Hardware.h`.
+- `site/printables.html`, `docs/printables.css`, `docs/printables.js`: card artwork, labels, full-size cardboard pieces, bench sheet and blank physical-build record. These are planning aids; drilling centres require a physically checked enclosure and received parts.
+- `site/story.txt`, `docs/assets/pip-story.svg`: original story and vector artwork. `scripts/make_story.py` renders the committed narration WAV using the local eSpeak NG shared library and voice data. It is separate from the normal site build; run it if the transcript changes.
 - `docs/assets/wiring.svg`: original connection overview. It is not a physical wiring photograph.
 - `docs/vendor/hls-1.6.13.min.js` and `hls-LICENSE.txt`: pinned third-party browser HLS playback.
 - `scripts/build_site.py`: generates HTML, identical firmware copies, SHA-256 manifest, deterministic ZIP, station JSON and the original five-second audio-check WAV.
@@ -25,7 +29,7 @@ python3 -m venv .venv
 .venv/bin/python scripts/build_site.py
 .venv/bin/python scripts/build_site.py --check
 python3 tests/check_repository.py
-node --test tests/test_web.mjs
+node --test tests/test_web.mjs tests/test_workshop.mjs
 g++ -std=c++17 -Wall -Wextra -Werror tests/test_radio.cpp -o build/test-radio
 ./build/test-radio
 ```
@@ -55,13 +59,17 @@ python3 -m http.server 8769 --bind 127.0.0.1
 
 Open `http://127.0.0.1:8769/`. The redirect preserves query and fragment. The content also works when `docs/` alone is the hosting root, as on GitHub Pages. `tests/browser.cjs` uses Playwright Chromium for responsive layout, configured ZIP downloads, real WAV playback and cancellation checks. Install Playwright in a separate local environment and set `PLAYWRIGHT_MODULE` to its module path if it is not available through ordinary Node resolution. Set `CHROME_PATH` if using an existing Chrome binary. Run `node tests/browser.cjs` while the server is active.
 
+Also run `node tests/workshop.cjs`. It exercises saved progress, all connection groups and symptoms, shopping export, the single configuration form's movement between upload stages, credential non-storage, mobile layouts, actual story playback, print visibility/scale, and unavailable-storage/no-JavaScript fallbacks. It writes review PDFs under ignored `build/`; inspect these visually for page breaks and correct dimensions. Print at actual size and measure the 50 mm square before using any outline. Browser PDF dimensions cannot verify a physical printer's scaling.
+
+The guided path saves only its current stage, view preference, build/tool checkmarks and shopping choices under `kangaroo-build-v1`. It does not save credentials. The configuration inputs remain disabled until the local form handler is attached, preventing native form submission if JavaScript is unavailable. Changes to checkpoint meaning or part IDs may require a state-version bump; never reinterpret an old completed checkbox as proof of a new physical check. The configuration form remains a single DOM node, preserving edits when moved to the normal-radio stage. A first visit to each upload stage selects its relevant operating mode; the user can change it explicitly.
+
 Unit tests use controlled media events for race conditions. Real WAV playback confirms the local media file/browser path. Neither proves live-stream decoding on an ESP32. Check the six real endpoints separately, and test actual hardware in Australia for ABC.
 
 ## Publishing
 
 For GitHub Pages, publish the `docs/` folder on the intended branch using the repository's existing Pages configuration. Generate and check the site before committing/publishing. All files under `docs/`, including `downloads/`, `vendor/` and `assets/`, must be included.
 
-After publication, open the real site, download a configured ZIP, verify its contents, and open `assets/audio-check.wav` from the phone that will write the tag. The old live site does not contain the new file until the revised site is published. The browser Copy demo URL action derives the public URL from its current hosting location.
+After publication, open the real site, download a configured ZIP, verify its contents, and open both `assets/audio-check.wav` and `assets/pip-and-the-little-light.wav` from the phone that will write the tag. The audio-copy actions derive the public URL from the current hosting location. Test a saved build and each printable sheet on the published site.
 
 ## External links and dependency updates
 
@@ -74,3 +82,5 @@ For station URL changes, edit `Stations.h`, regenerate, test browser playback an
 ## Licences
 
 Original project files are MIT. The original test tone is generated from a mathematical waveform by `build_site.py`, and contains no third-party recordings. HLS.js is Apache-2.0; its licence is included next to the vendored script. The Arduino libraries keep their upstream licences and are installed by the reader. Station streams and linked product documentation remain their owners' material.
+
+Pip's story, artwork and computer-narrated WAV are original project assets under MIT. The narration uses eSpeak NG's standard English voice (`en`, 145 words/minute, amplitude 65); the speech engine is not bundled. Preserve the computer-narration label. Do not present concept illustrations, sample Serial messages or browser playback as photographs, captured hardware output or a successful physical build.

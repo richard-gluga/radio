@@ -1,0 +1,181 @@
+{
+  "stages": [
+    {
+      "title": "Meet your radio",
+      "phase": "Orient yourself",
+      "need": "The parts list and a clear workbench.",
+      "action": "Understand the three controls and the order of the build.",
+      "expect": "You can explain how a tag selects audio and how the battery switch works.",
+      "checks": [
+        "I have a computer, internet and a phone that can write NFC tags.",
+        "I understand that soldering and adult assembly are required."
+      ]
+    },
+    {
+      "title": "Gather your parts",
+      "phase": "Prepare",
+      "need": "The shopping list, supplier pages and tools.",
+      "action": "Match the product codes and check the accessories before ordering.",
+      "expect": "Every required part and tool is accounted for.",
+      "checks": [
+        "I have checked the exact board, display, reader and battery product codes.",
+        "I have allowed for wires, headers, tools, mounting hardware and delivery."
+      ]
+    },
+    {
+      "title": "Get to know the pins",
+      "phase": "Prepare",
+      "need": "Unpowered boards, soldering tools, light and magnifier.",
+      "action": "Identify the labelled pins and solder the loose headers.",
+      "expect": "Headers are secure, with no solder bridging neighbouring pads.",
+      "checks": [
+        "USB and battery are disconnected.",
+        "I can distinguish VCC, 3V3, GND and the speaker outputs.",
+        "I have inspected the solder joints."
+      ]
+    },
+    {
+      "title": "Give the board its first program",
+      "phase": "First boot",
+      "need": "Bare DFR1139, computer and USB data cable.",
+      "action": "Install the pinned software, download Hardware test, then Verify and Upload.",
+      "expect": "Serial Monitor at 115200 reports PSRAM: OK (2097152 bytes).",
+      "checks": [
+        "The exact core, library versions and Tools settings are selected.",
+        "The complete extracted sketch verifies and uploads.",
+        "The bare board reports PSRAM: OK (2097152 bytes)."
+      ]
+    },
+    {
+      "title": "Bring the controls to life",
+      "phase": "Wire & check",
+      "need": "OLED, pot, button, RC522, short jumpers and breadboard.",
+      "action": "Connect and test the screen first, then controls, then the reader.",
+      "expect": "The screen works, the knob reaches mute/cap, and each button press counts once.",
+      "checks": [
+        "The OLED works in Hardware test.",
+        "The knob reaches zero and the cap; one press gives one button count.",
+        "The RC522 reports a version other than 00 or FF."
+      ]
+    },
+    {
+      "title": "Connect the sound",
+      "phase": "Wire & check",
+      "need": "Amplifier, speaker, 22 AWG leads and multimeter.",
+      "action": "Measure the two supply rails, unplug power, then connect the amplifier.",
+      "expect": "3V3 is about 3.3 V; VCC is about 4.5–5.0 V on USB. Speaker leads are isolated from GND.",
+      "checks": [
+        "I measured the power rails with the meter in DC-voltage mode.",
+        "The amplifier uses VCC and its GAIN pin is linked to VIN.",
+        "Only the speaker leads connect to the amplifier speaker terminals."
+      ]
+    },
+    {
+      "title": "Your first station",
+      "phase": "Listen",
+      "need": "Home 2.4 GHz Wi-Fi details and the assembled USB bench circuit.",
+      "action": "Generate Normal radio firmware, upload, and raise the knob gently.",
+      "expect": "You hear a station, can mute it, and can change stations with one press.",
+      "checks": [
+        "The radio joins Wi-Fi and plays the chosen stations.",
+        "Mute and station changes work.",
+        "Playback recovers after an internet interruption."
+      ]
+    },
+    {
+      "title": "Give a story a home",
+      "phase": "Listen",
+      "need": "Writable NTAG213/215, NFC-writing phone and a public audio URL.",
+      "action": "Write one URL record, read it back, then present the card to the reader.",
+      "expect": "Audio starts; the station button returns to radio.",
+      "checks": [
+        "The phone reads back the complete URL as a URL/URI record.",
+        "The short test file plays on the actual radio.",
+        "I tried the story card, removing and presenting it again to replay."
+      ]
+    },
+    {
+      "title": "Find a comfortable level",
+      "phase": "Finish",
+      "need": "Finished USB circuit and your intended listening position.",
+      "action": "Start at minimum, test representative audio, and reduce the cap if needed.",
+      "expect": "Listening is quiet and clear; a software step is never treated as a sound-level measurement.",
+      "checks": [
+        "I checked listening level away from ears.",
+        "I know to repeat this check with a full battery and the finished enclosure."
+      ]
+    },
+    {
+      "title": "Make it portable",
+      "phase": "Finish",
+      "need": "Protected pack, separate extension, switch, soldering tools and meter.",
+      "action": "Build and measure the disconnected extension harness, then test all four power states.",
+      "expect": "Battery playback and charging behave as shown in the table.",
+      "checks": [
+        "I checked extension continuity and battery connector polarity.",
+        "All four USB/switch states behave as documented.",
+        "Current, temperature and supply stability have been checked under load."
+      ]
+    },
+    {
+      "title": "Make it yours",
+      "phase": "Finish",
+      "need": "Bench-tested radio, actual enclosure, ruler and cardboard.",
+      "action": "Make a full-size layout, verify clearances, then mount and repeat the checks.",
+      "expect": "Controls, audio, NFC and charging work with the lid closed.",
+      "checks": [
+        "The actual parts fit with space for connectors, wires and access.",
+        "The closed lid passes NFC, reception and playback checks.",
+        "Battery, wiring and all small parts are secure."
+      ]
+    },
+    {
+      "title": "Find a fix",
+      "phase": "Reference",
+      "need": "The symptom you see and Serial Monitor if available.",
+      "action": "Choose a symptom and work through one check at a time.",
+      "expect": "You have a working checkpoint or useful observations to ask for help.",
+      "checks": [
+        "I have recorded unresolved symptoms and useful diagnostic messages."
+      ]
+    },
+    {
+      "title": "Keep it working",
+      "phase": "Reference",
+      "need": "Your private configured sketch and build notes.",
+      "action": "Keep configuration private and use the maintenance notes for updates.",
+      "expect": "You can reproduce the build and know what still needs physical verification.",
+      "checks": [
+        "My configured sketch is stored privately.",
+        "I have kept the part details, settings and measurements for this radio."
+      ]
+    }
+  ],
+  "tools": [
+    "Soldering iron, stand, electronics solder and flux",
+    "Side cutters, wire strippers and small screwdrivers",
+    "Multimeter with DC volts, resistance and continuity",
+    "Ruler, drill and file or small saw",
+    "Eye protection and a ventilated work area",
+    "Computer with Arduino IDE support and USB data cable",
+    "Internet access and 2.4 GHz Wi-Fi details",
+    "Phone capable of writing NFC tags",
+    "Cardboard, paper, pencil and masking tape for a trial layout"
+  ],
+  "glossary": {
+    "GPIO": "A numbered input or output on the ESP32. Match the GPIO number and board label, not the hole position.",
+    "3V3": "The regulated 3.3-volt supply for the screen, reader and potentiometer.",
+    "VCC": "This board’s USB/battery supply output. It powers the amplifier and is different from 3V3.",
+    "GND": "The circuit’s shared electrical reference. Neither speaker output belongs on this rail.",
+    "I2C": "A two-signal link (SDA and SCL) used by the OLED screen.",
+    "I2S": "The digital audio link from the ESP32 to the amplifier. It uses BCLK, LRC and DIN.",
+    "SPI": "The signal interface used by the RC522. Its SDA-labelled pin acts as chip select here.",
+    "PSRAM": "Extra working memory used by the audio library. The selected board has 2 MB.",
+    "Sketch": "The Arduino project folder: one .ino file plus all of its .h files.",
+    "Compile / Verify": "Translate the sketch into a program and check it for build errors.",
+    "Upload": "Copy the compiled program from your computer to the ESP32 over USB.",
+    "Serial Monitor": "Arduino IDE’s text window for messages from the board. Set its baud rate to 115200.",
+    "Continuity": "A meter test for a connected electrical path. Use it only with the circuit unpowered.",
+    "NDEF URI": "The URL record stored on a story card. The audio stays online, not on the card."
+  }
+}

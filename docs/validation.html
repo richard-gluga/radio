@@ -58,91 +58,11 @@
 </tbody>
 </table>
 <p>The configured radio uses 59,608 bytes of statically allocated internal RAM. That figure excludes runtime allocations, task stacks, TLS and PSRAM buffers; it is not proof of sufficient memory under every live-stream condition. The browser test also rejects a download whose source hash changes halfway through generation. Reproduction commands are in <a href="maintaining.html">MAINTAINING.md</a>.</p>
-<p>During the pre-publication external-link check, the new public <code>assets/audio-check.wav</code> URL returned 404 because the revised site was not yet deployed. Its file existed and played locally. The guide requires checking the published URL before writing a tag. DigiKey and Jaycar rejected direct automated requests with HTTP 403; their product pages were separately reviewed through the web lookup tool. They were not misclassified as missing products. Other actual tutorial/reference links responded successfully; example domains are placeholders, not offered audio files.</p>
-<h2>Corrections covered by this revision</h2>
-<table>
-<thead>
-<tr>
-<th>Earlier issue</th>
-<th>Correction and evidence</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Board/audio-library mismatch</td>
-<td>DFR1139 with 2 MB PSRAM, exact core/library versions and explicit flash/partition/PSRAM settings; configured compilation exercises the playback code</td>
-</tr>
-<tr>
-<td>Conflicting or unsuitable GPIO assignments</td>
-<td>One pin map in <code>Hardware.h</code>, matching tutorial/diagram; ADC1 GPIO35 for the knob, excluding the onboard battery divider and PSRAM connection</td>
-</tr>
-<tr>
-<td>Ambiguous amplifier power and speaker wiring</td>
-<td>VCC-to-VIN, separate 3V3 bus, 8 Ω enclosed speaker, explicit gain connection and isolated speaker outputs</td>
-</tr>
-<tr>
-<td>Charger, battery and switch assumptions</td>
-<td>Board's own source switching/charger; Adafruit 1781 has a documented charging-current recommendation; exact extension and polarity procedure; ST0579 has an explicit DC contact rating</td>
-</tr>
-<tr>
-<td>Retailer field contradicts switch datasheet</td>
-<td>ST0570 was excluded: its web fields say DC, but its linked drawing gives AC ratings. ST0579 is the selected part</td>
-</tr>
-<tr>
-<td>Incomplete shopping and assembly steps</td>
-<td>Headers, soldering, tools, connectors, insulated distribution, knob, mounting hardware, USB supply and enclosure clearance are included</td>
-</tr>
-<tr>
-<td>Display/reader/tag ambiguity</td>
-<td>Exact SSD1306/I2C display and SPI reader, supported NTAG213/215 URI workflow, explicit exclusion of supplied S50 tags</td>
-</tr>
-<tr>
-<td>Truncated URLs and incorrect NDEF handling</td>
-<td>Bounded byte parser, full advertised memory read, URI prefix expansion, malformed/partial/oversize rejection and host regression cases</td>
-</tr>
-<tr>
-<td>Fake playback state, progress or successful story completion</td>
-<td>Decoder-derived states, approximate/unknown timing, EOF classification and explicit errors; no unconditional Done label</td>
-</tr>
-<tr>
-<td>Controls freezing during connection attempts</td>
-<td>Audio/network connection work belongs to the audio task; UI queues the latest selection; remaining DNS/TLS latency is documented</td>
-</tr>
-<tr>
-<td>Volume starts above its configured cap</td>
-<td>Initial and ongoing audio volume both use the clamped knob value; no independent startup volume</td>
-</tr>
-<tr>
-<td>Missing recovery and confusing station button</td>
-<td>Bounded Wi-Fi home/backup attempts, station retry delays, one action per press and story-to-radio behavior</td>
-</tr>
-<tr>
-<td>Browser code differs from supplied firmware</td>
-<td>Browser packages canonical source files and changes only <code>RadioConfig.h</code>; checksums reject a mixed deployment</td>
-</tr>
-<tr>
-<td>Broken credential escaping or silently changed spaces</td>
-<td>Byte-preserving C++ string escaping, input validation, and independent extraction/compile tests</td>
-</tr>
-<tr>
-<td>Browser playback races and misleading previews</td>
-<td>Old media listeners/promises invalidated on switch/close; real media controls, real test WAV and explicit error states</td>
-</tr>
-<tr>
-<td>Wrong audio and illustrative images presented as evidence</td>
-<td>Unattributed book samples and misleading images removed; original test signal, original logical SVG and labelled concept illustration</td>
-</tr>
-<tr>
-<td>Unsupported cost, hearing-safety, runtime or NFC-range claims</td>
-<td>Removed guarantees; complete shopping checklist and explicit measurement/acceptance steps</td>
-</tr>
-<tr>
-<td>Incomplete FM alternative and duplicated documentation</td>
-<td>FM fragment removed; canonical README generates the website guide; station list generates browser data</td>
-</tr>
-</tbody>
-</table>
-<p>The remaining physical checks below are real gaps in validation, not completed work disguised as documentation.</p>
+<p>External product links were reviewed on 13 October 2026. DigiKey and Jaycar rejected direct automated requests with HTTP 403; their product pages were separately reviewed through web lookup. Check current stock and specifications before buying.</p>
+<h2>Interactive guide checks</h2>
+<p>The website adds a guided view alongside the full reference. <code>tests/workshop.cjs</code> passes in Chrome: all 13 stages at five viewport widths (360–1920 px), restored checkmarks and shopping choices, 25 wiring connections, 23 symptom flows, exported shopping text, both firmware-form locations, no credential persistence, real 45.5-second story decoding, and no-JavaScript/disabled-storage fallbacks. Existing configured-download, checksum and playback-cancellation tests also pass. The firmware sources are unchanged by this website update; the compile evidence above applies to those same sources.</p>
+<p>The board illustration's pin positions follow the manufacturer's component-side DFR1139 pinout, with USB-C at the top. Peripheral endpoints are explicitly schematic. The displayed Serial/OLED examples are derived from the firmware and labelled as examples. Neither illustration proves the physical wiring has been built.</p>
+<p>Printable layout dimensions and the 50 mm scale square are checked in the browser's print layout; review PDFs are generated for visual inspection. The full-size outlines are for cardboard placement. <strong>No exact enclosure or drilling template has been physically validated.</strong> Printer settings must still be checked with a ruler. The printable build record includes a photo shot list, measurement fields and a novice observation sheet to collect the remaining evidence.</p>
 <h2>Physical acceptance checklist — not performed here</h2>
 <p>Do not mark these complete without an assembled radio and actual observations. Record board revisions, supply, battery, firmware/configuration, date and any changed part.</p>
 <ul>
@@ -155,7 +75,7 @@
 <li>Play the five-second PCM WAV and a known-length constant-bitrate MP3. Observe time/unknown-duration behavior, successful completion, mid-file disconnection and the four-second return. Verify that a never-started file and a known early EOF remain errors; an ordinary EOF says End, without certifying complete delivery.</li>
 <li>Test reader range through the actual lid with the speaker/battery in their final positions. Test USB access, switches, loose-wire resistance, strain relief, sharp edges and battery retention.</li>
 <li>Measure listening sound level at a stated distance using a suitable meter and representative loud sources, on USB and a full battery. Record conditions and results; software steps are not dBA.</li>
-<li>Measure runtime and charge behavior; record capacity, volume, station and cutoff criterion. Do not restore a 12–18-hour promise without those measurements.</li>
+<li>Measure runtime and charge behavior; record capacity, volume, station and cutoff criterion.</li>
 <li>Ask a novice who did not write the guide to complete the build using only these instructions. Record every ambiguity and fix it before calling the guide novice-validated.</li>
 </ul>
-<p>No actual build photographs, sound-pressure measurements, battery endurance results or electrical certification are supplied by this repository revision. The original misleading images and audio examples have been removed rather than presented as evidence.</p></main></body></html>
+<p>No actual build photographs, sound-pressure measurements, battery endurance results or electrical certification are supplied by this repository revision.</p></main></body></html>
