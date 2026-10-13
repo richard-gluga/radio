@@ -52,8 +52,13 @@ const base=process.env.RADIO_BASE_URL||'http://127.0.0.1:8769/docs/';
   }
   await page.emulateMedia({reducedMotion:'no-preference'});await page.locator('#model-spin').click();
   assert.equal(await page.locator('#model-spin').getAttribute('aria-pressed'),'true');
-  await page.emulateMedia({reducedMotion:'reduce'});assert.equal(await page.locator('#model-spin').getAttribute('aria-pressed'),'false');
-  await page.emulateMedia({reducedMotion:'no-preference'});await page.locator('#path-play').click();await page.waitForSelector('.path-running');
+  await page.emulateMedia({reducedMotion:'reduce'});
+  // Media-query change events arrive asynchronously, including after emulateMedia resolves.
+  await page.waitForFunction(()=>document.querySelector('#model-spin').getAttribute('aria-pressed')==='false');
+  assert.equal(await page.locator('#model-spin').isVisible(),false);
+  await page.emulateMedia({reducedMotion:'no-preference'});
+  await page.waitForFunction(()=>document.querySelector('#path-play').textContent.startsWith('Follow'));
+  await page.locator('#path-play').click();await page.waitForSelector('.path-running');
   await page.waitForFunction(()=>document.querySelector('[data-path-step="1"]').getAttribute('aria-pressed')==='true');
   await page.locator('#path-play').click();
   const paused=await page.locator('.signal-path [aria-pressed="true"]').getAttribute('data-path-step');await page.waitForTimeout(3700);
