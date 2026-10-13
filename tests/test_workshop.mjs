@@ -1,7 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
-import {wires, wiringSvg} from '../docs/wiring.js';
+import {wires, wiringSvg, boardHeaders} from '../docs/wiring.js';
+
+test('physical power and unconnected pads match the DFR1139 v1.0 schematic P1/P3',()=>{
+ assert.deepEqual(boardHeaders.left.slice(0,5),['RST','3V3','NC','GND','EN']);
+ assert.deepEqual(boardHeaders.right.slice(0,3),['VCC','3V3','GND']);
+ assert.equal(boardHeaders.right[12],'NC');
+ assert.equal(boardHeaders.left.length,18);assert.equal(boardHeaders.right.length,14);
+});
 
 test('interactive signal endpoints match the firmware pin constants',async()=>{
  const source=await readFile(new URL('../firmware/KangarooRadio_ABCKids/Hardware.h',import.meta.url),'utf8');

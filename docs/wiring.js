@@ -28,8 +28,11 @@ export const wires = [
   ['amp','speaker','Speaker + / −','The speaker’s two leads go to the two amplifier output terminals only. Neither terminal connects to GND. Keep the speaker enclosure intact.','local'],
 ];
 export const pinLabels = {'3V3':'3V3','GND':'GND','VCC':'VCC','22':'GPIO22 / SCL','21':'GPIO21 / SDA','35':'GPIO35 / A3','14':'GPIO14 / D6','4':'GPIO4 / D12','18':'GPIO18 / SCK','23':'GPIO23 / MOSI','19':'GPIO19 / MISO','17':'GPIO17 / D10','26':'GPIO26 / D3','25':'GPIO25 / D2','13':'GPIO13 / D7'};
-const left = ['RST','3V3','3V3','GND','EN','18','23','19','22','21','2','13','14','0','26','25','1','3'];
+// P1 pin 3 is an unconnected pad, not a second 3V3 output. Confirmed on
+// DFR1139 schematic v1.0, P1/P3, as well as the component-side pinout.
+const left = ['RST','3V3','NC','GND','EN','18','23','19','22','21','2','13','14','0','26','25','1','3'];
 const right = ['VCC','3V3','GND','22','21','15','35','34','39','36','12','4','NC','17'];
+export const boardHeaders = {left, right};
 const colours = {power:'#b84532',ground:'#273c44',signal:'#216c8e',local:'#8b5730'};
 export function wiringSvg(index) {
   const [group,pin,target,,kind] = wires[index];
