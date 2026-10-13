@@ -37,6 +37,7 @@ def products():
         return table.replace("<table>", '<table class="parts-table">', 1)
     content = re.sub(r"<table>.*?</table>", shopping_table, content, count=1, flags=re.S)
     template = (ROOT / "site/template.html").read_text()
+    template = template.replace("<!-- VISUALS -->", (ROOT / "site/visuals.html").read_text())
     configure = re.search(r'    <section id="configure".*?</section>', template, re.S)[0]
     template = template.replace(configure, '')
     content, contents = enrich(content, configure)

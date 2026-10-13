@@ -1,0 +1,42 @@
+<section id="explore" class="explorer" aria-labelledby="explore-title">
+  <div class="explore-heading"><div><p class="eyebrow">A little box. A lot of possibility.</p><h2 id="explore-title">See what makes it sing.</h2></div><p>Open it up. Turn it around.<br>Get to know the parts before you pick up a wire.</p></div>
+  <div class="explore-grid">
+    <div class="model-stage">
+      <div id="radio-model" class="model-viewport" aria-label="Radio component explorer">
+        <img id="model-fallback" src="assets/radio-exploded.svg" width="960" height="720" loading="lazy" alt="Exploded concept: wooden enclosure, enclosed speaker, ESP32 board, NFC reader, amplifier, battery and front controls. Numbers match the component buttons.">
+        <span class="model-badge" aria-hidden="true">KANGAROO / EXPLORER 01</span>
+      </div>
+      <div class="model-controls" hidden>
+        <div class="model-view-buttons" role="group" aria-label="Radio view"><button id="model-closed" type="button" aria-pressed="true">Together</button><button id="model-open" type="button" aria-pressed="false">Open it up <span aria-hidden="true">↗</span></button></div>
+        <label class="explode-label" for="model-spread">Separate the parts<input id="model-spread" type="range" min="0" max="100" value="0"></label>
+        <div class="model-camera" role="group" aria-label="Camera controls"><button id="model-left" type="button" aria-label="Turn radio left">↶</button><button id="model-right" type="button" aria-label="Turn radio right">↷</button><button id="model-reset" type="button">Reset view</button><button id="model-spin" type="button" aria-pressed="false">Auto rotate</button></div>
+      </div>
+      <p id="model-status" class="model-hint" role="status">Illustrated component map. Enable JavaScript for the interactive 3D view.</p>
+    </div>
+    <div class="component-panel">
+      <p class="component-kicker">Seven pieces of the picture</p>
+      <div class="component-buttons" role="group" aria-label="Explore a component">
+        <button type="button" data-component="case" aria-pressed="true" disabled><span>01</span> The enclosure</button>
+        <button type="button" data-component="speaker" aria-pressed="false" disabled><span>02</span> The voice</button>
+        <button type="button" data-component="brain" aria-pressed="false" disabled><span>03</span> The brain</button>
+        <button type="button" data-component="reader" aria-pressed="false" disabled><span>04</span> The story reader</button>
+        <button type="button" data-component="amp" aria-pressed="false" disabled><span>05</span> The amplifier</button>
+        <button type="button" data-component="battery" aria-pressed="false" disabled><span>06</span> The battery</button>
+        <button type="button" data-component="controls" aria-pressed="false" disabled><span>07</span> The hands-on bits</button>
+      </div>
+      <div class="component-detail" aria-live="polite" aria-atomic="true"><p id="component-type">The finishing touch</p><h3 id="component-title">A home for your radio.</h3><p id="component-copy">A non-metal enclosure keeps the finished build together. Plan around your received parts and test the card reader through the lid before drilling.</p><a id="component-link" href="#11-build-the-enclosure-after-the-bench-works">Build the enclosure <span aria-hidden="true">→</span></a></div>
+    </div>
+  </div>
+  <p class="concept-caption">Concept model · simplified shapes and illustrative placement, not a wiring or drilling plan. Use the <a href="#wiring-lab">wiring bench</a> for exact connections and the <a href="printables.html#layout">cardboard layout kit</a> to plan your enclosure.</p>
+</section>
+<section id="story-path" class="story-path" aria-labelledby="story-path-title">
+  <div class="path-heading"><div><p class="eyebrow">From a tap to a tale</p><h2 id="story-path-title">Where does the story come from?</h2></div><button id="path-play" type="button" class="secondary" hidden>Follow the story <span aria-hidden="true">→</span></button></div>
+  <ol class="signal-path">
+    <li class="is-current"><button type="button" data-path-step="0" aria-pressed="true" disabled><span class="path-art"><svg viewBox="0 0 180 112" aria-hidden="true"><rect x="53" y="17" width="60" height="78" rx="8" fill="#fff8df" stroke="#bc8b59" stroke-width="2" transform="rotate(-12 83 56)"/><path d="M75 62q16-32 22-6l-3 14H77Z" fill="#bb765a"/><path d="m80 43-3-16m11 15 5-17" stroke="#bb765a" stroke-width="7" stroke-linecap="round"/><path d="M126 39q14 17 0 34m10-43q22 26 0 51" fill="none" stroke="#457b62" stroke-width="3" stroke-linecap="round"/></svg></span><span class="path-step-number">01 / TAP</span><strong>A card holds a link</strong><span>The NFC tag stores a web address, not the story’s audio.</span></button></li>
+    <li><button type="button" data-path-step="1" aria-pressed="false" disabled><span class="path-art"><svg viewBox="0 0 180 112" aria-hidden="true"><rect x="43" y="43" width="94" height="53" rx="7" fill="#407962"/><rect x="61" y="53" width="40" height="30" rx="3" fill="#b7c6b3"/><path d="M111 55v27m8-27v27M67 34q23-20 46 0M76 25q14-12 28 0" fill="none" stroke="#ad7c47" stroke-width="4" stroke-linecap="round"/><circle cx="90" cy="38" r="3" fill="#ad7c47"/></svg></span><span class="path-step-number">02 / FETCH</span><strong>Wi-Fi finds the audio</strong><span>The ESP32 requests that public audio URL over your network.</span></button></li>
+    <li><button type="button" data-path-step="2" aria-pressed="false" disabled><span class="path-art"><svg viewBox="0 0 180 112" aria-hidden="true"><path d="M17 59h13V44h14v30h14V44h14v15h15" fill="none" stroke="#457b62" stroke-width="3"/><rect x="93" y="29" width="62" height="62" rx="5" fill="#557d87"/><rect x="111" y="46" width="26" height="26" rx="3" fill="#203f3b"/><path d="M104 24v-8m13 8v-8m13 8v-8m13 8v-8M104 96v8m13-8v8m13-8v8m13-8v8" stroke="#c39959" stroke-width="4"/></svg></span><span class="path-step-number">03 / DECODE</span><strong>The signal becomes sound</strong><span>The ESP32 decodes the audio; the amplifier drives the speaker.</span></button></li>
+    <li><button type="button" data-path-step="3" aria-pressed="false" disabled><span class="path-art"><svg viewBox="0 0 180 112" aria-hidden="true"><rect x="35" y="29" width="91" height="56" rx="10" fill="#27483e"/><circle cx="67" cy="57" r="21" fill="#6d8574"/><circle cx="67" cy="57" r="12" fill="#142f2b"/><circle cx="105" cy="57" r="12" fill="#83917e"/><path d="M140 42q10 15 0 30m10-38q15 23 0 46" fill="none" stroke="#b98846" stroke-width="3" stroke-linecap="round"/></svg></span><span class="path-step-number">04 / LISTEN</span><strong>A little adventure begins</strong><span>The speaker moves air. Pip’s story comes to life.</span></button></li>
+  </ol>
+  <div class="path-caption"><p id="path-detail" role="status">Tap a step to explore. The card is a bookmark: the radio still needs Wi-Fi and a reachable audio host.</p><a href="#8-write-and-test-a-story-card">Make your first story card →</a></div>
+  <p class="help">Illustrated explanation; the animation does not read a card, access Wi-Fi hardware or play audio. Try the <a href="#listen">browser story preview</a> below to listen.</p>
+</section>

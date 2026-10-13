@@ -13,6 +13,8 @@ The README is the complete tutorial. `site/template.html` is the website shell, 
 - `site/printables.html`, `docs/printables.css`, `docs/printables.js`: card artwork, labels, full-size cardboard pieces, bench sheet and blank physical-build record. These are planning aids; drilling centres require a physically checked enclosure and received parts.
 - `site/story.txt`, `docs/assets/pip-story.svg`: original story and vector artwork. `scripts/make_story.py` renders the committed narration WAV using the local eSpeak NG shared library and voice data. It is separate from the normal site build; run it if the transcript changes.
 - `docs/assets/wiring.svg`: original connection overview. It is not a physical wiring photograph.
+- `site/visuals.html`, `docs/visuals.css`, `docs/visuals.js`, `docs/radio-model.js`: optional 3D component explorer and interactive story signal path. The SVG fallback and moonlit story illustration are original assets under `docs/assets/`. Component shapes and placement are conceptual, not dimensioned manufacturing drawings. Keep educational copy consistent with the README.
+- `docs/vendor/three-r180/`: unmodified, locally bundled Three.js r180 (0.180.0) and MIT licence. The rendering module loads near the viewport; nothing is fetched from a CDN. Keep the two JavaScript files together because one imports the other.
 - `docs/vendor/hls-1.6.13.min.js` and `hls-LICENSE.txt`: pinned third-party browser HLS playback.
 - `scripts/build_site.py`: generates HTML, identical firmware copies, SHA-256 manifest, deterministic ZIP, station JSON and the original five-second audio-check WAV.
 - `VALIDATION.md`: evidence and explicit physical acceptance checks. Do not replace pending measurements with guesses.
@@ -65,6 +67,8 @@ The guided path saves only its current stage, view preference, build/tool checkm
 
 Unit tests use controlled media events for race conditions. Real WAV playback confirms the local media file/browser path. Neither proves live-stream decoding on an ESP32. Check the six real endpoints separately, and test actual hardware in Australia for ABC.
 
+Run `node tests/visuals.cjs` with the same local server and Playwright environment. It exercises real WebGL rendering using Chrome's software renderer, keyboard controls, component links, mobile layouts, motion preferences, story animation and graphics failures. The component explanation remains usable if WebGL is unavailable or its context is lost. The illustrations and 3D model do not replace physical build evidence. Automatic rotation is opt-in, respects reduced motion, and rendering stops offscreen; fireflies move only during story playback. This renderer test is not a performance benchmark for every phone.
+
 ## Publishing
 
 For GitHub Pages, publish the `docs/` folder on the intended branch using the repository's existing Pages configuration. Generate and check the site before committing/publishing. All files under `docs/`, including `downloads/`, `vendor/` and `assets/`, must be included.
@@ -82,5 +86,7 @@ For station URL changes, edit `Stations.h`, regenerate, test browser playback an
 ## Licences
 
 Original project files are MIT. The original test tone is generated from a mathematical waveform by `build_site.py`, and contains no third-party recordings. HLS.js is Apache-2.0; its licence is included next to the vendored script. The Arduino libraries keep their upstream licences and are installed by the reader. Station streams and linked product documentation remain their owners' material.
+
+Three.js r180 is MIT; its upstream licence and source locations are included in `docs/vendor/three-r180/`. Keep that notice when redistributing the explorer.
 
 Pip's story, artwork and computer-narrated WAV are original project assets under MIT. The narration uses eSpeak NG's standard English voice (`en`, 145 words/minute, amplitude 65); the speech engine is not bundled. Preserve the computer-narration label. Do not present concept illustrations, sample Serial messages or browser playback as photographs, captured hardware output or a successful physical build.

@@ -39,6 +39,8 @@ The board illustration's pin positions follow the manufacturer's component-side 
 
 Printable layout dimensions and the 50 mm scale square are checked in the browser's print layout; review PDFs are generated for visual inspection. The full-size outlines are for cardboard placement. **No exact enclosure or drilling template has been physically validated.** Printer settings must still be checked with a ruler. The printable build record includes a photo shot list, measurement fields and a novice observation sheet to collect the remaining evidence.
 
+The additional visual layer passes `tests/visuals.cjs` in Chrome with software WebGL: rendered open/closed scenes and camera reset, pointer selection and dragging, keyboard controls, all seven component links, six viewport widths (320–1920 px), reduced-motion changes, pausing the story-path animation, real-audio-triggered fireflies, and fallbacks for lost WebGL context, unsupported WebGL, failed module download and disabled JavaScript. The 3D code loads near the viewport. Desktop and phone illustrations were visually reviewed. The existing browser and workshop suites also pass. These are website checks; the conceptual model supplies no enclosure dimensions or physical assembly evidence.
+
 ## Physical acceptance checklist — not performed here
 
 Do not mark these complete without an assembled radio and actual observations. Record board revisions, supply, battery, firmware/configuration, date and any changed part.

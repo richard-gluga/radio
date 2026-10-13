@@ -5,16 +5,19 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="description" content="Build a rechargeable ESP32 radio with an OLED, volume knob and NFC story cards. Exact parts, complete firmware and step-by-step checks.">
   <title>Kangaroo Radio — the complete build guide</title>
+  <link rel="icon" type="image/svg+xml" href="assets/radio-mark.svg">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="workshop.css">
+  <link rel="stylesheet" href="visuals.css">
   <script defer src="vendor/hls-1.6.13.min.js"></script>
   <script type="module" src="app.js"></script>
   <script type="module" src="workshop.js"></script>
+  <script type="module" src="visuals.js"></script>
 </head>
 <body>
   <a class="skip" href="#guide">Skip to instructions</a>
   <header class="topbar"><a class="brand" href="#top">Kangaroo <strong>Radio</strong><span class="brand-dot" aria-hidden="true"></span></a>
-    <nav aria-label="Main navigation"><a href="#guide">Build with me</a><a href="#wiring-lab">Wiring bench</a><a href="#listen">Listen</a><a href="printables.html">Print & make</a></nav>
+    <nav aria-label="Main navigation"><a href="#explore">Look inside</a><a href="#guide">Build with me</a><a href="#wiring-lab">Wiring bench</a><a href="#listen">Listen</a><a href="printables.html">Print & make</a></nav>
   </header>
   <main id="top">
     <section class="hero" aria-labelledby="hero-title">
@@ -29,6 +32,7 @@
       </div>
     </section>
     <section class="journey-strip" aria-label="Your journey"><div><span>01</span><strong>Get curious</strong><small>Meet the parts</small></div><div><span>02</span><strong>Make connections</strong><small>Wire, upload, check</small></div><div><span>03</span><strong>Hear it happen</strong><small>Your first station & story</small></div><div><span>04</span><strong>Make it yours</strong><small>Finish, label, enjoy</small></div></section>
+    <!-- VISUALS -->
     <noscript><p class="no-script-note">JavaScript is off. The complete instructions and printable sheets are available below. Use the unconfigured ZIP and follow the manual configuration instructions; interactive previews and saved progress need JavaScript.</p></noscript>
     <section id="build-dashboard" class="build-dashboard enhanced-only" aria-label="Build progress"><div><p class="eyebrow">Your workbench</p><h2 id="progress-title">One small step at a time.</h2><p id="progress-text" role="status">Ready when you are.</p><progress id="build-progress" max="13" value="0" aria-label="Completed stages"></progress><p class="help" id="storage-status">Checkmarks and shopping choices stay on this browser. Wi-Fi details are never saved.</p></div><div><div class="view-switch" role="group" aria-label="Guide view"><button id="guided-view" type="button" aria-pressed="true">Guided build</button><button id="reference-view" type="button" class="secondary" aria-pressed="false">Full reference</button></div><div class="actions"><button id="resume-build" type="button" class="secondary">Resume my step</button><button id="reset-build" type="button" class="text-button">Reset checkmarks</button></div></div></section>
     <div class="build-layout">
@@ -58,7 +62,7 @@
     </section>
     <section id="listen" class="tool-section" aria-labelledby="listen-title">
       <div class="section-intro"><p class="eyebrow">Optional browser preview</p><h2 id="listen-title">Listen before you build</h2><p>This uses your computer or phone's audio. It does not write NFC tags or prove ESP32 playback compatibility. Begin at low device volume.</p></div>
-      <div class="story-feature"><img src="assets/pip-story.svg" alt="Pip the kangaroo carries a firefly home on a leaf"><div><p class="eyebrow">Your first story card</p><h3>Pip and the little light</h3><p>A lost firefly. A helpful kangaroo. A little journey home. An original 45-second adventure to give your first card a voice.</p><div class="actions"><button id="play-story" type="button">Listen to Pip’s story</button><button id="copy-story" type="button" class="secondary">Copy story URL</button></div><p class="help">Computer narration · original text and artwork · <a href="assets/pip-and-the-little-light.txt">Read the transcript</a> · <a href="printables.html#cards">Print the card</a></p></div></div>
+      <div class="story-feature"><div class="story-window"><img src="assets/pip-night-garden.svg" width="900" height="720" loading="lazy" alt="Pip holds a little light in a moonlit garden of eucalyptus, winding water and fireflies"><span class="story-spark spark-one" aria-hidden="true"></span><span class="story-spark spark-two" aria-hidden="true"></span><span class="story-spark spark-three" aria-hidden="true"></span><span class="story-window-label">A little light. A big adventure.</span></div><div><p class="eyebrow">Your first story card</p><h3>Pip and the little light</h3><p>A lost firefly. A helpful kangaroo. A little journey home. An original 45-second adventure to give your first card a voice.</p><div class="actions"><button id="play-story" type="button">Listen to Pip’s story</button><button id="copy-story" type="button" class="secondary">Copy story URL</button></div><p class="help">Computer narration · original text and artwork · <a href="assets/pip-and-the-little-light.txt">Read the transcript</a> · <a href="printables.html#cards">Print the card</a></p></div></div>
       <div class="panel"><h3 class="panel-heading">Explore the stations</h3><div id="stations" class="station-grid"></div>
         <div class="demo-row"><button id="play-demo" type="button">Play five-second audio check</button><button id="copy-demo" type="button" class="secondary">Copy demo URL for a tag</button></div>
         <p class="help">Original synthetic WAV · 5 seconds · mono, 22.05 kHz, 16-bit PCM. Not a story narration or a calibration signal.</p>
